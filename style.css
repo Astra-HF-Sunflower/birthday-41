@@ -1,0 +1,254 @@
+/* ========== 基础样式 ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    overflow: hidden;
+    color: white;
+}
+
+/* ========== 页面容器和切换效果 ========== */
+.container {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+.page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.page.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* ========== 页面背景 ========== */
+.page-1 { background: linear-gradient(135deg, #2E8B57 0%, #3CB371 50%, #66CDAA 100%); }
+.page-2 { background: linear-gradient(135deg, #3CB371 0%, #2E8B57 100%); }
+.page-3 { background: linear-gradient(135deg, #2E8B57 0%, #20B2AA 100%); justify-content: flex-start; padding-top: 80px; overflow-y: auto; }
+.page-4 { background: linear-gradient(135deg, #20B2AA 0%, #3CB371 100%); }
+.page-5 { background: linear-gradient(135deg, #3CB371 0%, #2E8B57 100%); }
+.page-6 { background: linear-gradient(135deg, #2E8B57 0%, #20B2AA 100%); }
+.page-7 { background: linear-gradient(135deg, #20B2AA 0%, #3CB371 100%); }
+.page-8 { background: linear-gradient(135deg, #3CB371 0%, #2E8B57 100%); }
+
+/* ========== 导航点 ========== */
+.nav-dots {
+    position: fixed;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.nav-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    transition: all 0.3s;
+}
+
+.nav-dot.active {
+    background: white;
+    transform: scale(1.3);
+}
+
+/* ========== 各页面元素样式 ========== */
+.section-title {
+    font-size: 2rem;
+    margin-bottom: 40px;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+}
+
+/* Page 1: 封面 */
+.title { font-size: 3rem; font-weight: bold; margin-bottom: 20px; text-shadow: 2px 2px 10px rgba(0,0,0,0.3); }
+.date { font-size: 1.2rem; margin-bottom: 50px; opacity: 0.9; }
+.hint { font-size: 1rem; opacity: 0.7; animation: bounce 2s infinite; }
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Page 2: 卡片 */
+.card {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 500px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+.card h2 { font-size: 2rem; margin-bottom: 30px; }
+.card p { font-size: 1.1rem; line-height: 1.8; opacity: 0.95; }
+
+/* Page 3: 时间轴 */
+.timeline { max-width: 600px; width: 100%; padding: 20px; }
+.timeline-item { display: flex; margin-bottom: 50px; }
+.timeline-dot { width: 20px; height: 20px; background: white; border-radius: 50%; margin-right: 20px; flex-shrink: 0; box-shadow: 0 0 0 4px rgba(255,255,255,0.3); }
+.timeline-content { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); padding: 20px; border-radius: 15px; flex: 1; }
+.timeline-content h3 { font-size: 1.3rem; margin-bottom: 10px; }
+.timeline-content p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin-bottom: 15px; }
+.timeline-img img { width: 100%; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+
+/* Page 4: 关键词 */
+.keywords { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 20px; max-width: 600px; padding: 40px; }
+.keyword { background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(10px); padding: 15px 25px; border-radius: 30px; font-size: 1.2rem; font-weight: 500; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s; }
+.keyword:hover { transform: scale(1.1); background: rgba(255, 255, 255, 0.35); }
+.k1 { font-size: 1.5rem; } .k2 { font-size: 1.3rem; } .k3 { font-size: 1.1rem; } .k4 { font-size: 1.4rem; } .k5 { font-size: 1.2rem; } .k6 { font-size: 1.3rem; } .k7 { font-size: 1.1rem; } .k8 { font-size: 1.6rem; }
+.k9 { font-size: 1.4rem; }
+/* Page 5: 照片 */
+.photo-gallery { position: relative; width: 100%; max-width: 400px; height: 450px; }
+.photo-item { position: absolute; width: 100%; opacity: 0; transform: scale(0.8); transition: all 0.5s; background: rgba(255, 255, 255, 0.2); border-radius: 20px; padding: 20px; backdrop-filter: blur(10px); }
+.photo-item.active { opacity: 1; transform: scale(1); }
+.photo-item img { width: 100%; height: 350px; object-fit: cover; border-radius: 15px; }
+.photo-item p { margin-top: 15px; font-size: 1rem; }
+.photo-nav { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+.photo-nav .dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255, 255, 255, 0.5); cursor: pointer; }
+.photo-nav .dot.active { background: white; }
+
+/* Page 6: 数字 */
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 500px; width: 100%; }
+.stat-item { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); padding: 20px; border-radius: 15px; }
+.stat-number { font-size: 3rem; font-weight: bold; margin-bottom: 10px; }
+.stat-label { font-size: 0.95rem; opacity: 0.9; line-height: 1.4; }
+/* ↓↓↓ 在这里添加新代码 ↓↓↓ */
+.stat-item-full {
+    grid-column: 1 / -1; /* 这句代码就是让它横跨所有列的意思 */
+}
+
+/* Page 7: 祝福 */
+.blessing-card { background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(20px); border-radius: 20px; padding: 50px 40px; max-width: 550px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
+.blessing-card h2 { font-size: 2.2rem; margin-bottom: 30px; }
+.blessing-card p { font-size: 1.15rem; line-height: 2; opacity: 0.95; }
+
+/* Page 8: 结尾 */
+.sunflower-icon { font-size: 5rem; margin-bottom: 30px; animation: rotate 3s infinite linear; }
+@keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.ending h1 { font-size: 2.5rem; margin-bottom: 20px; text-shadow: 2px 2px 15px rgba(0,0,0,0.3); }
+.signature { font-size: 1.3rem; opacity: 0.9; margin-bottom: 50px; font-style: italic; }
+.final-hint { font-size: 0.95rem; opacity: 0.7; }
+
+/* ========== 音乐按钮 ========== */
+.music-control { position: fixed; top: 20px; right: 20px; width: 50px; height: 50px; background: rgba(255, 255, 255, 0.3); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 1000; font-size: 24px; backdrop-filter: blur(10px); }
+
+/* ========== 花里胡哨特效 ========== */
+.heart { position: fixed; color: #ff6b9d; font-size: 20px; pointer-events: none; animation: floatHeart 1.5s ease-out forwards; z-index: 9999; }
+@keyframes floatHeart { 0% { opacity: 1; transform: translateY(0) scale(0); } 50% { transform: translateY(-50px) scale(1.2); } 100% { opacity: 0; transform: translateY(-100px) scale(0.5); } }
+.falling-item { position: fixed; font-size: 25px; pointer-events: none; z-index: 100; animation: fallDown linear forwards; opacity: 0.7; }
+@keyframes fallDown { 0% { transform: translateY(-10vh) rotate(0deg); opacity: 0.7; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+.cursor-glow { position: fixed; width: 100px; height: 100px; border-radius: 50%; background: radial-gradient(circle, rgba(102, 205, 170, 0.4) 0%, transparent 70%); pointer-events: none; z-index: 9998; transform: translate(-50%, -50%); transition: all 0.15s ease-out; mix-blend-mode: screen; }
+.fireworks-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
+.firework { position: absolute; width: 4px; height: 4px; border-radius: 50%; animation: fireworkExplode 1.5s ease-out forwards; }
+@keyframes fireworkExplode { 0% { transform: translate(0, 0); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)); opacity: 0; } }
+.shooting-star { position: fixed; width: 2px; height: 2px; background: white; border-radius: 50%; box-shadow: 0 0 10px 2px white; pointer-events: none; z-index: 99; animation: shootingStar 2s linear forwards; }
+@keyframes shootingStar { 0% { transform: translate(0, 0); opacity: 1; } 100% { transform: translate(-200px, 200px); opacity: 0; } }
+.particle { position: fixed; width: 8px; height: 8px; background: #66CDAA; border-radius: 50%; pointer-events: none; z-index: 9999; animation: particleExplode 0.8s ease-out forwards; }
+@keyframes particleExplode { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(var(--px), var(--py)) scale(0); opacity: 0; } }/* ========== 关键词图片弹窗 ========== */
+.keyword {
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s;
+}
+
+.keyword::before {
+    content: '点击查看';
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+    white-space: nowrap;
+}
+
+.keyword:hover::before {
+    opacity: 0.7;
+}
+
+.keyword:hover {
+    transform: scale(1.15) translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 10000;
+    cursor: pointer;
+    animation: fadeIn 0.3s;
+}
+
+.modal.show {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    max-width: 80%;
+    max-height: 80%;
+    text-align: center;
+    animation: zoomIn 0.3s;
+}
+
+.modal-content img {
+    max-width: 100%;
+    max-height: 70vh;
+    border-radius: 20px;
+    box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+}
+
+.modal-content p {
+    color: white;
+    margin-top: 20px;
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+@keyframes zoomIn {
+    from {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
