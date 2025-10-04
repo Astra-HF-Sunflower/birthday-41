@@ -340,3 +340,18 @@ body {
         overflow-y: visible;    /* 【核心！】禁用内部滚动！ */
     }
 }
+/* 让代码截图在鼠标放上去时，显示“放大”手势 */
+.code-image-wrapper img {
+    cursor: zoom-in;
+}
+
+/* “图片放大镜”弹窗的专属样式 */
+#imageViewerModal {
+    background: rgba(0, 0, 0, 0.95); /* 用更深的背景突出图片 */
+}
+#viewerImage {
+    max-width: 95vw;
+    max-height: 95vh;
+    object-fit: contain; /* 保证图片完整显示，不被裁剪 */
+    cursor: zoom-out; /* 提示可以点击关闭 */
+}

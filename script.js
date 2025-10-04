@@ -337,3 +337,19 @@ function closeCodeModal() {
     const modal = document.getElementById('codeModal');
     modal.classList.remove('show');
 }
+// ↓↓↓ 在文件最底部，添加这两个全新的函数 ↓↓↓
+
+// 打开“图片放大镜”
+function openImageViewer(imageSrc) {
+    const viewerModal = document.getElementById('imageViewerModal');
+    const viewerImage = document.getElementById('viewerImage');
+    
+    viewerImage.src = imageSrc; // 把点击的图片地址，赋给放大镜里的图片
+    viewerModal.classList.add('show');
+}
+
+// 关闭“图片放大镜”
+function closeImageViewer() {
+    const viewerModal = document.getElementById('imageViewerModal');
+    viewerModal.classList.remove('show');
+}

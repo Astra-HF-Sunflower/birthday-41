@@ -199,27 +199,32 @@
 
     <script src="script.js"></script>
 <div id="codeModal" class="modal" onclick="closeCodeModal()">
-    <div class="modal-content code-modal-content">
+<div class="modal-content code-modal-content" onclick="event.stopPropagation()">
         <div class="code-column">
             <h4>HTML: 骨骼 🦴</h4>
             <div class="code-image-wrapper">
-                <img src="images/code_html.png" alt="HTML Code">
+                <img src="images/code_html.png" alt="HTML Code"onclick="openImageViewer(this.src)">
             </div>
         </div>
         <div class="code-column">
             <h4>CSS: 衣服 🎨</h4>
             <div class="code-image-wrapper">
-                <img src="images/code_css.png" alt="CSS Code">
+                <img src="images/code_css.png" alt="CSS Code"onclick="openImageViewer(this.src)">
             </div>
         </div>
         <div class="code-column">
             <h4>JS: 灵魂 🧠</h4>
             <div class="code-image-wrapper">
-                <img src="images/code_js.png" alt="JavaScript Code">
+                <img src="images/code_js.png" alt="JavaScript Code"onclick="openImageViewer(this.src)">
             </div>
         </div>
     </div>
 </div>
 <script src="script.js"></script>
-</body></body>
+<div id="imageViewerModal" class="modal" onclick="closeImageViewer()">
+    <img id="viewerImage" src="">
+</div>
+
+<script src="script.js"></script>
+</body></body></body>
 </html>
