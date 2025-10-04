@@ -91,14 +91,14 @@ body {
 .hint { font-size: 1rem; opacity: 0.7; animation: bounce 2s infinite; }
 .signature-main {
     width: 100%;
-    max-width: 600px; /* 限制最大宽度，防止在大屏幕上跑太远 */
-    padding: 0 20px; /* 增加一点边距 */
-    text-align: right; /* 核心！让文字靠右对齐 */
-    font-size: 1.5rem; /* 调整字体大小 */
-    font-style: italic; /* 斜体更有签名感 */
+    max-width: 600px;
+    padding: 0 40px; /* 在手机上增加左右边距，让它更居中一点 */
+    text-align: right;
+    font-size: 1.5rem;
+    font-style: italic;
     opacity: 0.9;
-    margin-top: 10px; /* 和主标题拉开一点距离 */
-    margin-bottom: -20px; /* 和下面的日期再近一点 */
+    margin-top: 10px;
+    margin-bottom: 25px; /* 关键修改！从-20px改成25px，把日期往下推！ */
 }
 @keyframes bounce {
     0%, 100% { transform: translateY(0); }
