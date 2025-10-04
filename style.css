@@ -287,16 +287,56 @@ body {
     }
 }
 
-/* ========== 彩蛋弹窗专属样式 ========== */
-.code-modal-content { display: flex; flex-direction: row; gap: 20px; width: 90vw; max-width: 1200px; height: 85vh; background: #2c3e50; padding: 20px; border-radius: 15px; overflow: hidden; }
+/* ========== 彩蛋弹窗专属样式 (最终魔法卷轴版) ========== */
+.code-modal-content {
+    display: flex;
+    flex-direction: row; /* 在电脑上横向排列 */
+    gap: 20px;
+    width: 90vw;
+    max-width: 1200px;
+    height: 85vh;
+    background: #2c3e50;
+    padding: 20px;
+    border-radius: 15px;
+    overflow: hidden; /* 电脑端保持不变 */
+}
 .code-column {
     flex: 1;
     display: flex;
     flex-direction: column;
     min-width: 0;
-    overflow: hidden; /* 【核心魔法咒语！】这行代码就是坚固的“墙壁”！ */
+    overflow: hidden; /* 电脑端保持内部滚动 */
 }
-.code-column h4 { color: #ecf0f1; text-align: center; margin-bottom: 15px; flex-shrink: 0; }
-.code-image-wrapper { flex-grow: 1; overflow-y: auto; border-radius: 8px; }
-.code-image-wrapper img { width: 100%; display: block; }
-@media (max-width: 768px) { .code-modal-content { flex-direction: column; height: 90vh; } }
+.code-column h4 {
+    color: #ecf0f1;
+    text-align: center;
+    margin-bottom: 15px;
+    flex-shrink: 0;
+}
+.code-image-wrapper {
+    flex-grow: 1;
+    overflow-y: auto; /* 电脑端保持内部滚动 */
+    border-radius: 8px;
+}
+.code-image-wrapper img {
+    width: 100%;
+    display: block;
+}
+
+/* --- 手机端优化：变成一个可以整体滚动的“魔法卷轴”！ --- */
+@media (max-width: 768px) {
+    .code-modal-content {
+        flex-direction: column; /* 依然是竖排 */
+        height: auto;           /* 【核心！】不再固定高度！ */
+        max-height: 90vh;       /* 【核心！】给它一个最大高度，超出就滚动 */
+        overflow-y: auto;       /* 【核心！】让整个弹窗自己可以滚动！ */
+        padding: 40px 15px;     /* 增加一点内部的上下边距 */
+    }
+    .code-column {
+        overflow: visible;      /* 【核心！】让每个槽位自然展开，不再隐藏内容 */
+        margin-bottom: 30px;    /* 在每个代码截图之间增加一些间距 */
+    }
+    .code-image-wrapper {
+        overflow-y: visible;    /* 【核心！】禁用内部滚动！ */
+    }
+}
