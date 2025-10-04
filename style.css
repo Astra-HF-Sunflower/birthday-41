@@ -100,6 +100,22 @@ body {
     margin-top: 10px;
     margin-bottom: 25px; /* 关键修改！从-20px改成25px，把日期往下推！ */
 }
+/* --- 手机端封面专属间距优化 --- */
+@media (max-width: 768px) {
+    .title {
+        margin-bottom: 15px; /* 标题和落款的距离 */
+    }
+    .signature-main {
+        margin-top: 0; /* 落款紧随标题 */
+        margin-bottom: 40px; /* 【核心】大大拉开落款和日期的距离！ */
+        font-size: 1.2rem; /* 在手机上让签名稍微小一点，更协调 */
+    }
+    .date {
+        margin-top: 0;
+        margin-bottom: 70px; /* 【核心】大大拉开日期和下方提示的距离！ */
+        font-size: 1rem; /* 日期也稍微小一点 */
+    }
+}
 @keyframes bounce {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
