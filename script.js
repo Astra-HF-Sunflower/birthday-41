@@ -326,4 +326,14 @@ document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         closeModal();
     }
-});
+});// 显示“制作人彩蛋”弹窗
+function showCodeModal() {
+    const modal = document.getElementById('codeModal');
+    modal.classList.add('show');
+}
+
+// 关闭“制作人彩蛋”弹窗
+function closeCodeModal() {
+    const modal = document.getElementById('codeModal');
+    modal.classList.remove('show');
+}

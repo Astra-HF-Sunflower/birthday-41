@@ -180,7 +180,7 @@
             <div class="ending">
                 <div class="sunflower-icon">🌻</div>
                 <h1>Happy 18th Birthday</h1>
-                <p class="signature">—— 小向日葵喵</p>
+                <p class="signature"onclick="showCodeModal()">—— 小向日葵喵</p>
                 <p class="final-hint">长按保存这个页面吧～</p>
             </div>
         </section>
@@ -198,5 +198,28 @@
     </div>
 
     <script src="script.js"></script>
-</body>
+<div id="codeModal" class="modal" onclick="closeCodeModal()">
+    <div class="modal-content code-modal-content">
+        <div class="code-column">
+            <h4>HTML: 骨骼 🦴</h4>
+            <div class="code-image-wrapper">
+                <img src="images/code_html.png" alt="HTML Code">
+            </div>
+        </div>
+        <div class="code-column">
+            <h4>CSS: 衣服 🎨</h4>
+            <div class="code-image-wrapper">
+                <img src="images/code_css.png" alt="CSS Code">
+            </div>
+        </div>
+        <div class="code-column">
+            <h4>JS: 灵魂 🧠</h4>
+            <div class="code-image-wrapper">
+                <img src="images/code_js.png" alt="JavaScript Code">
+            </div>
+        </div>
+    </div>
+</div>
+<script src="script.js"></script>
+</body></body>
 </html>

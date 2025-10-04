@@ -177,7 +177,20 @@ body {
 .sunflower-icon { font-size: 5rem; margin-bottom: 30px; animation: rotate 3s infinite linear; }
 @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 .ending h1 { font-size: 2.5rem; margin-bottom: 20px; text-shadow: 2px 2px 15px rgba(0,0,0,0.3); }
-.signature { font-size: 1.3rem; opacity: 0.9; margin-bottom: 50px; font-style: italic; }
+.signature {
+    font-size: 1.3rem;
+    opacity: 0.9;
+    margin-bottom: 50px;
+    font-style: italic;
+    cursor: pointer; /* 鼠标放上去会变成小手！ */
+    transition: all 0.3s;
+    color: #FFD700; /* 【核心！】给它一个闪亮的金色，暗示这里可以点！ */
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); /* 再加一点金色的光晕！ */
+}
+.signature:hover {
+    opacity: 1;
+    transform: scale(1.1); /* 鼠标放上去会放大一点！ */
+}
 .final-hint { font-size: 0.95rem; opacity: 0.7; }
 
 /* ========== 音乐按钮 ========== */
@@ -274,7 +287,10 @@ body {
     }
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
+/* ========== 彩蛋弹窗专属样式 ========== */
+.code-modal-content { display: flex; flex-direction: row; gap: 20px; width: 90vw; max-width: 1200px; height: 85vh; background: #2c3e50; padding: 20px; border-radius: 15px; overflow: hidden; }
+.code-column { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.code-column h4 { color: #ecf0f1; text-align: center; margin-bottom: 15px; flex-shrink: 0; }
+.code-image-wrapper { flex-grow: 1; overflow-y: auto; border-radius: 8px; }
+.code-image-wrapper img { width: 100%; display: block; }
+@media (max-width: 768px) { .code-modal-content { flex-direction: column; height: 90vh; } }
