@@ -360,3 +360,36 @@ body {
 .modal-content p { color: white; margin-top: 20px; font-size: 1.2rem; opacity: 0.9; }
 @keyframes zoomIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+/* ↓↓↓ 在文件最底部，添加全新的“叉号”按钮样式 ↓↓↓ */
+
+/* ========== 弹窗关闭按钮 (叉号) ========== */
+.modal-content {
+    position: relative; /* 让叉号可以相对于它来定位 */
+}
+
+.close-button {
+    position: absolute; /* 把它从文档流里抽出来，浮动在右上角 */
+    top: -15px;
+    right: -15px;
+    width: 40px;
+    height: 40px;
+    background: white;
+    color: #333;
+    border-radius: 50%; /* 一个完美的圆形 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    font-weight: bold;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: all 0.2s;
+    z-index: 10001; /* 确保它在最顶层 */
+}
+
+.close-button:hover {
+    transform: scale(1.1) rotate(90deg); /* 增加一个酷炫的旋转效果 */
+    background: #FF5555; /* 变成红色警告 */
+    color: white;
+}

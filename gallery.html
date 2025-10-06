@@ -150,15 +150,17 @@
         <span class="nav-dot active"></span><span class="nav-dot"></span><span class="nav-dot"></span><span class="nav-dot"></span><span class="nav-dot"></span><span class="nav-dot"></span><span class="nav-dot"></span><span class="nav-dot"></span>
     </div>
 
-    <!-- ==================== 关键词图片弹窗 (展柜) ==================== -->
-    <div id="imageModal" class="modal" onclick="closeModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <img id="modalImage" src="" alt="">
-            <p id="modalText"></p>
-        </div>
+  <div id="imageModal" class="modal" onclick="closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <!-- ↓↓↓ 在这里添加全新的“叉号”按钮 ↓↓↓ -->
+        <span class="close-button" onclick="closeModal()">&times;</span>
+        
+        <img id="modalImage" src="" alt="">
+        <p id="modalText"></p>
     </div>
-    <!-- ============================================================= -->
+</div>
 
-    <script src="gallery_script.js"></script>
+   <script src="gallery_script.js"></script>
+    <script src="common.js"></script>
 </body>
 </html>
