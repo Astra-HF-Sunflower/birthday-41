@@ -122,7 +122,7 @@ function logOut() {
     document.getElementById('boot-screen').classList.add('hidden');
 }
 
-// --- OS 魔法：让窗口可以被拖动 & 开始菜单逻辑 ---
+// --- OS 魔法：让窗口可以被拖动 & 开始菜单逻辑 (V2.0 外交版) ---
 document.addEventListener('DOMContentLoaded', () => {
     const windows = document.querySelectorAll('.window');
     windows.forEach((win, index) => {
@@ -132,6 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let isDragging = false;
         let startX, startY, initialX, initialY;
 
+        // --- 电脑端：只允许通过标题栏拖动 ---
         titleBar.addEventListener('mousedown', (e) => {
             isDragging = true;
             startX = e.clientX;
@@ -139,33 +140,66 @@ document.addEventListener('DOMContentLoaded', () => {
             initialX = win.offsetLeft;
             initialY = win.offsetTop;
             
-            // 点击时，把当前窗口带到最前面
             document.querySelectorAll('.window').forEach(w => w.style.zIndex = 100);
             win.style.zIndex = 101;
         });
 
-        document.addEventListener('mousemove', (e) => {
+        // --- 手机端：专属的触摸拖动逻辑 ---
+        titleBar.addEventListener('touchstart', (e) => {
+            // 只处理单指触摸
+            if (e.touches.length === 1) {
+                isDragging = true;
+                const touch = e.touches[0];
+                startX = touch.clientX;
+                startY = touch.clientY;
+                initialX = win.offsetLeft;
+                initialY = win.offsetTop;
+                
+                document.querySelectorAll('.window').forEach(w => w.style.zIndex = 100);
+                win.style.zIndex = 101;
+            }
+        }, { passive: true });
+
+
+        // --- 统一的移动逻辑 ---
+        function handleMove(clientX, clientY) {
             if (isDragging) {
-                const dx = e.clientX - startX;
-                const dy = e.clientY - startY;
+                const dx = clientX - startX;
+                const dy = clientY - startY;
                 win.style.left = `${initialX + dx}px`;
                 win.style.top = `${initialY + dy}px`;
             }
-        });
+        }
 
-        document.addEventListener('mouseup', () => {
+        document.addEventListener('mousemove', (e) => handleMove(e.clientX, e.clientY));
+        document.addEventListener('touchmove', (e) => {
+            // 【核心外交协议！】如果事件起源于标题栏，我们才处理拖动！
+            if (isDragging && e.target.closest('.title-bar')) {
+                // 阻止页面默认的滚动行为（比如整个网页上下弹动）
+                e.preventDefault();
+                if (e.touches.length === 1) {
+                    const touch = e.touches[0];
+                    handleMove(touch.clientX, touch.clientY);
+                }
+            }
+        }, { passive: false });
+
+
+        // --- 统一的停止逻辑 ---
+        function stopDragging() {
             isDragging = false;
-        });
+        }
+        document.addEventListener('mouseup', stopDragging);
+        document.addEventListener('touchend', stopDragging);
     });
 
+    // --- 开始菜单逻辑 (保持不变) ---
     const startButton = document.getElementById('start-button');
     const startMenu = document.getElementById('start-menu');
     startButton.addEventListener('click', (e) => {
-        e.stopPropagation(); // 防止点击事件冒泡到document
+        e.stopPropagation();
         startMenu.classList.toggle('hidden');
     });
-
-    // 点击页面任何地方，如果开始菜单是打开的，就关闭它
     document.addEventListener('click', (e) => {
         if (!startMenu.classList.contains('hidden') && !startButton.contains(e.target)) {
             startMenu.classList.add('hidden');
