@@ -170,3 +170,23 @@ if(musicIcon) musicIcon.textContent = '🔇';
 
 // --- 页面加载时，手动触发一次页面切换，以激活第一页 ---
 changePage();
+// ↓↓↓ 在文件最底部，changePage() 的前面，添加这两个新函数 ↓↓↓
+
+// --- 手机专属按钮翻页 ---
+function goPageUp() {
+    if (currentPage > 0) {
+        currentPage--;
+        changePage();
+    }
+}
+
+function goPageDown() {
+    if (currentPage < totalPages - 1) {
+        currentPage++;
+        changePage();
+    }
+}
+
+
+// --- 页面加载时，手动触发一次页面切换，以激活第一页 ---
+changePage();
