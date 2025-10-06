@@ -1,79 +1,4 @@
-/* ==================== 基础 & 全局样式 ==================== */
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; overflow: hidden; color: white; user-select: none; /* 禁止选中文本，更有OS的感觉 */ }
-.hidden { display: none !important; }
-
-/* ==================== 登录门 (Windows 风格) ==================== */
-#login-gate { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0078D7; display: flex; justify-content: center; align-items: center; z-index: 99999; transition: opacity 1s; color: white; text-align: center; }
-#boot-screen { opacity: 1; transition: opacity 0.5s; }
-.windows-logo { width: 80px; height: 80px; background-color: white; margin: 0 auto; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2,3H11V12H2V3M13,3H22V7H13V3M2,14H11V21H2V14M13,9H22V21H13V9Z'/%3E%3C/svg%3E") no-repeat center; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2,3H11V12H2V3M13,3H22V7H13V3M2,14H11V21H2V14M13,9H22V21H13V9Z'/%3E%3C/svg%3E") no-repeat center; }
-#boot-screen p { margin-top: 20px; font-size: 1rem; }
-.spinner { width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; margin: 20px auto; animation: spin 1s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-#user-selection-screen { display: flex; gap: 50px; }
-.user-card { cursor: pointer; transition: all 0.3s; }
-.user-card:hover { transform: scale(1.1); }
-.user-card img { width: 120px; height: 120px; border-radius: 50%; border: 4px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-.user-card h2 { margin-top: 15px; }
-#password-screen img { width: 120px; height: 120px; border-radius: 50%; border: 4px solid white; margin-bottom: 20px; }
-.password-input-wrapper { position: relative; width: 300px; margin: 0 auto; }
-#login-password { display: block; width: 100%; padding: 15px 60px 15px 20px; background: rgba(0,0,0,0.2); border: 1px solid white; border-radius: 5px; color: white; font-size: 1.2rem; outline: none; }
-.password-input-wrapper button { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: white; font-size: 2rem; cursor: pointer; padding: 5px 15px; }
-#login-error { color: #FFC0CB; margin-top: 15px; height: 20px; }
-.back-link { display: inline-block; margin-top: 30px; color: rgba(255,255,255,0.8); cursor: pointer; }
-.shake { animation: shake 0.5s; }
-@keyframes shake { 10%, 90% { transform: translateX(-5px); } 20%, 80% { transform: translateX(5px); } 30%, 50%, 70% { transform: translateX(-10px); } 40%, 60% { transform: translateX(10px); } }
-.fade-out { opacity: 0; pointer-events: none; }
-
-/* ==================== 桌面 OS 核心样式 ==================== */
-#desktop {
-    width: 100vw;
-    height: 100vh;
-    background-image: linear-gradient(to bottom, #0078D6, #3C93DC, #5AADDD); /* 经典的XP蓝天背景 */
-    position: relative;
-    overflow: hidden;
-}
-
-/* --- 桌面图标 --- */
-.desktop-icons { padding: 20px; display: flex; flex-direction: column; gap: 20px; }
-.icon { width: 80px; text-align: center; cursor: pointer; }
-.icon img { width: 50px; height: 50px; margin-bottom: 5px; }
-.icon span { background: #0078D6; box-shadow: 0 0 0 3px #0078D6; }
-.icon:hover span { background: #3399FF; box-shadow: 0 0 0 3px #3399FF; }
-
-/* --- 任务栏 --- */
-.taskbar { position: absolute; bottom: 0; left: 0; width: 100%; height: 40px; background: linear-gradient(to bottom, #245EDC, #3F8CF3, #245EDC); border-top: 1px solid #4A9DF4; z-index: 1000; display: flex; align-items: center; padding: 0 5px; }
-#start-button { background: linear-gradient(to bottom, #37B42D, #55E84A, #37B42D); border: 1px solid #3A8E34; border-radius: 10px 10px 0 0; color: white; font-weight: bold; font-style: italic; display: flex; align-items: center; padding: 0 15px; height: 30px; cursor: pointer; }
-#start-button:hover { background: linear-gradient(to bottom, #49C640, #69F960, #49C640); }
-#start-button img { width: 20px; height: 20px; margin-right: 5px; }
-
-/* --- 开始菜单 --- */
-#start-menu { position: absolute; bottom: 40px; left: 0; width: 250px; background: #245EDC; border: 2px solid #3F8CF3; border-radius: 5px 5px 0 0; padding: 5px; z-index: 999; }
-#start-menu ul { list-style: none; }
-#start-menu li { display: flex; align-items: center; padding: 10px; cursor: pointer; }
-#start-menu li:hover { background: #3F8CF3; }
-#start-menu img { width: 30px; height: 30px; margin-right: 10px; }
-
-/* --- 窗口样式 --- */
-.window { position: absolute; width: 80vw; height: 80vh; max-width: 900px; max-height: 600px; top: 5vh; left: 10vw; background: #ECE9D8; border: 1px solid #08246B; box-shadow: 5px 5px 10px rgba(0,0,0,0.3); z-index: 100; resize: both; overflow: auto; }
-.title-bar { background: linear-gradient(to right, #0055E3, #3B92F3); color: white; padding: 5px 10px; display: flex; justify-content: space-between; align-items: center; cursor: move; height: 30px; }
-.title-bar-text { font-weight: bold; }
-.title-bar-controls button { width: 20px; height: 20px; border: 1px solid white; margin-left: 3px; font-weight: bold; cursor: pointer; }
-button[aria-label="Close"] { background: #FF5555; color: white; }
-.window-body { width: 100%; height: calc(100% - 30px); color: black; background: white; }
-.window-body iframe { width: 100%; height: 100%; }
-.window-body canvas { width: 100%; height: 100%; background: #222; }
-
-/* ========== 手机端专属 OS 样式 ========== */
-@media (max-width: 768px) {
-    /* 在手机上，桌面图标竖排居中 */
-    .desktop-icons { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-    /* 任务栏变成一个简单的底部栏 */
-    .taskbar { justify-content: center; }
-    /* 窗口不再是窗口，而是全屏的App */
-    .window { width: 100vw; height: 100vh; top: 0; left: 0; max-width: none; max-height: none; z-index: 500; }
-    .title-bar { border-radius: 0; }
-}/* ========== 基础样式 ========== */
+/* ========== 基础样式 ========== */
 * {
     margin: 0;
     padding: 0;
@@ -257,9 +182,17 @@ body {
     opacity: 0.9;
     margin-bottom: 50px;
     font-style: italic;
-    /* 我们不再需要这里的特殊颜色和效果了 */
+    cursor: pointer; /* 鼠标放上去会变成小手！ */
+    transition: all 0.3s;
+    color: #FFD700; /* 【核心！】给它一个闪亮的金色，暗示这里可以点！ */
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); /* 再加一点金色的光晕！ */
+}
+.signature:hover {
+    opacity: 1;
+    transform: scale(1.1); /* 鼠标放上去会放大一点！ */
 }
 .final-hint { font-size: 0.95rem; opacity: 0.7; }
+
 /* ========== 音乐按钮 ========== */
 .music-control { position: fixed; top: 20px; right: 20px; width: 50px; height: 50px; background: rgba(255, 255, 255, 0.3); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 1000; font-size: 24px; backdrop-filter: blur(10px); }
 
@@ -352,11 +285,104 @@ body {
         transform: scale(1);
         opacity: 1;
     }
-}/* ========== 弹窗通用样式 ========== */
-.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 10000; cursor: pointer; animation: fadeIn 0.3s; }
-.modal.show { display: flex; justify-content: center; align-items: center; }
-.modal-content { max-width: 80%; max-height: 80%; text-align: center; animation: zoomIn 0.3s; cursor: default; }
-.modal-content img { max-width: 100%; max-height: 70vh; border-radius: 20px; box-shadow: 0 10px 50px rgba(0,0,0,0.5); }
-.modal-content p { color: white; margin-top: 20px; font-size: 1.2rem; opacity: 0.9; }
-@keyframes zoomIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+}
+
+/* ========== 彩蛋弹窗专属样式 (最终魔法卷轴版) ========== */
+.code-modal-content {
+    display: flex;
+    flex-direction: row; /* 在电脑上横向排列 */
+    gap: 20px;
+    width: 90vw;
+    max-width: 1200px;
+    height: 85vh;
+    background: #2c3e50;
+    padding: 20px;
+    border-radius: 15px;
+    overflow: hidden; /* 电脑端保持不变 */
+}
+.code-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden; /* 电脑端保持内部滚动 */
+}
+.code-column h4 {
+    color: #ecf0f1;
+    text-align: center;
+    margin-bottom: 15px;
+    flex-shrink: 0;
+}
+.code-image-wrapper {
+    flex-grow: 1;
+    overflow-y: auto; /* 电脑端保持内部滚动 */
+    border-radius: 8px;
+}
+.code-image-wrapper img {
+    width: 100%;
+    display: block;
+}
+
+/* --- 手机端优化：变成一个可以整体滚动的“魔法卷轴”！ --- */
+@media (max-width: 768px) {
+    .code-modal-content {
+        flex-direction: column; /* 依然是竖排 */
+        height: auto;           /* 【核心！】不再固定高度！ */
+        max-height: 90vh;       /* 【核心！】给它一个最大高度，超出就滚动 */
+        overflow-y: auto;       /* 【核心！】让整个弹窗自己可以滚动！ */
+        padding: 40px 15px;     /* 增加一点内部的上下边距 */
+    }
+    .code-column {
+        overflow: visible;      /* 【核心！】让每个槽位自然展开，不再隐藏内容 */
+        margin-bottom: 30px;    /* 在每个代码截图之间增加一些间距 */
+    }
+    .code-image-wrapper {
+        overflow-y: visible;    /* 【核心！】禁用内部滚动！ */
+    }
+}
+/* 让代码截图在鼠标放上去时，显示“放大”手势 */
+.code-image-wrapper img {
+    cursor: zoom-in;
+}
+
+/* “图片放大镜”弹窗的专属样式 */
+#imageViewerModal {
+    background: rgba(0, 0, 0, 0.95); /* 用更深的背景突出图片 */
+}
+#viewerImage {
+    max-width: 95vw;
+    max-height: 95vh;
+    object-fit: contain; /* 保证图片完整显示，不被裁剪 */
+    cursor: zoom-out; /* 提示可以点击关闭 */
+}
+/* ========== 庄园大门 (Windows 登录风格) ========== */
+.main-content-wrapper { transition: opacity 1s ease-in-out; opacity: 0; pointer-events: none; }
+#login-gate { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #46cff1; /* 41版Windows 标志性的青色 */ display: flex; justify-content: center; align-items: center; z-index: 99999; transition: opacity 1s; color: white; text-align: center; }
+.hidden { display: none !important; }
+
+/* --- 开机动画 --- */
+#boot-screen { opacity: 1; transition: opacity 0.5s; }
+.windows-logo { width: 80px; height: 80px; background-color: white; margin: 0 auto; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2,3H11V12H2V3M13,3H22V7H13V3M2,14H11V21H2V14M13,9H22V21H13V9Z'/%3E%3C/svg%3E") no-repeat center; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2,3H11V12H2V3M13,3H22V7H13V3M2,14H11V21H2V14M13,9H22V21H13V9Z'/%3E%3C/svg%3E") no-repeat center; }
+#boot-screen p { margin-top: 20px; font-size: 1rem; }
+.spinner { width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; margin: 20px auto; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* --- 用户选择界面 --- */
+#user-selection-screen { display: flex; gap: 50px; }
+.user-card { cursor: pointer; transition: all 0.3s; }
+.user-card:hover { transform: scale(1.1); }
+.user-card img { width: 120px; height: 120px; border-radius: 50%; border: 4px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+.user-card h2 { margin-top: 15px; }
+
+/* --- 密码输入界面 --- */
+#password-screen img { width: 120px; height: 120px; border-radius: 50%; border: 4px solid white; margin-bottom: 20px; }
+.password-input-wrapper { position: relative; width: 300px; margin: 0 auto; }
+#login-password { display: block; width: 100%; padding: 15px 60px 15px 20px; background: rgba(0,0,0,0.2); border: 1px solid white; border-radius: 5px; color: white; font-size: 1.2rem; outline: none; }
+.password-input-wrapper button { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: white; font-size: 2rem; cursor: pointer; padding: 5px 15px; }
+#login-error { color: #FFC0CB; /* 粉色错误提示，更柔和 */ margin-top: 15px; height: 20px; }
+.back-link { display: inline-block; margin-top: 30px; color: rgba(255,255,255,0.8); cursor: pointer; }
+
+/* 动画效果 */
+.shake { animation: shake 0.5s; }
+@keyframes shake { 10%, 90% { transform: translateX(-5px); } 20%, 80% { transform: translateX(5px); } 30%, 50%, 70% { transform: translateX(-10px); } 40%, 60% { transform: translateX(10px); } }
+.fade-out { opacity: 0; pointer-events: none; }

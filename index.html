@@ -8,259 +8,108 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+    <!-- ==================== 登录门 ==================== -->
     <div id="login-gate">
-    <!-- Windows 开机动画 -->
-    <div id="boot-screen">
-        <div class="windows-logo"></div>
-        <p>正在进入我们的庄园...</p>
-        <div class="spinner"></div>
-    </div>
-
-    <!-- 用户选择界面 -->
-    <div id="user-selection-screen" class="hidden">
-        <div class="user-card" onclick="selectUser('sunflower')">
-            <img src="images/sunflower-avatar.png" alt="向日葵">
-            <h2>向日葵喵</h2>
+        <!-- 开机动画 -->
+        <div id="boot-screen">
+            <div class="windows-logo"></div>
+            <p>正在进入我们的庄园...</p>
+            <div class="spinner"></div>
         </div>
-        <div class="user-card" onclick="selectUser('corn')">
-            <img src="images/corn-avatar.png" alt="松仁玉米">
-            <h2>松仁玉米</h2>
-        </div>
-    </div>
-
-    <!-- 密码输入界面 -->
-    <div id="password-screen" class="hidden">
-        <img id="password-avatar" src="">
-        <h2 id="password-username"></h2>
-        <div class="password-input-wrapper">
-            <input type="password" id="login-password" placeholder="输入密码" autocomplete="off">
-            <button onclick="enterManor()">➔</button>
-        </div>
-        <p id="login-error"></p>
-        <a class="back-link" onclick="backToUserSelection()">← 返回用户选择</a>
-    </div>
-</div>
-
-
-    <div class="main-content-wrapper">
-   <div class="main-content-wrapper"></div> <audio id="bgMusic" loop>
-        <source src="music/bgm.mp3" type="audio/mpeg">
-    </audio>
-    
-    <div class="music-control" onclick="toggleMusic()">
-        <span id="musicIcon">🔇</span>
-    </div>
-
-    <div class="container">
-        <!-- 第1页 -->
-        <section class="page page-1 active">
-            <h1 class="title">属于孙钰的<br>成人礼！</h1>
-<p class="signature-main">——your 皇甫</p>
-<p class="date">2007.11.30 - 2025.11.30</p>
-            <p class="hint">向下滑动开始 ↓</p>
-        </section>
-
-        <!-- 第2页 -->
-        <section class="page page-2">
-            <div class="card">
-                <h2>嘿，生日快乐！🎂</h2>
-                <p class="edit-text-1">
-                    时间过得好快...转眼间，41已经成为大人了！。<br>
-                    我还记得我们第一次做同桌的样子....<br>
-                    这短短的一年...谢谢你的陪伴！<br><br>
-                    今天特别的日子，我特意编写了这个小程序送给你～
-                    希望41在未来的日子里，天天开心！😘
-                </p>
+        <!-- 用户选择 -->
+        <div id="user-selection-screen" class="hidden">
+            <div class="user-card" onclick="selectUser('sunflower')">
+                <img src="images/sunflower-avatar.png" alt="小向日葵喵(管理员)">
+                <h2>向日葵</h2>
             </div>
-        </section>
+            <div class="user-card" onclick="selectUser('corn')">
+                <img src="images/corn-avatar.png" alt="松仁玉米">
+                <h2>松仁玉米</h2>
+            </div>
+        </div>
+        <!-- 密码输入 -->
+        <div id="password-screen" class="hidden">
+            <img id="password-avatar" src="">
+            <h2 id="password-username"></h2>
+            <div class="password-input-wrapper">
+                <input type="password" id="login-password" placeholder="输入密码" autocomplete="off">
+                <button onclick="enterOS()">➔</button>
+            </div>
+            <p id="login-error"></p>
+            <a class="back-link" onclick="backToUserSelection()">← 返回用户选择</a>
+        </div>
+    </div>
 
-        <!-- 第3页 -->
-        <section class="page page-3">
-            <h2 class="section-title">我们的时间线</h2>
-            <div class="timeline">
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <h3>📍 高一·初识</h3>
-                        <p class="edit-text-2">第一次对41留下印象  同学A！</p>
-                        <div class="timeline-img">
-                            <img src="images/photo1.jpg" alt="高一">
-                        </div>
+    <!-- ==================== 我们的专属 OS ==================== -->
+    <main id="desktop" class="hidden">
+
+        <!-- 桌面图标 -->
+        <div class="desktop-icons">
+            <div class="icon" ondblclick="openWindow('gallery')">
+                <img src="images/icon-gallery.png" alt="回忆画廊">
+                <span>回忆画廊.exe</span>
+            </div>
+            <div class="icon" ondblclick="openWindow('manor')">
+                <img src="images/icon-manor.png" alt="我们的庄园">
+                <span>我们的庄园.exe</span>
+            </div>
+        </div>
+
+        <!-- 所有窗口的容器 -->
+        <div id="window-container">
+            <!-- 回忆画廊 窗口 -->
+            <div id="gallery-window" class="window hidden">
+                <div class="title-bar">
+                    <div class="title-bar-text">🖼️ 回忆画廊</div>
+                    <div class="title-bar-controls">
+                        <button aria-label="Minimize"></button>
+                        <button aria-label="Maximize"></button>
+                        <button aria-label="Close" onclick="closeWindow('gallery')"></button>
                     </div>
                 </div>
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <h3>📍 高二·日常</h3>
-                        <p class="edit-text-3">传纸条、麻辣拌、小零食...猫猫！</p>
-                        <div class="timeline-img">
-                            <img src="images/photo2.jpg" alt="高二">
-                        </div>
+                <div class="window-body">
+                    <!-- 【关键！】用 iframe 嵌入我们的回忆画廊！ -->
+                    <iframe src="gallery.html" frameborder="0"></iframe>
+                </div>
+            </div>
+
+            <!-- 我们的庄园 窗口 -->
+            <div id="manor-window" class="window hidden">
+                <div class="title-bar">
+                    <div class="title-bar-text">🏡 我们的庄园</div>
+                    <div class="title-bar-controls">
+                        <button aria-label="Minimize"></button>
+                        <button aria-label="Maximize"></button>
+                        <button aria-label="Close" onclick="closeWindow('manor')"></button>
                     </div>
                 </div>
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <h3>📍 高三·现在</h3>
-                        <p class="edit-text-4">一起走到今天，一起迎接未来</p>
-                        <div class="timeline-img">
-                            <img src="images/photo3.jpg" alt="高三">
-                        </div>
-                    </div>
+                <div class="window-body">
+                    <canvas id="game-canvas"></canvas>
                 </div>
             </div>
-        </section>
+        </div>
 
-       <!-- 第4页：关键词云 -->
-<section class="page page-4">
-    <h2 class="section-title">属于我们的关键词</h2>
-    <div class="keywords">
-        <span class="keyword k1" onclick="showKeywordImage('sunflower')">🌻 向日葵</span>
-        <span class="keyword k2" onclick="showKeywordImage('cat')">🐱 猫猫</span>
-        <span class="keyword k3" onclick="showKeywordImage('note')">📝 纸条</span>
-        <span class="keyword k4" onclick="showKeywordImage('corn')">🌽 玉米</span>
-        <span class="keyword k5" onclick="showKeywordImage('food')">🍜 麻辣拌</span>
-        <span class="keyword k6" onclick="showKeywordImage('library')">📚 图书馆</span>
-        <span class="keyword k7" onclick="showKeywordImage('snack')">🍟 零食</span>
-        <span class="keyword k8" onclick="showKeywordImage('desk')">❤ 同桌</span>
-    </div><span class="keyword k9" onclick="showKeywordImage('diary')">📖 日记</span>
-</section>
+        <!-- 任务栏 -->
+        <div class="taskbar">
+            <button id="start-button">
+                <img src="images/windows-icon.png" alt="Start">
+                <span>开始</span>
+            </button>
+            <div id="taskbar-apps"></div>
+        </div>
 
-<!-- 图片弹窗 -->
-<div id="imageModal" class="modal" onclick="closeModal()">
-    <div class="modal-content">
-        <img id="modalImage" src="" alt="">
-        <p id="modalText"></p>
-    </div>
-</div>
-
-        <!-- 第5页 -->
-        <section class="page page-5">
-            <h2 class="section-title">珍藏的瞬间</h2>
-            <div class="photo-gallery">
-                <div class="photo-item active">
-                    <img src="images/photo4.jpg" alt="照片1">
-                    <p class="edit-text-5">在这里写照片描述</p>
-                </div>
-                <div class="photo-item">
-                    <img src="images/photo5.jpg" alt="照片2">
-                    <p class="edit-text-6">在这里写照片描述</p>
-                </div>
-                <div class="photo-item">
-                    <img src="images/photo6.jpg" alt="照片3">
-                    <p class="edit-text-7">在这里写照片描述</p>
-                </div>
-            </div>
-            <div class="photo-nav">
-                <span class="dot active" onclick="showPhoto(0)"></span>
-                <span class="dot" onclick="showPhoto(1)"></span>
-                <span class="dot" onclick="showPhoto(2)"></span>
-            </div>
-        </section>
-
-        <!-- 第6页 -->
-        <section class="page page-6">
-            <h2 class="section-title">用数字记录</h2>
-            <div class="stats">
-                <div class="stat-item">
-                    <div class="stat-number">18</div>
-                    <div class="stat-label">岁 人生新篇章</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">1095</div>
-                    <div class="stat-label">天 三年高中时光</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number edit-number-1">数不清</div>
-                    <div class="stat-label">张纸条 我们的幸福回忆</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number edit-number-2">记不全</div>
-                    <div class="stat-label">包零食 被41吃掉！</div>
-                </div>
-                <div class="stat-item stat-item-full">
-    <div class="stat-number">∞</div>
-    <div class="stat-label">未来的可能</div>
-</div>
-            </div>
-        </section>
-
-        <!-- 第7页 -->
-        <section class="page page-7">
-            <div class="blessing-card">
-                <h2>写给18岁的你</h2>
-               <!-- ↓↓↓ 用下面这个完整的段落，替换掉你原来的祝福语段落 ↓↓↓ -->
-
-<p class="edit-text-final">
-    愿你永远保持现在的笑容，<br>
-    愿你喜欢的都能得到，<br>
-    愿你的善良永远被温柔以待。<br>
-    <br>
-    18岁，是全新的开始，<br>
-    未来的路还很长，<br>
-    希望我们都能成为更好的自己。<br>
-    在未来...41要一直记得我哦！<br>
-    一想到我们总有一天要分开...就忍不住地哭呢...<br>
-    把这个二维码收藏好吧！<br>当41任何悲伤的时候...拿出回忆一下这一刻的幸福吧！<br>
-    希望我的赠礼 是41所有朋友中最独特的...<br>
-    我们都会一直爱着你的！<br>
-    <br>
-    生日快乐，孙钰！🎉
-</p>
-            </div>
-        </section>
-
-        <!-- 第8页 -->
-        <section class="page page-8">
-            <div class="ending">
-                <div class="sunflower-icon">🌻</div>
-                <h1>Happy 18th Birthday</h1>
-                <p class="signature"onclick="showCodeModal()">—— 小向日葵喵</p>
-                <p class="final-hint">长按保存这个页面吧～</p>
-            </div>
-        </section>
-    </div>
-
-    <div class="nav-dots">
-        <span class="nav-dot active"></span>
-        <span class="nav-dot"></span>
-        <span class="nav-dot"></span>
-        <span class="nav-dot"></span>
-        <span class="nav-dot"></span>
-        <span class="nav-dot"></span>
-        <span class="nav-dot"></span>
-        <span class="nav-dot"></span>
-    </div>
+        <!-- 开始菜单 -->
+        <div id="start-menu" class="hidden">
+            <ul>
+                <li onclick="logOut()">
+                    <img src="images/icon-logout.png" alt="注销">
+                    <span>注销</span>
+                </li>
+            </ul>
+        </div>
+    </main>
 
     <script src="script.js"></script>
-<div id="codeModal" class="modal" onclick="closeCodeModal()">
-<div class="modal-content code-modal-content" onclick="event.stopPropagation()">
-        <div class="code-column">
-            <h4>HTML: 骨骼 🦴</h4>
-            <div class="code-image-wrapper">
-                <img src="images/code_html.png" alt="HTML Code"onclick="openImageViewer(this.src)">
-            </div>
-        </div>
-        <div class="code-column">
-            <h4>CSS: 衣服 🎨</h4>
-            <div class="code-image-wrapper">
-                <img src="images/code_css.png" alt="CSS Code"onclick="openImageViewer(this.src)">
-            </div>
-        </div>
-        <div class="code-column">
-            <h4>JS: 灵魂 🧠</h4>
-            <div class="code-image-wrapper">
-                <img src="images/code_js.png" alt="JavaScript Code"onclick="openImageViewer(this.src)">
-            </div>
-        </div>
-    </div>
-</div>
-<script src="script.js"></script>
-<div id="imageViewerModal" class="modal" onclick="closeImageViewer()">
-    <img id="viewerImage" src="">
-</div>
-
-<script src="script.js"></script>
-</div>
-</body></body></body>
+</body>
 </html>
