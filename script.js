@@ -1,7 +1,88 @@
 let currentPage = 0;
 const totalPages = 8;
 let isScrolling = false;
+// ==================== 庄园大门锁芯 (Windows 风格) ====================
+let selectedUser = null; // 用来记录当前选择了哪个用户
 
+// --- 动画：页面加载后，先显示开机动画，然后切换到用户选择 ---
+window.onload = function() {
+    setTimeout(() => {
+        document.getElementById('boot-screen').style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('boot-screen').classList.add('hidden');
+            document.getElementById('user-selection-screen').classList.remove('hidden');
+        }, 500); // 等待渐隐动画结束
+    }, 2500); // 开机动画持续2.5秒
+};
+
+// --- 功能：选择用户 ---
+function selectUser(user) {
+    selectedUser = user;
+    
+    // 切换到密码输入界面
+    document.getElementById('user-selection-screen').classList.add('hidden');
+    document.getElementById('password-screen').classList.remove('hidden');
+
+    // 更新密码界面的头像和用户名
+    const avatar = document.getElementById('password-avatar');
+    const username = document.getElementById('password-username');
+    if (user === 'sunflower') {
+        avatar.src = 'images/sunflower-avatar.png';
+        username.textContent = '向日葵';
+    } else {
+        avatar.src = 'images/corn-avatar.png';
+        username.textContent = '松仁玉米';
+    }
+    // 清空上次的密码和错误信息
+    document.getElementById('login-password').value = '';
+    document.getElementById('login-error').textContent = '';
+}
+
+// --- 功能：返回用户选择 ---
+function backToUserSelection() {
+    document.getElementById('password-screen').classList.add('hidden');
+    document.getElementById('user-selection-screen').classList.remove('hidden');
+}
+
+// --- 核心：检查密码并进入庄园 ---
+function enterManor() {
+    const passwordInput = document.getElementById('login-password');
+    const errorMsg = document.getElementById('login-error');
+    const passwordScreen = document.getElementById('password-screen');
+    const password = passwordInput.value.trim();
+
+    // 根据选择的用户，检查对应的密码
+    let isCorrect = false;
+    if (selectedUser === 'sunflower' && password === "080130") {
+        isCorrect = true;
+    } else if (selectedUser === 'corn' && password === "071130") {
+        isCorrect = true;
+    }
+
+    if (isCorrect) {
+        // 密码正确！
+        const gate = document.getElementById('login-gate');
+        const wrapper = document.querySelector('.main-content-wrapper');
+        gate.classList.add('fade-out');
+        wrapper.style.opacity = '1';
+        wrapper.style.pointerEvents = 'auto';
+        
+        // 尝试播放音乐
+        document.dispatchEvent(new Event('click'));
+
+    } else {
+        // 密码错误！
+        errorMsg.textContent = "密码错误！";
+        passwordScreen.classList.add('shake');
+        
+        setTimeout(() => {
+            passwordScreen.classList.remove('shake');
+        }, 500);
+    }
+}
+// =====================================================================
+
+// =======================================================
 // ↓↓↓ 用下面这个最终版的代码块，替换你之前所有的音乐代码 ↓↓↓
 // ==================== 音乐控制 (V10.0 破釜沉舟版) ====================
 const bgMusic = document.getElementById('bgMusic');

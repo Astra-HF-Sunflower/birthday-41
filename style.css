@@ -355,3 +355,34 @@ body {
     object-fit: contain; /* 保证图片完整显示，不被裁剪 */
     cursor: zoom-out; /* 提示可以点击关闭 */
 }
+/* ========== 庄园大门 (Windows 登录风格) ========== */
+.main-content-wrapper { transition: opacity 1s ease-in-out; opacity: 0; pointer-events: none; }
+#login-gate { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #46cff1; /* 41版Windows 标志性的青色 */ display: flex; justify-content: center; align-items: center; z-index: 99999; transition: opacity 1s; color: white; text-align: center; }
+.hidden { display: none !important; }
+
+/* --- 开机动画 --- */
+#boot-screen { opacity: 1; transition: opacity 0.5s; }
+.windows-logo { width: 80px; height: 80px; background-color: white; margin: 0 auto; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2,3H11V12H2V3M13,3H22V7H13V3M2,14H11V21H2V14M13,9H22V21H13V9Z'/%3E%3C/svg%3E") no-repeat center; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2,3H11V12H2V3M13,3H22V7H13V3M2,14H11V21H2V14M13,9H22V21H13V9Z'/%3E%3C/svg%3E") no-repeat center; }
+#boot-screen p { margin-top: 20px; font-size: 1rem; }
+.spinner { width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; margin: 20px auto; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* --- 用户选择界面 --- */
+#user-selection-screen { display: flex; gap: 50px; }
+.user-card { cursor: pointer; transition: all 0.3s; }
+.user-card:hover { transform: scale(1.1); }
+.user-card img { width: 120px; height: 120px; border-radius: 50%; border: 4px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+.user-card h2 { margin-top: 15px; }
+
+/* --- 密码输入界面 --- */
+#password-screen img { width: 120px; height: 120px; border-radius: 50%; border: 4px solid white; margin-bottom: 20px; }
+.password-input-wrapper { position: relative; width: 300px; margin: 0 auto; }
+#login-password { display: block; width: 100%; padding: 15px 60px 15px 20px; background: rgba(0,0,0,0.2); border: 1px solid white; border-radius: 5px; color: white; font-size: 1.2rem; outline: none; }
+.password-input-wrapper button { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: white; font-size: 2rem; cursor: pointer; padding: 5px 15px; }
+#login-error { color: #FFC0CB; /* 粉色错误提示，更柔和 */ margin-top: 15px; height: 20px; }
+.back-link { display: inline-block; margin-top: 30px; color: rgba(255,255,255,0.8); cursor: pointer; }
+
+/* 动画效果 */
+.shake { animation: shake 0.5s; }
+@keyframes shake { 10%, 90% { transform: translateX(-5px); } 20%, 80% { transform: translateX(5px); } 30%, 50%, 70% { transform: translateX(-10px); } 40%, 60% { transform: translateX(10px); } }
+.fade-out { opacity: 0; pointer-events: none; }

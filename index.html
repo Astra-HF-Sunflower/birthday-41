@@ -8,7 +8,42 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <audio id="bgMusic" loop>
+    <div id="login-gate">
+    <!-- Windows 开机动画 -->
+    <div id="boot-screen">
+        <div class="windows-logo"></div>
+        <p>正在进入我们的庄园...</p>
+        <div class="spinner"></div>
+    </div>
+
+    <!-- 用户选择界面 -->
+    <div id="user-selection-screen" class="hidden">
+        <div class="user-card" onclick="selectUser('sunflower')">
+            <img src="images/sunflower-avatar.png" alt="向日葵">
+            <h2>向日葵喵</h2>
+        </div>
+        <div class="user-card" onclick="selectUser('corn')">
+            <img src="images/corn-avatar.png" alt="松仁玉米">
+            <h2>松仁玉米</h2>
+        </div>
+    </div>
+
+    <!-- 密码输入界面 -->
+    <div id="password-screen" class="hidden">
+        <img id="password-avatar" src="">
+        <h2 id="password-username"></h2>
+        <div class="password-input-wrapper">
+            <input type="password" id="login-password" placeholder="输入密码" autocomplete="off">
+            <button onclick="enterManor()">➔</button>
+        </div>
+        <p id="login-error"></p>
+        <a class="back-link" onclick="backToUserSelection()">← 返回用户选择</a>
+    </div>
+</div>
+
+
+    <div class="main-content-wrapper">
+   <div class="main-content-wrapper"></div> <audio id="bgMusic" loop>
         <source src="music/bgm.mp3" type="audio/mpeg">
     </audio>
     
@@ -226,5 +261,6 @@
 </div>
 
 <script src="script.js"></script>
+</div>
 </body></body></body>
 </html>
