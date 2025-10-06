@@ -74,21 +74,21 @@
                 </div>
             </div>
 
-            <!-- 我们的庄园 窗口 -->
-            <div id="manor-window" class="window hidden">
-                <div class="title-bar">
-                    <div class="title-bar-text">🏡 我们的庄园</div>
-                    <div class="title-bar-controls">
-                        <button aria-label="Minimize"></button>
-                        <button aria-label="Maximize"></button>
-                        <button aria-label="Close" onclick="closeWindow('manor')"></button>
-                    </div>
-                </div>
-                <div class="window-body">
-                    <canvas id="game-canvas"></canvas>
-                </div>
-            </div>
+          <!-- 我们的庄园 窗口 -->
+<div id="manor-window" class="window hidden">
+    <div class="title-bar">
+        <div class="title-bar-text">🏡 我们的庄园</div>
+        <div class="title-bar-controls">
+            <button aria-label="Minimize"></button>
+            <button aria-label="Maximize"></button>
+            <button aria-label="Close" onclick="closeWindow('manor')"></button>
         </div>
+    </div>
+    <div class="window-body">
+        <!-- ✅ 改成这个！ -->
+        <iframe src="game.html" frameborder="0"></iframe>
+    </div>
+</div>
 
         <!-- 任务栏 -->
         <div class="taskbar">
