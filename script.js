@@ -42,8 +42,8 @@ function backToUserSelection() {
     document.getElementById('password-screen').classList.add('hidden');
     document.getElementById('user-selection-screen').classList.remove('hidden');
 }
+// ↓↓↓ 用下面这个全新的代码块，替换掉你旧的 enterOS 和 proceedToDesktop 函数 ↓↓↓
 
-// --- 核心：检查密码并进入 OS (V2.0 性格版) ---
 function enterOS() {
     const passwordInput = document.getElementById('login-password');
     const errorMsg = document.getElementById('login-error');
@@ -64,8 +64,9 @@ function enterOS() {
     } else if (selectedUser === 'sunflower') {
         if (password === "080130") {
             errorMsg.style.color = "#58a6ff";
-            errorMsg.textContent = ">> 进入管理员操作系统";
-            setTimeout(proceedToDesktop, 1500); // 暂时先统一进入桌面
+            errorMsg.textContent = ">> Access Granted. Entering Admin Panel...";
+            // 【核心！】密码正确后，不再直接进桌面，而是调用“进入后台”函数
+            setTimeout(proceedToAdmin, 1500);
         } else {
             errorMsg.style.color = "#e74c3c";
             errorMsg.textContent = "连我生日都记不住！滚！";
@@ -74,6 +75,8 @@ function enterOS() {
         }
     }
 }
+
+// “进入桌面”函数，保持不变
 function proceedToDesktop() {
     const gate = document.getElementById('login-gate');
     const desktop = document.getElementById('desktop');
@@ -81,30 +84,72 @@ function proceedToDesktop() {
     desktop.classList.remove('hidden');
 }
 
-// --- OS 功能：打开窗口 ---
-function openWindow(appName) {
-    const windowEl = document.getElementById(`${appName}-window`);
-    if (windowEl) {
-        windowEl.classList.remove('hidden');
-        // 把窗口带到最前面
-        document.querySelectorAll('.window').forEach(win => win.style.zIndex--);
-        windowEl.style.zIndex = 101;
-    }
+// 【全新的“进入后台”函数！】
+function proceedToAdmin() {
+    const gate = document.getElementById('login-gate');
+    const adminPanel = document.getElementById('admin-panel');
+    gate.classList.add('fade-out');
+    adminPanel.classList.remove('hidden');
 }
 
-// --- OS 功能：关闭窗口 (带远程静音) ---
+// 【全新的“从后台进入桌面”函数！】
+function proceedToHub() {
+    const adminPanel = document.getElementById('admin-panel');
+    const desktop = document.getElementById('desktop');
+    adminPanel.classList.add('hidden'); // 隐藏后台
+    desktop.classList.remove('hidden'); // 显示桌面
+}
+// --- OS 功能：打开窗口 (V2.0 - 带任务栏联动) ---
+function openWindow(appName) {
+    const windowEl = document.getElementById(`${appName}-window`);
+    const taskbarApps = document.getElementById('taskbar-apps');
+    if (!windowEl || !taskbarApps) return;
+
+    // 1. 显示窗口并带到最前面
+    windowEl.classList.remove('hidden');
+    document.querySelectorAll('.window').forEach(win => win.style.zIndex = 100);
+    windowEl.style.zIndex = 101;
+
+    // 2. 【核心！】检查任务栏上是否已经有这个App的按钮了
+    let taskbarBtn = document.getElementById(`task-${appName}`);
+    if (!taskbarBtn) {
+        // 如果没有，就创建一个新的！
+        taskbarBtn = document.createElement('button');
+        taskbarBtn.id = `task-${appName}`;
+        taskbarBtn.className = 'taskbar-btn';
+        // 从桌面图标复制图片和文字
+        const iconImg = document.querySelector(`.icon[ondblclick="openWindow('${appName}')"] img`).src;
+        const iconText = document.querySelector(`.icon[ondblclick="openWindow('${appName}')"] span`).textContent;
+        taskbarBtn.innerHTML = `<img src="${iconImg}"> <span>${iconText.replace('.exe','')}</span>`;
+        
+        // 给新按钮加上“点击带到最前”的功能
+        taskbarBtn.onclick = () => openWindow(appName);
+        
+        taskbarApps.appendChild(taskbarBtn);
+    }
+    // 激活当前App的任务栏按钮
+    document.querySelectorAll('.taskbar-btn').forEach(btn => btn.classList.remove('active'));
+    taskbarBtn.classList.add('active');
+}
+
+// --- OS 功能：关闭窗口 (V2.0 - 带任务栏联动) ---
 function closeWindow(appName) {
     const windowEl = document.getElementById(`${appName}-window`);
     if (windowEl) {
         windowEl.classList.add('hidden');
-        if (appName === 'gallery') {
+
+        // 【核心！】从任务栏上移除对应的按钮
+        const taskbarBtn = document.getElementById(`task-${appName}`);
+        if (taskbarBtn) {
+            taskbarBtn.remove();
+        }
+
+        // 远程静音 (保持不变)
+        if (appName === 'gallery' && typeof bgMusic !== 'undefined' && bgMusic && !bgMusic.paused) {
+            // 我们需要找到 gallery 内部的 toggleMusic 函数来正确切换状态
             const iframe = windowEl.querySelector('iframe');
-            if (iframe) {
-                const iframeContent = iframe.contentDocument || iframe.contentWindow.document;
-                const audio = iframeContent.getElementById('bgMusic');
-                if (audio && !audio.paused) {
-                    audio.pause();
-                }
+            if(iframe && iframe.contentWindow && typeof iframe.contentWindow.toggleMusic === 'function'){
+                iframe.contentWindow.toggleMusic();
             }
         }
     }
@@ -205,4 +250,20 @@ document.addEventListener('DOMContentLoaded', () => {
             startMenu.classList.add('hidden');
         }
     });
-});
+});// ↓↓↓ 在文件最底部，添加这两个全新的函数 ↓↓↓
+
+// --- 放大镜功能 ---
+function openImageViewer(imageSrc) {
+    const viewerModal = document.getElementById('imageViewerModal');
+    const viewerImage = document.getElementById('viewerImage');
+    if(viewerModal && viewerImage) {
+        viewerImage.src = imageSrc;
+        viewerModal.classList.remove('hidden');
+    }
+}
+function closeImageViewer() {
+    const viewerModal = document.getElementById('imageViewerModal');
+    if(viewerModal) {
+        viewerModal.classList.add('hidden');
+    }
+}

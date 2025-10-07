@@ -45,7 +45,50 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helv
 .taskbar { position: absolute; bottom: 0; left: 0; width: 100%; height: 40px; background: linear-gradient(to bottom, #245EDC, #3F8CF3, #245EDC); border-top: 1px solid #4A9DF4; z-index: 1000; display: flex; align-items: center; padding: 0 5px; }
 #start-button { background: linear-gradient(to bottom, #37B42D, #55E84A, #37B42D); border: 1px solid #3A8E34; border-radius: 10px 10px 0 0; color: white; font-weight: bold; font-style: italic; display: flex; align-items: center; padding: 0 15px; height: 30px; cursor: pointer; }
 #start-button:hover { background: linear-gradient(to bottom, #49C640, #69F960, #49C640); }
+#start-button img { width: 20px; height: 20px; margin-right: 5px; }/* ... #start-button:hover 的样式 ... */
 #start-button img { width: 20px; height: 20px; margin-right: 5px; }
+
+
+/* ↓↓↓ 在这里，添加全新的“任务栏按钮”样式 ↓↓↓ */
+
+#taskbar-apps {
+    display: flex;
+    height: 100%;
+    margin-left: 10px;
+}
+
+.taskbar-btn {
+    background: #3B8CF3;
+    border: 1px solid #245EDC;
+    border-bottom: none;
+    color: white;
+    padding: 0 10px;
+    margin-right: 3px;
+    height: 30px;
+    align-self: flex-end; /* 让按钮贴着底部 */
+    display: flex;
+    align-items: center;
+    max-width: 150px;
+    border-radius: 5px 5px 0 0;
+    cursor: pointer;
+}
+
+.taskbar-btn.active {
+    background: #4A9DF4;
+    border-color: #5AAEFF;
+}
+
+.taskbar-btn img {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+}
+
+.taskbar-btn span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* 如果名字太长，就显示省略号 */
+}
 
 /* --- 开始菜单 --- */
 #start-menu { position: absolute; bottom: 40px; left: 0; width: 250px; background: #245EDC; border: 2px solid #3F8CF3; border-radius: 5px 5px 0 0; padding: 5px; z-index: 999; }
@@ -304,97 +347,85 @@ body {
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 
+/* ==================== 终极弹窗法典 (适用于所有弹窗) ==================== */
+
+/* --- 弹窗的“幕布” (半透明背景) --- */
 .modal {
-    display: none;
-    position: fixed;
+    position: fixed; /* 固定在屏幕上 */
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    z-index: 10000;
-    cursor: pointer;
-    animation: fadeIn 0.3s;
-}
-
-.modal.show {
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 10000; /* 确保它在最顶层！ */
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer; /* 提示可以点击背景关闭 */
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none; /* 默认不可点击 */
+}
+.modal.show {
+    opacity: 1;
+    pointer-events: auto; /* 显示时才可点击 */
 }
 
+/* --- 弹窗的“内容盒子” --- */
 .modal-content {
-    max-width: 80%;
-    max-height: 80%;
-    text-align: center;
+    max-width: 90vw;
+    max-height: 90vh;
     animation: zoomIn 0.3s;
+    cursor: default; /* 鼠标在内容上时，变回普通箭头 */
+    position: relative; /* 为了关闭按钮的定位 */
 }
 
-.modal-content img {
-    max-width: 100%;
-    max-height: 70vh;
+/* --- 关键词弹窗 (#imageModal) 的专属样式 --- */
+#imageModal .modal-content {
+    background: rgba(44, 62, 80, 0.8);
+    padding: 30px;
     border-radius: 20px;
-    box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
 }
-
-.modal-content p {
+#imageModal img {
+    max-width: 100%;
+    max-height: 60vh;
+    border-radius: 15px;
+}
+#imageModal p {
     color: white;
     margin-top: 20px;
     font-size: 1.2rem;
-    opacity: 0.9;
 }
 
-@keyframes zoomIn {
-    from {
-        transform: scale(0.5);
-        opacity: 0;
-    }
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
-}/* ========== 弹窗通用样式 ========== */
-.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 10000; cursor: pointer; animation: fadeIn 0.3s; }
-.modal.show { display: flex; justify-content: center; align-items: center; }
-.modal-content { max-width: 80%; max-height: 80%; text-align: center; animation: zoomIn 0.3s; cursor: default; }
-.modal-content img { max-width: 100%; max-height: 70vh; border-radius: 20px; box-shadow: 0 10px 50px rgba(0,0,0,0.5); }
-.modal-content p { color: white; margin-top: 20px; font-size: 1.2rem; opacity: 0.9; }
-@keyframes zoomIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-/* ↓↓↓ 在文件最底部，添加全新的“叉号”按钮样式 ↓↓↓ */
-
-/* ========== 弹窗关闭按钮 (叉号) ========== */
-.modal-content {
-    position: relative; /* 让叉号可以相对于它来定位 */
-}
-
+/* --- 弹窗的“关闭按钮” (叉号) --- */
 .close-button {
-    position: absolute; /* 把它从文档流里抽出来，浮动在右上角 */
+    position: absolute;
     top: -15px;
     right: -15px;
     width: 40px;
     height: 40px;
     background: white;
     color: #333;
-    border-radius: 50%; /* 一个完美的圆形 */
+    border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 28px;
     font-weight: bold;
-    line-height: 1;
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     transition: all 0.2s;
-    z-index: 10001; /* 确保它在最顶层 */
+    z-index: 10001;
+}
+.close-button:hover {
+    transform: scale(1.1) rotate(90deg);
+    background: #FF5555;
+    color: white;
 }
 
-.close-button:hover {
-    transform: scale(1.1) rotate(90deg); /* 增加一个酷炫的旋转效果 */
-    background: #FF5555; /* 变成红色警告 */
-    color: white;
-}/* ↓↓↓ 在文件最底部，添加全新的“导航翼”样式 ↓↓↓ */
-
+/* --- 动画效果 --- */
+@keyframes zoomIn { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 /* ========== 手机专属翻页按钮 (导航翼) ========== */
 .page-nav-buttons {
     display: none; /* 【核心！】默认在电脑上是隐藏的！ */
@@ -445,4 +476,34 @@ body {
     width: 100%;
     height: 100%;
     border: none;
-}
+}/* ==================== 管理员后台 (彩蛋) ==================== */
+#admin-panel { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d1117; color: #c9d1d9; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 99998; opacity: 1; transition: opacity 1s; }
+.admin-header { font-family: 'Courier New', Courier, monospace; text-align: center; margin-bottom: 20px; }
+.admin-header h1 { color: #58a6ff; font-size: 2rem; }
+.admin-header p { color: #8b949e; }
+.proceed-btn { margin-top: 20px; background: none; border: 1px solid #30363d; color: #58a6ff; padding: 10px 20px; font-family: 'Courier New', Courier, monospace; cursor: pointer; transition: all 0.3s; }
+.proceed-btn:hover { background: #30363d; color: white; }
+#admin-panel .code-modal-content { position: relative; display: flex; flex-direction: row; gap: 20px; width: 80vw; max-width: 1000px; height: 60vh; background: #161b22; padding: 20px; border-radius: 15px; border: 1px solid #30363d; overflow: hidden; }
+#admin-panel .code-column { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+#admin-panel .code-column h4 { color: #ecf0f1; text-align: center; margin-bottom: 15px; flex-shrink: 0; }
+#admin-panel .code-image-wrapper { flex-grow: 1; overflow-y: auto; border-radius: 8px; }
+#admin-panel .code-image-wrapper img { width: 100%; display: block; }
+@media (max-width: 768px) { #admin-panel .code-modal-content { flex-direction: column; height: 80vh; } }
+/* ==================== 管理员后台 (彩蛋) V2.0 ==================== */
+#admin-panel { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d1117; color: #c9d1d9; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 99998; opacity: 1; transition: opacity 1s; }
+.admin-header { font-family: 'Courier New', Courier, monospace; text-align: center; margin-bottom: 20px; }
+.admin-header h1 { color: #58a6ff; font-size: 2rem; }
+.admin-header p { color: #8b949e; }
+.proceed-btn { margin-top: 20px; background: none; border: 1px solid #30363d; color: #58a6ff; padding: 10px 20px; font-family: 'Courier New', Courier, monospace; cursor: pointer; transition: all 0.3s; }
+.proceed-btn:hover { background: #30363d; color: white; }
+#admin-panel .code-modal-content { position: relative; display: flex; flex-direction: row; gap: 20px; width: 80vw; max-width: 1000px; height: 60vh; background: #161b22; padding: 20px; border-radius: 15px; border: 1px solid #30363d; overflow: hidden; }
+#admin-panel .code-column { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+#admin-panel .code-column h4 { color: #ecf0f1; text-align: center; margin-bottom: 15px; flex-shrink: 0; }
+#admin-panel .code-image-wrapper { flex-grow: 1; overflow-y: auto; border-radius: 8px; }
+#admin-panel .code-image-wrapper img { width: 100%; display: block; cursor: zoom-in; /* 增加放大手势 */ }
+
+
+
+/* --- 放大镜样式 --- */
+.modal { display: flex; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 100000; cursor: zoom-out; }
+#viewerImage { max-width: 95vw; max-height: 95vh; object-fit: contain; }

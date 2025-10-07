@@ -1,54 +1,51 @@
-// ==================== Player.js (V3.1 - 终极动画版) ====================
-
+// ==================== Player.js (V4.0 - 最终比例版) ====================
 export default class Player {
-    
-constructor(gameWidth, gameHeight) {
-    this.gameWidth = gameWidth;
-    this.gameHeight = gameHeight;
-
-    // --- “裁剪”尺寸 (基于我们新的、无变形的图片) ---
-    this.image = new Image();
-    this.image.src = './game/player.png';
-    this.spriteWidth = 256;    // 单帧宽度
-    this.spriteHeight = 256;   // 单帧高度
-    
-    // --- 【核心！】“智能缩放”！ ---
-    this.scale = 0.5; // 缩放比例！你可以改成 0.4, 0.6, 任何你喜欢的大小！
-    this.width = this.spriteWidth * this.scale;
-    this.height = this.spriteHeight * this.scale;
-
-    this.x = this.gameWidth / 2 - this.width / 2;
-    this.y = this.gameHeight - this.height - 20;
-    
-    this.speed = 0;
-    this.maxSpeed = 3;
-
-    // --- 动画控制 (保持不变) ---
-    this.frameX = 0;
-    this.maxFrame = 3;
-    this.fps = 8;
-    this.frameTimer = 0;
-    this.frameInterval = 1000 / this.fps;
-}
+    constructor(gameWidth, gameHeight) {
+        this.gameWidth = gameWidth;
+        this.gameHeight = gameHeight;
+        this.image = new Image();
+        this.image.src = '/images/player.png'; // 确保图片在 images 文件夹！
+        this.spriteWidth = 256;
+        this.spriteHeight = 256;
+        this.scale = 0.5;
+        this.width = this.spriteWidth * this.scale;
+        this.height = this.spriteHeight * this.scale;
+        this.x = 100; // 让她出生在左边一点
+        this.y = 100; // 让她出生在上面一点
+        this.speed = 0;
+        this.maxSpeed = 3;
+        this.vy = 0; // 垂直速度，暂时不用
+        this.frameX = 0;
+        this.maxFrame = 3;
+        this.fps = 8;
+        this.frameTimer = 0;
+        this.frameInterval = 1000 / this.fps;
+    }
 
     update(input, deltaTime) {
-        // --- 移动逻辑 ---
-        if (input.keys.indexOf('d') > -1) {
-            this.speed = this.maxSpeed;
-        } else if (input.keys.indexOf('a') > -1) {
-            this.speed = -this.maxSpeed;
-        } else {
-            this.speed = 0;
-        }
+        // --- 水平移动 ---
+        if (input.keys.indexOf('d') > -1) { this.speed = this.maxSpeed; } 
+        else if (input.keys.indexOf('a') > -1) { this.speed = -this.maxSpeed; } 
+        else { this.speed = 0; }
         this.x += this.speed;
+
+        // --- 垂直移动 (我们也加上 W 和 S！) ---
+        if (input.keys.indexOf('w') > -1) { this.vy = -this.maxSpeed; }
+        else if (input.keys.indexOf('s') > -1) { this.vy = this.maxSpeed; }
+        else { this.vy = 0; }
+        this.y += this.vy;
+        
+        // --- 边界检测 ---
         if (this.x < 0) this.x = 0;
         if (this.x > this.gameWidth - this.width) this.x = this.gameWidth - this.width;
+        if (this.y < 0) this.y = 0;
+        if (this.y > this.gameHeight - this.height) this.y = this.gameHeight - this.height;
 
-        // --- 动画更新逻辑 ---
-        if (this.speed !== 0) {
+        // --- 动画更新 ---
+        if (this.speed !== 0 || this.vy !== 0) { // 只要在动，就播放动画
             this.frameTimer += deltaTime;
             if (this.frameTimer > this.frameInterval) {
-                this.frameX = (this.frameX + 1) % (this.maxFrame + 1); // 用取余运算来完美循环！
+                this.frameX = (this.frameX + 1) % (this.maxFrame + 1);
                 this.frameTimer = 0;
             }
         } else {
@@ -57,7 +54,6 @@ constructor(gameWidth, gameHeight) {
     }
 
     draw(context) {
-        // 【核心！】我们现在绝对是在画精灵图了！
         context.drawImage(
             this.image,
             this.frameX * this.spriteWidth, 0,

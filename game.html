@@ -39,19 +39,6 @@
             const deltaTime = timestamp - lastTime;
             lastTime = timestamp;
 
-            // 填充绿色背景
-            ctx.fillStyle = '#56b386';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // 画个欢迎文字
-            ctx.fillStyle = 'white';
-            ctx.font = 'bold 36px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('🌱 欢迎来到我们的庄园！', canvas.width/2, canvas.height/2);
-            
-            ctx.font = '18px Arial';
-            ctx.fillText('游戏开发中...', canvas.width/2, canvas.height/2 + 50);
-
             requestAnimationFrame(gameLoop);
         }
 
