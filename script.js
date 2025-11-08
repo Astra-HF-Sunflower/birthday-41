@@ -2,6 +2,7 @@
 
 // ==================== 登录门 & OS 内核 ====================
 let selectedUser = null;
+let minimizedWindows = {}; // 追踪哪些窗口被最小化了
 
 // --- 动画：页面加载后，先显示开机动画，然后切换到用户选择 ---
 window.onload = function() {
@@ -42,8 +43,8 @@ function backToUserSelection() {
     document.getElementById('password-screen').classList.add('hidden');
     document.getElementById('user-selection-screen').classList.remove('hidden');
 }
-// ↓↓↓ 用下面这个全新的代码块，替换掉你旧的 enterOS 和 proceedToDesktop 函数 ↓↓↓
 
+// --- 功能：输入密码并登录 ---
 function enterOS() {
     const passwordInput = document.getElementById('login-password');
     const errorMsg = document.getElementById('login-error');
@@ -65,7 +66,6 @@ function enterOS() {
         if (password === "080130") {
             errorMsg.style.color = "#58a6ff";
             errorMsg.textContent = ">> Access Granted. Entering Admin Panel...";
-            // 【核心！】密码正确后，不再直接进桌面，而是调用“进入后台”函数
             setTimeout(proceedToAdmin, 1500);
         } else {
             errorMsg.style.color = "#e74c3c";
@@ -76,7 +76,7 @@ function enterOS() {
     }
 }
 
-// “进入桌面”函数，保持不变
+// --- "进入桌面"函数 ---
 function proceedToDesktop() {
     const gate = document.getElementById('login-gate');
     const desktop = document.getElementById('desktop');
@@ -84,7 +84,7 @@ function proceedToDesktop() {
     desktop.classList.remove('hidden');
 }
 
-// 【全新的“进入后台”函数！】
+// --- "进入管理员后台"函数 ---
 function proceedToAdmin() {
     const gate = document.getElementById('login-gate');
     const adminPanel = document.getElementById('admin-panel');
@@ -92,61 +92,88 @@ function proceedToAdmin() {
     adminPanel.classList.remove('hidden');
 }
 
-// 【全新的“从后台进入桌面”函数！】
+// --- "从后台进入桌面"函数 ---
 function proceedToHub() {
     const adminPanel = document.getElementById('admin-panel');
     const desktop = document.getElementById('desktop');
-    adminPanel.classList.add('hidden'); // 隐藏后台
-    desktop.classList.remove('hidden'); // 显示桌面
+    adminPanel.classList.add('hidden');
+    desktop.classList.remove('hidden');
 }
-// --- OS 功能：打开窗口 (V2.0 - 带任务栏联动) ---
+
+// ==================== 窗口管理系统 ====================
+
+// --- 打开窗口（合并版，修复了重复定义问题）---
 function openWindow(appName) {
     const windowEl = document.getElementById(`${appName}-window`);
     const taskbarApps = document.getElementById('taskbar-apps');
     if (!windowEl || !taskbarApps) return;
 
-    // 1. 显示窗口并带到最前面
+    // 如果窗口是最小化的，则还原
+    if (minimizedWindows[appName]) {
+        windowEl.classList.remove('hidden');
+        minimizedWindows[appName] = false;
+    }
+
+    // 显示窗口并带到最前面
     windowEl.classList.remove('hidden');
     document.querySelectorAll('.window').forEach(win => win.style.zIndex = 100);
     windowEl.style.zIndex = 101;
 
-    // 2. 【核心！】检查任务栏上是否已经有这个App的按钮了
+    // 检查任务栏上是否已经有这个App的按钮了
     let taskbarBtn = document.getElementById(`task-${appName}`);
     if (!taskbarBtn) {
-        // 如果没有，就创建一个新的！
+        // 如果没有，就创建一个新的
         taskbarBtn = document.createElement('button');
         taskbarBtn.id = `task-${appName}`;
         taskbarBtn.className = 'taskbar-btn';
-        // 从桌面图标复制图片和文字
-        const iconImg = document.querySelector(`.icon[ondblclick="openWindow('${appName}')"] img`).src;
-        const iconText = document.querySelector(`.icon[ondblclick="openWindow('${appName}')"] span`).textContent;
-        taskbarBtn.innerHTML = `<img src="${iconImg}"> <span>${iconText.replace('.exe','')}</span>`;
         
-        // 给新按钮加上“点击带到最前”的功能
-        taskbarBtn.onclick = () => openWindow(appName);
+        // 从桌面图标复制图片和文字
+        const iconEl = document.querySelector(`.icon[ondblclick*="${appName}"]`);
+        if (iconEl) {
+            const iconImg = iconEl.querySelector('img').src;
+            const iconText = iconEl.querySelector('span').textContent;
+            taskbarBtn.innerHTML = `<img src="${iconImg}"> <span>${iconText.replace('.exe','')}</span>`;
+        }
+        
+        // 给新按钮加上点击切换最小化/还原 的功能（行为更像真实系统）
+        taskbarBtn.onclick = () => {
+            const winEl = document.getElementById(`${appName}-window`);
+            if (!winEl) return;
+            // 如果当前是最小化或隐藏，则打开并聚焦
+            if (minimizedWindows[appName] || winEl.classList.contains('hidden')) {
+                openWindow(appName);
+                minimizedWindows[appName] = false;
+                winEl.classList.remove('hidden');
+                document.querySelectorAll('.taskbar-btn').forEach(b=>b.classList.remove('active'));
+                taskbarBtn.classList.add('active');
+            } else {
+                // 否则最小化
+                minimizeWindow(appName);
+            }
+        };
         
         taskbarApps.appendChild(taskbarBtn);
     }
+    
     // 激活当前App的任务栏按钮
     document.querySelectorAll('.taskbar-btn').forEach(btn => btn.classList.remove('active'));
     taskbarBtn.classList.add('active');
 }
 
-// --- OS 功能：关闭窗口 (V2.0 - 带任务栏联动) ---
+// --- 关闭窗口 ---
 function closeWindow(appName) {
     const windowEl = document.getElementById(`${appName}-window`);
     if (windowEl) {
         windowEl.classList.add('hidden');
 
-        // 【核心！】从任务栏上移除对应的按钮
+        // 从任务栏上移除对应的按钮
         const taskbarBtn = document.getElementById(`task-${appName}`);
         if (taskbarBtn) {
             taskbarBtn.remove();
         }
 
-        // 远程静音 (保持不变)
-        if (appName === 'gallery' && typeof bgMusic !== 'undefined' && bgMusic && !bgMusic.paused) {
-            // 我们需要找到 gallery 内部的 toggleMusic 函数来正确切换状态
+        // 远程静音（针对回忆画廊）
+        if (appName === 'gallery') {
             const iframe = windowEl.querySelector('iframe');
             if(iframe && iframe.contentWindow && typeof iframe.contentWindow.toggleMusic === 'function'){
                 iframe.contentWindow.toggleMusic();
@@ -155,7 +182,68 @@ function closeWindow(appName) {
     }
 }
 
-// --- OS 功能：注销 ---
+// --- 最小化窗口 ---
+function minimizeWindow(appName) {
+    const windowEl = document.getElementById(`${appName}-window`);
+    const taskbarBtn = document.getElementById(`task-${appName}`);
+    
+    if (windowEl) {
+        windowEl.classList.add('hidden'); 
+        if (taskbarBtn) {
+            taskbarBtn.classList.remove('active'); 
+        }
+        minimizedWindows[appName] = true;
+    }
+}
+
+// --- 最大化/还原窗口 ---
+function maximizeWindow(appName) {
+    const windowEl = document.getElementById(`${appName}-window`);
+    if (!windowEl) return;
+    
+    // 如果已经最大化，则还原到之前的尺寸和位置
+    if (windowEl.classList.contains('maximized')) {
+        windowEl.classList.remove('maximized');
+
+        // 恢复之前保存的位置和大小
+        const prevLeft = windowEl.dataset.prevLeft;
+        const prevTop = windowEl.dataset.prevTop;
+        const prevWidth = windowEl.dataset.prevWidth;
+        const prevHeight = windowEl.dataset.prevHeight;
+        if (prevLeft) windowEl.style.left = prevLeft;
+        if (prevTop) windowEl.style.top = prevTop;
+        if (prevWidth) windowEl.style.width = prevWidth;
+        if (prevHeight) windowEl.style.height = prevHeight;
+
+        // 清理保存的数据
+        delete windowEl.dataset.prevLeft;
+        delete windowEl.dataset.prevTop;
+        delete windowEl.dataset.prevWidth;
+        delete windowEl.dataset.prevHeight;
+
+        // 恢复可调整大小
+        windowEl.style.resize = '';
+        windowEl.style.boxShadow = '';
+    } else {
+        // 保存当前位置和大小以便还原
+        const rect = windowEl.getBoundingClientRect();
+        windowEl.dataset.prevLeft = windowEl.style.left || `${rect.left}px`;
+        windowEl.dataset.prevTop = windowEl.style.top || `${rect.top}px`;
+        windowEl.dataset.prevWidth = windowEl.style.width || `${rect.width}px`;
+        windowEl.dataset.prevHeight = windowEl.style.height || `${rect.height}px`;
+
+        // 设置为最大化
+        windowEl.classList.add('maximized');
+        document.querySelectorAll('.window').forEach(win => win.style.zIndex = 100);
+        windowEl.style.zIndex = 101;
+
+        // 禁用调整大小并移除阴影以更真实
+        windowEl.style.resize = 'none';
+        windowEl.style.boxShadow = 'none';
+    }
+}
+
+// --- 注销 ---
 function logOut() {
     const gate = document.getElementById('login-gate');
     const desktop = document.getElementById('desktop');
@@ -167,17 +255,49 @@ function logOut() {
     document.getElementById('boot-screen').classList.add('hidden');
 }
 
-// --- OS 魔法：让窗口可以被拖动 & 开始菜单逻辑 (V2.0 外交版) ---
+// ==================== 图片查看器 ====================
+
+function openImageViewer(imageSrc) {
+    const viewerModal = document.getElementById('imageViewerModal');
+    const viewerImage = document.getElementById('viewerImage');
+    if(viewerModal && viewerImage) {
+        viewerImage.src = imageSrc;
+        viewerModal.classList.remove('hidden');
+    }
+}
+
+function closeImageViewer() {
+    const viewerModal = document.getElementById('imageViewerModal');
+    if(viewerModal) {
+        viewerModal.classList.add('hidden');
+    }
+}
+
+// ==================== 桌面设置：壁纸更换 ====================
+
+function setWallpaper(imagePath) {
+    const desktop = document.getElementById('desktop');
+    if (imagePath) {
+        desktop.style.backgroundImage = `url('${imagePath}')`;
+        desktop.style.backgroundSize = 'cover';
+        desktop.style.backgroundPosition = 'center';
+    } else {
+        desktop.style.backgroundImage = '';
+    }
+}
+
+// ==================== 窗口拖动 & 开始菜单 ====================
+
 document.addEventListener('DOMContentLoaded', () => {
     const windows = document.querySelectorAll('.window');
-    windows.forEach((win, index) => {
+    windows.forEach((win) => {
         const titleBar = win.querySelector('.title-bar');
         if (!titleBar) return;
         
         let isDragging = false;
         let startX, startY, initialX, initialY;
 
-        // --- 电脑端：只允许通过标题栏拖动 ---
+        // 电脑端拖动
         titleBar.addEventListener('mousedown', (e) => {
             isDragging = true;
             startX = e.clientX;
@@ -189,9 +309,8 @@ document.addEventListener('DOMContentLoaded', () => {
             win.style.zIndex = 101;
         });
 
-        // --- 手机端：专属的触摸拖动逻辑 ---
+        // 手机端拖动
         titleBar.addEventListener('touchstart', (e) => {
-            // 只处理单指触摸
             if (e.touches.length === 1) {
                 isDragging = true;
                 const touch = e.touches[0];
@@ -205,8 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, { passive: true });
 
-
-        // --- 统一的移动逻辑 ---
+        // 统一的移动逻辑
         function handleMove(clientX, clientY) {
             if (isDragging) {
                 const dx = clientX - startX;
@@ -218,9 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.addEventListener('mousemove', (e) => handleMove(e.clientX, e.clientY));
         document.addEventListener('touchmove', (e) => {
-            // 【核心外交协议！】如果事件起源于标题栏，我们才处理拖动！
             if (isDragging && e.target.closest('.title-bar')) {
-                // 阻止页面默认的滚动行为（比如整个网页上下弹动）
                 e.preventDefault();
                 if (e.touches.length === 1) {
                     const touch = e.touches[0];
@@ -229,41 +345,57 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, { passive: false });
 
-
-        // --- 统一的停止逻辑 ---
+        // 停止拖动
         function stopDragging() {
             isDragging = false;
         }
         document.addEventListener('mouseup', stopDragging);
         document.addEventListener('touchend', stopDragging);
+        
+        // 标题栏上的窗口控制按钮（最小化/最大化/关闭）绑定
+        const appId = win.id || '';
+        const appName = appId.replace(/-window$/, '');
+        const btnMin = win.querySelector('.title-bar-controls button[aria-label="Minimize"]');
+        const btnMax = win.querySelector('.title-bar-controls button[aria-label="Maximize"]');
+        const btnClose = win.querySelector('.title-bar-controls button[aria-label="Close"]');
+        if (btnMin) {
+            btnMin.addEventListener('click', (e) => {
+                e.stopPropagation();
+                minimizeWindow(appName);
+            });
+        }
+        if (btnMax) {
+            btnMax.addEventListener('click', (e) => {
+                e.stopPropagation();
+                maximizeWindow(appName);
+            });
+        }
+        if (btnClose) {
+            btnClose.addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeWindow(appName);
+            });
+        }
+
+        // 双击标题栏切换最大化（桌面端行为）
+        titleBar.addEventListener('dblclick', (e) => {
+            e.stopPropagation();
+            maximizeWindow(appName);
+        });
     });
 
-    // --- 开始菜单逻辑 (保持不变) ---
+    // 开始菜单逻辑
     const startButton = document.getElementById('start-button');
     const startMenu = document.getElementById('start-menu');
-    startButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        startMenu.classList.toggle('hidden');
-    });
-    document.addEventListener('click', (e) => {
-        if (!startMenu.classList.contains('hidden') && !startButton.contains(e.target)) {
-            startMenu.classList.add('hidden');
-        }
-    });
-});// ↓↓↓ 在文件最底部，添加这两个全新的函数 ↓↓↓
-
-// --- 放大镜功能 ---
-function openImageViewer(imageSrc) {
-    const viewerModal = document.getElementById('imageViewerModal');
-    const viewerImage = document.getElementById('viewerImage');
-    if(viewerModal && viewerImage) {
-        viewerImage.src = imageSrc;
-        viewerModal.classList.remove('hidden');
+    if (startButton && startMenu) {
+        startButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            startMenu.classList.toggle('hidden');
+        });
+        document.addEventListener('click', (e) => {
+            if (!startMenu.classList.contains('hidden') && !startButton.contains(e.target)) {
+                startMenu.classList.add('hidden');
+            }
+        });
     }
-}
-function closeImageViewer() {
-    const viewerModal = document.getElementById('imageViewerModal');
-    if(viewerModal) {
-        viewerModal.classList.add('hidden');
-    }
-}
+});

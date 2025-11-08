@@ -120,19 +120,18 @@
             <div class="code-column">
                 <h4>HTML: 骨骼 🦴</h4>
                 <div class="code-image-wrapper">
-                    <img src="images/code_html.png" alt="HTML Code"onclick="openImageViewer(this.src)>
-                </div>
+                   <img src="images/code_html.png" alt="HTML Code" onclick="openImageViewer(this.src)"> 
             </div>
             <div class="code-column">
                 <h4>CSS: 衣服 🎨</h4>
                 <div class="code-image-wrapper">
-                    <img src="images/code_css.png" alt="CSS Code"onclick="openImageViewer(this.src)>
+                   <img src="images/code_css.png" alt="CSS Code" onclick="openImageViewer(this.src)">
                 </div>
             </div>
             <div class="code-column">
                 <h4>JS: 灵魂 🧠</h4>
                 <div class="code-image-wrapper">
-                    <img src="images/code_js.png" alt="JavaScript Code"onclick="openImageViewer(this.src)>
+                   <img src="images/code_js.png" alt="JavaScript Code" onclick="openImageViewer(this.src)">
                 </div>
             </div>
         </div>
@@ -142,6 +141,15 @@
     <!-- ========================================================== -->
 
     <script src="script.js"></script>
-    
-</body>
+     <!-- 图片查看器（放大镜功能） -->
+    <div id="imageViewerModal" class="hidden">
+        <div class="image-viewer-overlay" onclick="closeImageViewer()"></div>
+        <div class="image-viewer-content">
+            <img id="viewerImage" src="" alt="放大图片">
+            <button class="close-viewer" onclick="closeImageViewer()">✕</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>   
 </html>

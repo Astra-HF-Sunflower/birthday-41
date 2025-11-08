@@ -4,7 +4,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helv
 .hidden { display: none !important; }
 
 /* ==================== 登录门 (Windows 风格) ==================== */
-#login-gate { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0078D7; display: flex; justify-content: center; align-items: center; z-index: 99999; transition: opacity 1s; color: white; text-align: center; }
+#login-gate { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0078D7; display: flex; justify-content: center; align-items: center; z-index: 99999; transition: opacity 1s; color: white; text-align: center; }/* 密码输入框在出错时的动画效果 */
+#password-screen.shake #login-password {
+    border: 3px solid #e74c3c; /* 鲜艳的红色边框 */
+    box-shadow: 0 0 15px rgba(231, 76, 60, 0.8); /* 红色发光效果 */
+}
 #boot-screen { opacity: 1; transition: opacity 0.5s; }
 .windows-logo { width: 80px; height: 80px; background-color: white; margin: 0 auto; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2,3H11V12H2V3M13,3H22V7H13V3M2,14H11V21H2V14M13,9H22V21H13V9Z'/%3E%3C/svg%3E") no-repeat center; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2,3H11V12H2V3M13,3H22V7H13V3M2,14H11V21H2V14M13,9H22V21H13V9Z'/%3E%3C/svg%3E") no-repeat center; }
 #boot-screen p { margin-top: 20px; font-size: 1rem; }
@@ -506,4 +510,106 @@ body {
 
 /* --- 放大镜样式 --- */
 .modal { display: flex; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 100000; cursor: zoom-out; }
-#viewerImage { max-width: 95vw; max-height: 95vh; object-fit: contain; }
+#viewerImage { max-width: 95vw; max-height: 95vh; object-fit: contain; }/* ==================== 窗口最大化样式 ==================== */
+.window.maximized {
+    /* 覆盖定位和尺寸，实现最大化效果 */
+    top: 0 !important; 
+    left: 0 !important;
+    width: 100% !important;
+    /* 减去任务栏 40px 的高度 */
+    height: calc(100vh - 40px) !important; 
+    
+    /* 最大化后，禁用拖动、缩放和阴影，更真实 */
+    resize: none !important; 
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+/* 确保窗口内容在最大化时仍占满空间 */
+.window.maximized .window-body {
+    height: 100%;
+}/* ------------------------------------------- */
+/* 【新增】确保所有窗口在加载时都是隐藏的，除非被 JS 显示 */
+/* ------------------------------------------- */
+#desktop .window {
+    /* 默认隐藏窗口 */
+    opacity: 0;
+    pointer-events: none;
+    /* 确保它在桌面布局之外，不会影响其他元素 */
+    position: absolute; 
+    top: -5000px; 
+    left: -5000px;
+    
+    /* 覆盖样式：如果它有 hidden class，则完全不显示 */
+    display: none;
+}
+
+/* 只有当 JS 移除了 hidden 类，并调用 openWindow 时，才显示它 */
+#desktop .window:not(.hidden) {
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
+    /* 恢复到正常位置（你的原有 CSS 会定位它） */
+    top: 5vh; 
+    left: 10vw;
+}
+
+/* 确保最大化时能覆盖 */
+.window.maximized {
+    top: 0 !important; 
+    left: 0 !important;
+}/* ==================== 图片查看器 ==================== */
+#imageViewerModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-viewer-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    cursor: pointer;
+}
+
+.image-viewer-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+    z-index: 10000;
+}
+
+#viewerImage {
+    max-width: 100%;
+    max-height: 90vh;
+    box-shadow: 0 0 50px rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+
+.close-viewer {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid #fff;
+    color: #fff;
+    font-size: 24px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.close-viewer:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform: rotate(90deg);
+}
