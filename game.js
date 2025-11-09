@@ -13,6 +13,94 @@
    
 ===================================================================== */
 
+// ==================== 🏪 收购商配置 ====================
+
+const MERCHANTS_CONFIG = {
+    localMarket: {
+        id: 'localMarket',
+        name: '穗丰农产贸易公司',
+        desc: '收购新鲜的原材料，价格公道。',
+        emoji: '🧑‍🌾',
+        multipliers: {
+            // 对常见原料有轻微加成
+            wheat: 1.2,
+            apple: 1.2,
+            fishMeat: 1.1,
+            // 对高级料理不感兴趣
+            premiumDish: 0.5
+        }
+    },
+    gourmetRestaurant: {
+        id: 'gourmetRestaurant',
+        name: "『星辰』餐饮集团",
+        desc: '只收购高品质的食材和精致料理。',
+        emoji: '👑',
+        multipliers: {
+            // 对高级料理和稀有品有巨大加成
+            premiumDish: 2.0,
+            coldAppleJam: 1.5,
+            wangboSashimi: 1.5,
+            godWool: 1.8,
+            // 不收低级原料
+            wheat: 0.3,
+            apple: 0.5
+        }
+    },
+    globalTrade: {
+        id: 'globalTrade',
+        name: '环球贸易公司',
+        desc: '什么都收，量大从优！',
+        emoji: '🚢',
+        multipliers: {} // 没有特殊偏好，价格稳定
+    }
+};
+// ==================== 📜 订单池配置 ====================
+// 系统会从这里随机抽取订单
+
+const ORDERS_POOL_CONFIG = {
+    // 老王农贸市场订单
+    local_1: {
+        merchantId: 'localMarket',
+        items: { wheat: 20 }, // 需要20个小麦
+        reward: { gold: 800 },   // 奖励800金币
+        desc: "最近面粉需求大，急需一批小麦！"
+    },
+    local_2: {
+        merchantId: 'localMarket',
+        items: { apple: 15 },
+        reward: { gold: 1100 },
+        desc: "果酱工坊需要新鲜的苹果。"
+    },
+
+    // 餐厅订单
+    gourmet_1: {
+        merchantId: 'gourmetRestaurant',
+        items: { 'apple_2': 5 }, // 需要5个2星苹果
+        reward: { gold: 2000 },
+        desc: "我们需要高品质的苹果来做甜点。"
+    },
+    gourmet_2: {
+        id: 'gourmet_2',
+        merchantId: 'gourmetRestaurant',
+        items: { beefNoodle: 3 },
+        reward: { gold: 2500 },
+        desc: "有贵客预定了三碗顶级牛肉面。"
+    },
+
+    // 贸易公司订单
+    trade_1: {
+        merchantId: 'globalTrade',
+        items: { flour: 50, bread: 20 }, // 复合订单
+        reward: { gold: 15000 },
+        desc: "一艘远洋货轮需要大量面粉和面包补给。"
+    },
+    trade_2: {
+        merchantId: 'globalTrade',
+        items: { wool: 30, godWool: 10 },
+        reward: { gold: 10000 },
+        desc: "海外市场需要一批高质量的羊毛制品。"
+    }
+};
 // ==================== 📋 稀有度配置 ====================
 const RARITY_CONFIG = {
     common: { name: '常见', color: '#4CAF50', emoji: '🟢' },
@@ -184,6 +272,7 @@ let gameState = {
     plots: {},
     inventory: {},
     items: {},
+    activeOrders: [],         // ✅ 新增：当前激活的订单列表
     craftingQueue: [],
     currentShopTab: 'farm',
     currentItemTab: 'fertilizer',
@@ -194,12 +283,18 @@ let gameState = {
     cloverCraftTime: 0,
     mails: [],
     unreadMails: 0
+    
 };
 
 // ==================== 🎮 游戏初始化 ====================
 function initGame() {
     console.log('🎮 游戏启动中...');
     loadGame();
+   // 如果没有激活的订单，就生成新的
+    if (!gameState.activeOrders || gameState.activeOrders.length === 0) {
+        generateOrders();
+    }
+    
     initPlots();
     renderPlots();
     updateGoldDisplay();
@@ -458,33 +553,145 @@ function renderInventory() {
     container.innerHTML = html;
 }
 
-// ==================== 💰 出售商店 ====================
-function openSellShop() { renderSellShop(); document.getElementById('sell-modal').classList.add('show'); }
-function closeSellShop() { document.getElementById('sell-modal').classList.remove('show'); }
-function renderSellShop() {
-    const container = document.getElementById('sell-items');
-    const items = Object.entries(gameState.inventory).filter(([id, count]) => {
-        const baseId = id.split('_')[0]; if (baseId === 'clover') return false; return count > 0;
-    });
-    if (items.length === 0) { container.innerHTML = '<div class="inventory-empty">没有可以出售的物品~</div>'; return; }
-    container.innerHTML = items.map(([itemId, count]) => {
-        const parts = itemId.split('_'); const baseId = parts[0]; const star = parts[1] ? parseInt(parts[1]) : 0;
-        const product = PRODUCTS_CONFIG[baseId]; if (!product) return '';
-        const rarity = RARITY_CONFIG[product.rarity]; const starStr = star > 0 ? '⭐'.repeat(star) : '';
-        let priceMulti = 1; if (star === 2) priceMulti = 1.5; if (star === 3) priceMulti = 2.5;
-        const sellPrice = Math.floor(product.sellPrice * priceMulti);
-        return `<div class="sell-item"><div class="sell-item-icon">${product.emoji}</div><div class="sell-item-info"><div class="sell-item-name" style="color: ${rarity.color}">${rarity.emoji} ${product.name} ${starStr}</div><div class="sell-item-count">持有: ${count}</div></div><div class="sell-item-actions"><div class="sell-item-price">${sellPrice}💰</div><button class="sell-btn" onclick="sellItem('${itemId}', 1)">卖1</button>${count >= 5 ? `<button class="sell-btn" onclick="sellItem('${itemId}', 5)">卖5</button>` : ''}<button class="sell-btn" onclick="sellItem('${itemId}', ${count})">全卖</button></div></div>`;
+// =====================================================================
+//                        💰 交易中心（收购商）
+// =====================================================================
+
+// --- 打开交易中心 ---
+function openSellShop(merchantId = 'localMarket') {
+    // 默认打开第一个收购商
+    gameState.currentMerchant = merchantId; 
+    renderMerchantTabs();
+    renderSellShop();
+    document.getElementById('sell-modal').classList.add('show');
+}
+
+// --- 关闭交易中心 ---
+function closeSellShop() {
+    document.getElementById('sell-modal').classList.remove('show');
+}
+
+// --- 渲染收购商标签页 ---
+function renderMerchantTabs() {
+    const container = document.getElementById('merchant-tabs');
+    container.innerHTML = Object.values(MERCHANTS_CONFIG).map(merchant => {
+        const isActive = gameState.currentMerchant === merchant.id;
+        return `
+            <button 
+                class="shop-tab ${isActive ? 'active' : ''}" 
+                onclick="switchMerchantTab('${merchant.id}')"
+            >
+                ${merchant.emoji} ${merchant.name}
+            </button>
+        `;
     }).join('');
 }
+
+// --- 切换收购商 ---
+function switchMerchantTab(merchantId) {
+    gameState.currentMerchant = merchantId;
+    renderMerchantTabs(); // 重新渲染标签，更新高亮
+    renderSellShop();     // 重新渲染商品列表和价格   renderSellShop(); // ✅ 这个函数内部已经包含了 renderOrders()，所以不用额外加
+}
+
+
+// --- 渲染出售列表 ---
+function renderSellShop() {
+    const container = document.getElementById('sell-items');
+    const merchant = MERCHANTS_CONFIG[gameState.currentMerchant];
+   
+    // ✅ 新增：渲染当前商人的订单
+    renderOrders(merchant.id);
+    const items = Object.entries(gameState.inventory).filter(([id, count]) => {
+        const baseId = id.split('_')[0];
+        if (baseId === 'clover') return false;
+        return count > 0;
+    });
+
+    if (items.length === 0) {
+        container.innerHTML = '<div class="inventory-empty">没有可以出售的物品~</div>';
+        return;
+    }
+
+    container.innerHTML = items.map(([itemId, count]) => {
+        const parts = itemId.split('_');
+        const baseId = parts[0];
+        const star = parts[1] ? parseInt(parts[1]) : 0;
+
+        const product = PRODUCTS_CONFIG[baseId];
+        if (!product) return '';
+
+        const rarity = RARITY_CONFIG[product.rarity];
+        const starStr = star > 0 ? '⭐'.repeat(star) : '';
+
+        // 【核心】计算价格
+        let starMulti = 1;
+        if (star === 2) starMulti = 1.5;
+        if (star === 3) starMulti = 2.5;
+
+        // 获取商家的价格乘数，如果没有特殊乘数，则默认为1
+        const merchantMulti = merchant.multipliers[baseId] || 1;
+        
+        const finalSellPrice = Math.floor(product.sellPrice * starMulti * merchantMulti);
+
+        let priceIndicator = '';
+        if (merchantMulti > 1) {
+            priceIndicator = `<span style="color: #4CAF50; font-weight: bold;"> (高价)</span>`;
+        } else if (merchantMulti < 1) {
+            priceIndicator = `<span style="color: #F44336; font-weight: bold;"> (低价)</span>`;
+        }
+        
+        return `
+            <div class="sell-item">
+                <div class="sell-item-icon">${product.emoji}</div>
+                <div class="sell-item-info">
+                    <div class="sell-item-name" style="color: ${rarity.color}">
+                        ${rarity.emoji} ${product.name} ${starStr}
+                    </div>
+                    <div class="sell-item-count">持有: ${count}</div>
+                </div>
+                <div class="sell-item-actions">
+                    <div class="sell-item-price">${finalSellPrice}💰${priceIndicator}</div>
+                    <button class="sell-btn" onclick="sellItem('${itemId}', 1)">卖1</button>
+                    ${count >= 5 ? `<button class="sell-btn" onclick="sellItem('${itemId}', 5)">卖5</button>` : ''}
+                    <button class="sell-btn" onclick="sellItem('${itemId}', ${count})">全卖</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// --- 出售物品逻辑 ---
 function sellItem(itemId, amount) {
-    if (!gameState.inventory[itemId] || gameState.inventory[itemId] < amount) { showToast('❌ 物品数量不足！'); return; }
-    const parts = itemId.split('_'); const baseId = parts[0]; const star = parts[1] ? parseInt(parts[1]) : 0;
+    if (!gameState.inventory[itemId] || gameState.inventory[itemId] < amount) {
+        showToast('❌ 物品数量不足！');
+        return;
+    }
+
+    const parts = itemId.split('_');
+    const baseId = parts[0];
+    const star = parts[1] ? parseInt(parts[1]) : 0;
+
     const product = PRODUCTS_CONFIG[baseId];
-    let priceMulti = 1; if (star === 2) priceMulti = 1.5; if (star === 3) priceMulti = 2.5;
-    const totalPrice = Math.floor(product.sellPrice * priceMulti * amount);
-    gameState.inventory[itemId] -= amount; gameState.gold += totalPrice;
-    showToast(`✅ 出售了 ${amount} 个，获得 ${totalPrice} 金币！`);
-    updateGoldDisplay(); saveGame(); renderSellShop();
+    const merchant = MERCHANTS_CONFIG[gameState.currentMerchant];
+
+    let starMulti = 1;
+    if (star === 2) starMulti = 1.5;
+    if (star === 3) starMulti = 2.5;
+
+    const merchantMulti = merchant.multipliers[baseId] || 1;
+    
+    const finalSellPrice = Math.floor(product.sellPrice * starMulti * merchantMulti);
+    const totalPrice = finalSellPrice * amount;
+
+    gameState.inventory[itemId] -= amount;
+    gameState.gold += totalPrice;
+
+    showToast(`✅ 向 ${merchant.name} 出售了 ${amount} 个，获得 ${totalPrice} 金币！`);
+
+    updateGoldDisplay();
+    saveGame();
+    renderSellShop();
 }
 
 // ==================== 🔨 制作台系统 ====================
@@ -705,6 +912,113 @@ function loadGame() {
         } catch (e) { console.warn('⚠️ 存档损坏'); }
     }
 }
+// =====================================================================
+//                        📜 订单系统函数
+// =====================================================================
 
+// --- 生成新订单 ---
+function generateOrders() {
+    gameState.activeOrders = []; // 清空旧订单
+    const allOrderKeys = Object.keys(ORDERS_POOL_CONFIG);
+    
+    // 每个商人随机分配1-2个订单
+    Object.keys(MERCHANTS_CONFIG).forEach(merchantId => {
+        const merchantOrders = allOrderKeys.filter(key => ORDERS_POOL_CONFIG[key].merchantId === merchantId);
+        
+        // 打乱顺序，取前一两个
+        merchantOrders.sort(() => 0.5 - Math.random()); 
+        
+        const orderCount = Math.random() > 0.5 ? 2 : 1;
+        for(let i=0; i < Math.min(orderCount, merchantOrders.length); i++) {
+            const orderKey = merchantOrders[i];
+            const order = ORDERS_POOL_CONFIG[orderKey];
+            gameState.activeOrders.push({
+                ...order,
+                id: orderKey, // 用配置的key作为唯一ID
+                status: 'active'
+            });
+        }
+    });
+    saveGame();
+}
+
+// --- 渲染订单列表 ---
+function renderOrders(merchantId) {
+    const container = document.getElementById('merchant-orders');
+    const orders = gameState.activeOrders.filter(order => order.merchantId === merchantId);
+
+    if (orders.length === 0) {
+        container.innerHTML = '<div style="padding: 10px; text-align: center; font-size: 12px; color: #999;">这位商人暂时没有特殊订单...</div>';
+        return;
+    }
+
+    container.innerHTML = `<h3 style="margin: 12px 0 8px 0; color: #666; font-size: 14px;">特殊订单</h3>` +
+        orders.map(order => {
+            let canDeliver = true;
+            let ingredientsText = '';
+
+            // 检查材料
+            for (let itemId in order.items) {
+                const needAmount = order.items[itemId];
+                const haveAmount = gameState.inventory[itemId] || 0;
+                if (haveAmount < needAmount) canDeliver = false;
+                
+                const product = PRODUCTS_CONFIG[itemId.split('_')[0]];
+                const star = itemId.includes('_') ? '⭐'.repeat(parseInt(itemId.split('_')[1])) : '';
+                ingredientsText += `${product.emoji}${product.name}${star} ${haveAmount}/${needAmount} `;
+            }
+
+            return `
+                <div class="shop-item" style="display: block; background: #fff8e1;">
+                    <div style="font-size: 12px; font-style: italic; color: #666; margin-bottom: 8px;">"${order.desc}"</div>
+                    <div style="font-size: 11px; margin-bottom: 8px;"><b>需要:</b> ${ingredientsText}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="font-size: 11px;"><b>奖励:</b> ${order.reward.gold}💰</div>
+                        <button class="sell-btn" ${!canDeliver ? 'disabled' : ''} onclick="deliverOrder('${order.id}')">
+                            ${canDeliver ? '交付订单' : '材料不足'}
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+}
+
+// --- 交付订单 ---
+function deliverOrder(orderId) {
+    const orderIndex = gameState.activeOrders.findIndex(o => o.id === orderId);
+    if (orderIndex === -1) return;
+    
+    const order = gameState.activeOrders[orderIndex];
+
+    // 再次检查材料
+    for (let itemId in order.items) {
+        if ((gameState.inventory[itemId] || 0) < order.items[itemId]) {
+            showToast('❌ 交付失败，材料不足！');
+            return;
+        }
+    }
+
+    // 扣除材料
+    for (let itemId in order.items) {
+        gameState.inventory[itemId] -= order.items[itemId];
+    }
+
+    // 发放奖励
+    gameState.gold += order.reward.gold;
+    showToast(`🎉 订单完成！获得 ${order.reward.gold} 金币！`);
+
+    // 移除已完成的订单
+    gameState.activeOrders.splice(orderIndex, 1);
+    
+    // 如果是当天最后一个订单，可以考虑刷新
+    if (gameState.activeOrders.filter(o => o.merchantId === order.merchantId).length === 0) {
+        // 简单处理：直接重新生成所有订单
+        generateOrders();
+    }
+
+    saveGame();
+    updateGoldDisplay();
+    renderSellShop(); // 重新渲染出售界面
+}
 // ==================== 🚀 游戏启动入口 ====================
 window.addEventListener('load', initGame);      

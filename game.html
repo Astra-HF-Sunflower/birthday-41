@@ -30,7 +30,6 @@
             flex-direction: column;
         }
 
-        /* ========== 顶部导航栏 ========== */
         #game-header {
             background: linear-gradient(135deg, #FF8C69, #FF6B6B);
             color: white;
@@ -80,7 +79,6 @@
             transform: scale(1.05);
         }
 
-        /* ========== 主游戏区域 ========== */
         #game-main {
             flex: 1;
             overflow-y: auto;
@@ -114,7 +112,6 @@
             gap: 12px;
         }
 
-        /* ========== 地块样式 ========== */
         .plot {
             background: white;
             border-radius: 12px;
@@ -206,7 +203,6 @@
             transform: scale(1.05);
         }
 
-        /* ========== 通用弹窗样式 ========== */
         .modal {
             position: fixed;
             top: 0;
@@ -339,7 +335,6 @@
             font-weight: bold;
         }
 
-        /* ========== 各个商店的主题色 ========== */
         .header-buy { background: linear-gradient(135deg, #FF8C69, #FF6B6B); }
         .header-item { background: linear-gradient(135deg, #AB47BC, #7B1FA2); }
         .header-inventory { background: linear-gradient(135deg, #9C27B0, #673AB7); }
@@ -348,7 +343,6 @@
         .header-mail { background: linear-gradient(135deg, #42A5F5, #1E88E5); }
         .header-cat { background: linear-gradient(135deg, #FF69B4, #FF1493); }
 
-        /* ========== 背包物品 ========== */
         .inventory-item {
             display: flex;
             align-items: center;
@@ -384,7 +378,6 @@
             color: #999;
         }
 
-        /* ========== 出售商店 ========== */
         .sell-item {
             display: flex;
             align-items: center;
@@ -444,7 +437,11 @@
             transform: scale(1.05);
         }
 
-        /* ========== 提示消息 ========== */
+        .sell-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
         #toast {
             position: fixed;
             top: 70px;
@@ -472,7 +469,6 @@
             to { transform: translate(-50%, 0); opacity: 1; }
         }
 
-        /* ========== 彩蛋弹窗 ========== */
         #blessing-modal, #clover-blessing-modal {
             position: fixed;
             top: 0;
@@ -540,7 +536,6 @@
             100% { transform: translateY(-150px) scale(2); opacity: 0; }
         }
 
-        /* ========== 手机端适配 ========== */
         @media (max-width: 768px) {
             #game-header h1 {
                 font-size: 16px;
@@ -559,16 +554,14 @@
 </head>
 <body>
     <div id="game-container">
-        <!-- 顶部导航 -->
         <div id="game-header">
             <div>
                 <h1>🏡 <span id="farm-name-display">我们的欢乐庄园</span></h1>
                 <div style="font-size: 11px; color: rgba(255,255,255,0.8); margin-top: 2px;" id="farm-subtitle">庄园主：孙钰</div>
             </div>
             <div id="header-right">
-                <div id="gold-display">💰 <span id="gold-amount">500</span></div>
+                <div id="gold-display">💰 <span id="gold-amount">1000</span></div>
                 
-                <!-- 邮箱按钮（带未读角标）-->
                 <button class="header-btn" onclick="openMailbox()" style="position: relative;">
                     📬 信箱
                     <span id="mail-badge" class="hidden" style="position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 11px; display: flex; align-items: center; justify-content: center;">0</span>
@@ -578,32 +571,27 @@
                 <button class="header-btn" onclick="openBuyShop()">🛒 种子</button>
                 <button class="header-btn" onclick="openItemShop()">🧪 道具</button>
                 <button class="header-btn" onclick="openCraftShop()">🔨 制作</button>
-                <button class="header-btn" onclick="openSellShop()">💰 出售</button>
+                <button class="header-btn" onclick="openSellShop()">🤝 交易</button>
             </div>
         </div>
 
-        <!-- 主游戏区 -->
         <div id="game-main">
-            <!-- 农田区 -->
             <div class="section">
                 <div class="section-title">🌾 农田区域</div>
                 <div class="plots-container" id="farm-plots"></div>
             </div>
 
-            <!-- 畜栏区 -->
             <div class="section">
                 <div class="section-title">🐑 畜栏区域</div>
                 <div class="plots-container" id="ranch-plots"></div>
             </div>
 
-            <!-- 水域区 -->
             <div class="section">
                 <div class="section-title">🐟 水域区域</div>
                 <div class="plots-container" id="pond-plots"></div>
             </div>
         </div>
 
-        <!-- 猫猫 NPC（可拖拽）-->
         <div id="cat-npc" class="hidden" style="position: fixed; bottom: 80px; right: 20px; cursor: grab; z-index: 500;">
             <div style="text-align: center; user-select: none;">
                 <div style="font-size: 80px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));">😺</div>
@@ -615,7 +603,6 @@
         </div>
     </div>
 
-    <!-- 种子购买商店 -->
     <div id="shop-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header header-buy">
@@ -631,7 +618,6 @@
         </div>
     </div>
 
-    <!-- 道具商店 -->
     <div id="item-shop-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header header-item">
@@ -646,7 +632,6 @@
         </div>
     </div>
 
-    <!-- 背包 -->
     <div id="inventory-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header header-inventory">
@@ -657,33 +642,29 @@
         </div>
     </div>
 
-    <!-- 出售商店 -->
     <div id="sell-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header header-sell">
-                <h2>💰 出售商店</h2>
+                <h2>🤝 交易中心</h2>
                 <button class="modal-close" onclick="closeSellShop()">✕</button>
             </div>
+            <div class="shop-tabs" id="merchant-tabs"></div>
+            <div id="merchant-orders" style="padding: 0 15px; border-bottom: 1px solid #eee;"></div>
             <div class="modal-items" id="sell-items"></div>
         </div>
     </div>
 
-    <!-- 制作台 -->
     <div id="craft-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header header-craft">
                 <h2>🔨 制作台</h2>
                 <button class="modal-close" onclick="closeCraftShop()">✕</button>
             </div>
+            <div id="crafting-queue" style="padding: 10px 15px; background: #f0f0f0;"></div>
             <div class="modal-items" id="craft-items"></div>
-        </div><!-- ✅ 新增：制作队列显示区 -->
-        <div id="crafting-queue" style="padding: 10px 15px; background: #f0f0f0;"></div>
-        <div class="modal-items" id="craft-items"></div>
+        </div>
     </div>
-</div>
-    
 
-    <!-- 信箱弹窗 -->
     <div id="mailbox-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header header-mail">
@@ -694,7 +675,6 @@
         </div>
     </div>
 
-    <!-- 读信弹窗 -->
     <div id="mail-detail-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header" style="background: linear-gradient(135deg, #66BB6A, #43A047);">
@@ -712,7 +692,6 @@
         </div>
     </div>
 
-    <!-- 猫猫互动面板 -->
     <div id="cat-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header header-cat">
@@ -720,15 +699,11 @@
                 <button class="modal-close" onclick="closeCatPanel()">✕</button>
             </div>
             <div class="modal-items">
-                <!-- 猫猫状态 -->
                 <div style="text-align: center; padding: 15px; background: #f9f9f9; border-radius: 10px; margin-bottom: 15px;">
                     <div style="font-size: 60px; margin-bottom: 10px;">😺</div>
                     <div style="font-size: 16px; font-weight: bold; color: #FF6B6B; margin-bottom: 8px;">皇甫</div>
-                    <div id="cat-dialogue" style="font-size: 13px; color: #666; font-style: italic; margin-bottom: 12px;">
-                        "喵~ 你好呀！"
-                    </div>
+                    <div id="cat-dialogue" style="font-size: 13px; color: #666; font-style: italic; margin-bottom: 12px;">"喵~ 你好呀！"</div>
                     
-                    <!-- 好感度 -->
                     <div style="margin: 8px 0;">
                         <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
                             <span>💕 好感度</span>
@@ -739,7 +714,6 @@
                         </div>
                     </div>
 
-                    <!-- 情绪值 -->
                     <div style="margin: 8px 0;">
                         <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
                             <span>😊 情绪值</span>
@@ -751,23 +725,13 @@
                     </div>
                 </div>
 
-                <!-- 互动按钮 -->
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-                    <button class="sell-btn" style="background: #FF69B4; padding: 12px;" onclick="interactCat('pet')">
-                        🤲 摸头
-                    </button>
-                    <button class="sell-btn" style="background: #FFD700; padding: 12px;" onclick="interactCat('praise')">
-                        👍 夸奖
-                    </button>
-                    <button class="sell-btn" style="background: #FF6347; padding: 12px;" onclick="interactCat('hit')">
-                        👊 揍
-                    </button>
-                    <button class="sell-btn" style="background: #9C27B0; padding: 12px;" onclick="openCatFeedMenu()">
-                        🍖 投喂
-                    </button>
+                    <button class="sell-btn" style="background: #FF69B4; padding: 12px;" onclick="interactCat('pet')">🤲 摸头</button>
+                    <button class="sell-btn" style="background: #FFD700; padding: 12px;" onclick="interactCat('praise')">👍 夸奖</button>
+                    <button class="sell-btn" style="background: #FF6347; padding: 12px;" onclick="interactCat('hit')">👊 揍</button>
+                    <button class="sell-btn" style="background: #9C27B0; padding: 12px;" onclick="openCatFeedMenu()">🍖 投喂</button>
                 </div>
 
-                <!-- 说明 -->
                 <div style="font-size: 11px; color: #999; padding: 10px; background: #f0f0f0; border-radius: 8px;">
                     💡 提示：情绪值低于20时，猫猫会不理你哦！投喂可以恢复情绪~
                 </div>
@@ -775,10 +739,8 @@
         </div>
     </div>
 
-    <!-- 提示消息 -->
     <div id="toast"></div>
 
-    <!-- 玉米彩蛋弹窗 -->
     <div id="blessing-modal">
         <div class="blessing-content">
             <h1>🎉 恭喜你！🎉</h1>
@@ -791,7 +753,6 @@
         </div>
     </div>
 
-    <!-- 四叶草彩蛋弹窗 -->
     <div id="clover-blessing-modal">
         <div class="blessing-content">
             <h1>🍀 传说中的四叶草！🍀</h1>
