@@ -1239,4 +1239,22 @@ button[aria-label="Close"] {
         flex-direction: column; 
         height: 80vh; 
     }
-}   
+}           /* ✅【全新】猫猫互动小按钮样式 */
+        .cat-action-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid white;
+            background: rgba(255, 105, 180, 0.8); /* 粉色底 */
+            backdrop-filter: blur(5px);
+            color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.2s;
+        }
+
+        .cat-action-btn:hover {
+            transform: scale(1.15);
+            background: rgba(255, 20, 147, 0.9); /* 深粉色 */
+        }

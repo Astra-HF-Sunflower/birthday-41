@@ -566,7 +566,8 @@
                     📬 信箱
                     <span id="mail-badge" class="hidden" style="position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 11px; display: flex; align-items: center; justify-content: center;">0</span>
                 </button>
-                
+                <!-- ✅ 新增：音乐按钮 -->
+<button class="header-btn" id="bgm-button" onclick="toggleBgm()">🔈 音乐</button>
                 <button class="header-btn" onclick="openInventory()">🎒 背包</button>
                 <button class="header-btn" onclick="openBuyShop()">🛒 种子</button>
                 <button class="header-btn" onclick="openItemShop()">🧪 道具</button>
@@ -591,17 +592,42 @@
                 <div class="plots-container" id="pond-plots"></div>
             </div>
         </div>
-
+        <!-- ✅【全新】猫猫 NPC 及其所有 UI -->
         <div id="cat-npc" class="hidden" style="position: fixed; bottom: 80px; right: 20px; cursor: grab; z-index: 500;">
-            <div style="text-align: center; user-select: none;">
-                <div style="font-size: 80px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));">😺</div>
-                <div style="background: rgba(255,255,255,0.9); padding: 4px 8px; border-radius: 10px; font-size: 11px; margin-top: -10px;">
-                    <div id="cat-name" style="font-weight: bold; color: #FF6B6B;">皇甫</div>
-                    <div style="font-size: 10px; color: #666;">点击互动</div>
+            <div id="cat-wrapper" style="position: relative; text-align: center; user-select: none;">
+                
+                <!-- 对话气泡 -->
+                <div id="cat-dialogue-bubble" class="hidden"
+                     style="position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 10px; min-width: 150px; max-width: 220px; text-align: left;">
+                    <div style="background: rgba(255,255,255,0.95); color: #333; padding: 8px 12px; border-radius: 10px; font-size: 13px; box-shadow: 0 3px 10px rgba(0,0,0,0.2);">
+                        <span id="cat-bubble-text">喵~ 你好呀！</span>
+                    </div>
+                </div>
+
+                <!-- 动画/立绘区域 -->
+                <div id="cat-visual" style="width: 180px; height: 180px; display: flex; align-items: center; justify-content: center;">
+                    <img id="cat-image" src="images/cat/idle.png" alt="猫猫" 
+                         style="max-width: 100%; max-height: 100%; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));">
+                    <video id="cat-video" src="" class="hidden"
+                           style="max-width: 100%; max-height: 100%; border-radius: 15px;" 
+                           muted playsinline></video>
+                </div>
+
+                <!-- 名字标签 -->
+                <div style="background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 10px; font-size: 12px; display: inline-block; color: white; margin-top: 5px;">
+                    <span id="cat-name" style="font-weight: bold;">皇甫</span>
+                </div>
+                
+                <!-- 互动按钮组（默认隐藏） -->
+                <div id="cat-mini-actions" class="hidden"
+                     style="position: absolute; top: 20px; right: 100%; margin-right: 10px; display: flex; flex-direction: column; gap: 8px;">
+                    <button class="cat-action-btn" onclick="interactCat('pet')" title="摸头">🤲</button>
+                    <button class="cat-action-btn" onclick="interactCat('praise')" title="夸奖">👍</button>
+                    <button class="cat-action-btn" onclick="interactCat('hit')" title="揍">👊</button>
+                    <button class="cat-action-btn" onclick="openCatFeedMenu()" title="投喂">🍖</button>
                 </div>
             </div>
         </div>
-    </div>
 
     <div id="shop-modal" class="modal">
         <div class="modal-content">
@@ -692,18 +718,33 @@
         </div>
     </div>
 
-    <div id="cat-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header header-cat">
-                <h2>😺 猫猫互动</h2>
-                <button class="modal-close" onclick="closeCatPanel()">✕</button>
-            </div>
-            <div class="modal-items">
-                <div style="text-align: center; padding: 15px; background: #f9f9f9; border-radius: 10px; margin-bottom: 15px;">
-                    <div style="font-size: 60px; margin-bottom: 10px;">😺</div>
-                    <div style="font-size: 16px; font-weight: bold; color: #FF6B6B; margin-bottom: 8px;">皇甫</div>
-                    <div id="cat-dialogue" style="font-size: 13px; color: #666; font-style: italic; margin-bottom: 12px;">"喵~ 你好呀！"</div>
-                    
+   <div id="cat-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header header-cat">
+            <h2>😺 猫猫互动</h2>
+            <button class="modal-close" onclick="closeCatPanel()">✕</button>
+        </div>
+        <div class="modal-items">
+            <!-- 猫猫状态 -->
+            <div style="text-align: center; padding: 15px; background: #f9f9f9; border-radius: 10px; margin-bottom: 15px;">
+
+                <!-- ✅ 新增：立绘 + 动画区域 -->
+                <div id="cat-portrait-area" style="margin-bottom: 10px;">
+                    <!-- 默认显示立绘 -->
+                    <img id="cat-image" src="images/cat/idle.png" alt="猫猫" 
+                         style="max-width: 100%; border-radius: 10px; display: block;">
+                    <!-- 播放动作用的视频（默认隐藏） -->
+                    <video id="cat-video" src="" 
+                           style="max-width: 100%; border-radius: 10px; display: none;" 
+                           muted></video>
+                </div>
+
+                <div style="font-size: 16px; font-weight: bold; color: #FF6B6B; margin-bottom: 8px;">皇甫</div>
+                <div id="cat-dialogue" style="font-size: 13px; color: #666; font-style: italic; margin-bottom: 12px;">
+                    "喵~ 你好呀！"
+                </div>
+                <!-- 后面好感度、情绪条、按钮那一大坨保持原样 -->
+                ...
                     <div style="margin: 8px 0;">
                         <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
                             <span>💕 好感度</span>
@@ -766,5 +807,5 @@
     </div>
 
     <script src="game.js"></script>
-</body>
+
 </html>

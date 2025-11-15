@@ -3,761 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我们的欢乐庄园</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: "Microsoft YaHei", sans-serif;
-            background: linear-gradient(to bottom, #87CEEB 0%, #90EE90 100%);
-            overflow: hidden;
-            width: 100%;
-            height: 100vh;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        #game-container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        #game-header {
-            background: linear-gradient(135deg, #FF8C69, #FF6B6B);
-            color: white;
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            z-index: 100;
-            flex-wrap: wrap;
-        }
-
-        #game-header h1 {
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
-
-        #header-right {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        #gold-display {
-            font-size: 16px;
-            font-weight: bold;
-            background: rgba(255,255,255,0.2);
-            padding: 6px 12px;
-            border-radius: 20px;
-        }
-
-        .header-btn {
-            background: rgba(255,255,255,0.3);
-            border: 2px solid white;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 13px;
-        }
-
-        .header-btn:hover {
-            background: white;
-            color: #FF6B6B;
-            transform: scale(1.05);
-        }
-
-        #game-main {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-        }
-
-        .section {
-            margin-bottom: 25px;
-        }
-
-        .section-title {
-            font-size: 16px;
-            color: #333;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .section-title::before {
-            content: '';
-            width: 4px;
-            height: 18px;
-            background: #FF6B6B;
-            border-radius: 2px;
-        }
-
-        .plots-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 12px;
-        }
-
-        .plot {
-            background: white;
-            border-radius: 12px;
-            padding: 12px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-            transition: all 0.3s;
-            cursor: pointer;
-            position: relative;
-            min-height: 160px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .plot:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 12px rgba(0,0,0,0.15);
-        }
-
-        .plot.empty {
-            border: 2px dashed #ddd;
-            background: #f9f9f9;
-        }
-
-        .plot-icon {
-            font-size: 50px;
-            margin-bottom: 8px;
-        }
-
-        .plot-name {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 4px;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .plot-status {
-            font-size: 11px;
-            color: #999;
-            text-align: center;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 5px;
-            background: #e0e0e0;
-            border-radius: 3px;
-            overflow: hidden;
-            margin: 8px 0;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #4CAF50, #8BC34A);
-            transition: width 0.3s;
-        }
-
-        .plot-actions {
-            display: flex;
-            gap: 4px;
-            margin-top: 8px;
-            width: 100%;
-        }
-
-        .action-btn {
-            flex: 1;
-            padding: 5px 8px;
-            border: none;
-            border-radius: 6px;
-            font-size: 11px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .action-btn.care {
-            background: #64B5F6;
-            color: white;
-        }
-
-        .action-btn.harvest {
-            background: #FFD54F;
-            color: #333;
-            font-weight: bold;
-        }
-
-        .action-btn:hover {
-            transform: scale(1.05);
-        }
-
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .modal.show {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 450px;
-            max-height: 85%;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .modal-header {
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-header h2 {
-            font-size: 18px;
-        }
-
-        .modal-close {
-            background: rgba(255,255,255,0.3);
-            border: none;
-            color: white;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .shop-tabs {
-            display: flex;
-            background: #f5f5f5;
-            padding: 0;
-        }
-
-        .shop-tab {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            font-size: 13px;
-            transition: all 0.3s;
-            border-bottom: 3px solid transparent;
-        }
-
-        .shop-tab.active {
-            background: white;
-            border-bottom-color: #FF6B6B;
-            font-weight: bold;
-        }
-
-        .modal-items {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-        }
-
-        .shop-item {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            background: #f9f9f9;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .shop-item:hover {
-            background: #f0f0f0;
-            transform: translateX(3px);
-        }
-
-        .shop-item.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .shop-item.disabled:hover {
-            transform: none;
-        }
-
-        .shop-item-icon {
-            font-size: 35px;
-            margin-right: 12px;
-        }
-
-        .shop-item-info {
-            flex: 1;
-        }
-
-        .shop-item-name {
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
-
-        .shop-item-desc {
-            font-size: 11px;
-            color: #666;
-            line-height: 1.4;
-        }
-
-        .shop-item-price {
-            font-size: 16px;
-            color: #FF6B6B;
-            font-weight: bold;
-        }
-
-        .header-buy { background: linear-gradient(135deg, #FF8C69, #FF6B6B); }
-        .header-item { background: linear-gradient(135deg, #AB47BC, #7B1FA2); }
-        .header-inventory { background: linear-gradient(135deg, #9C27B0, #673AB7); }
-        .header-sell { background: linear-gradient(135deg, #4CAF50, #8BC34A); }
-        .header-craft { background: linear-gradient(135deg, #FF9800, #FF5722); }
-        .header-mail { background: linear-gradient(135deg, #42A5F5, #1E88E5); }
-        .header-cat { background: linear-gradient(135deg, #FF69B4, #FF1493); }
-
-        .inventory-item {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            background: #f9f9f9;
-            border-radius: 8px;
-            margin-bottom: 8px;
-        }
-
-        .inventory-item-icon {
-            font-size: 35px;
-            margin-right: 12px;
-        }
-
-        .inventory-item-info {
-            flex: 1;
-        }
-
-        .inventory-item-name {
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
-
-        .inventory-item-count {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .inventory-empty {
-            text-align: center;
-            padding: 40px;
-            color: #999;
-        }
-
-        .sell-item {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            background: #f9f9f9;
-            border-radius: 8px;
-            margin-bottom: 8px;
-        }
-
-        .sell-item-icon {
-            font-size: 35px;
-            margin-right: 12px;
-        }
-
-        .sell-item-info {
-            flex: 1;
-        }
-
-        .sell-item-name {
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
-
-        .sell-item-count {
-            font-size: 11px;
-            color: #666;
-        }
-
-        .sell-item-actions {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-
-        .sell-item-price {
-            font-size: 14px;
-            color: #4CAF50;
-            font-weight: bold;
-            min-width: 60px;
-        }
-
-        .sell-btn {
-            padding: 6px 12px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 11px;
-        }
-
-        .sell-btn:hover {
-            background: #45a049;
-            transform: scale(1.05);
-        }
-
-        #toast {
-            position: fixed;
-            top: 70px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.85);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            display: none;
-            z-index: 2000;
-            animation: slideDown 0.3s;
-            max-width: 80%;
-            text-align: center;
-            font-size: 13px;
-            white-space: pre-line;
-        }
-
-        #toast.show {
-            display: block;
-        }
-
-        @keyframes slideDown {
-            from { transform: translate(-50%, -20px); opacity: 0; }
-            to { transform: translate(-50%, 0); opacity: 1; }
-        }
-
-        #blessing-modal, #clover-blessing-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.9);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 3000;
-        }
-
-        #blessing-modal.show, #clover-blessing-modal.show {
-            display: flex;
-        }
-
-        #clover-blessing-modal {
-            background: linear-gradient(135deg, rgba(102,126,234,0.95) 0%, rgba(118,75,162,0.95) 100%);
-        }
-
-        .blessing-content {
-            text-align: center;
-            color: white;
-            animation: zoomIn 0.5s;
-            padding: 20px;
-        }
-
-        .blessing-content h1 {
-            font-size: 36px;
-            margin-bottom: 15px;
-            text-shadow: 0 0 20px rgba(255,107,107,0.8);
-        }
-
-        .blessing-content p {
-            font-size: 20px;
-            line-height: 1.8;
-            margin-bottom: 20px;
-        }
-
-        .blessing-close {
-            padding: 12px 30px;
-            background: linear-gradient(135deg, #FF8C69, #FF6B6B);
-            border: none;
-            color: white;
-            border-radius: 20px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        @keyframes zoomIn {
-            from { transform: scale(0.5); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .firework {
-            position: absolute;
-            font-size: 25px;
-            animation: firework 2s infinite;
-            pointer-events: none;
-        }
-
-        @keyframes firework {
-            0% { transform: translateY(0) scale(0); opacity: 1; }
-            100% { transform: translateY(-150px) scale(2); opacity: 0; }
-        }
-
-        @media (max-width: 768px) {
-            #game-header h1 {
-                font-size: 16px;
-            }
-            
-            .header-btn {
-                font-size: 11px;
-                padding: 5px 8px;
-            }
-            
-            .plots-container {
-                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-            }
-        }
-    </style>
+    <title>属于孙钰的成人礼！ —— your 皇甫</title>
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="game-container">
-        <div id="game-header">
-            <div>
-                <h1>🏡 <span id="farm-name-display">我们的欢乐庄园</span></h1>
-                <div style="font-size: 11px; color: rgba(255,255,255,0.8); margin-top: 2px;" id="farm-subtitle">庄园主：孙钰</div>
+
+    <!-- ==================== 登录门 ==================== -->
+    <div id="login-gate">
+        <!-- 开机动画 -->
+        <div id="boot-screen">
+            <div class="windows-logo"></div>
+            <p>正在进入我们的庄园...</p>
+            <div class="spinner"></div>
+        </div>
+
+        <!-- 用户选择 -->
+        <div id="user-selection-screen" class="hidden">
+            <div class="user-card" onclick="selectUser('sunflower')">
+                <img src="images/sunflower-avatar.png" alt="小向日葵喵(管理员)">
+                <h2>向日葵</h2>
             </div>
-            <div id="header-right">
-                <div id="gold-display">💰 <span id="gold-amount">1000</span></div>
-                
-                <button class="header-btn" onclick="openMailbox()" style="position: relative;">
-                    📬 信箱
-                    <span id="mail-badge" class="hidden" style="position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 11px; display: flex; align-items: center; justify-content: center;">0</span>
-                </button>
-                
-                <button class="header-btn" onclick="openInventory()">🎒 背包</button>
-                <button class="header-btn" onclick="openBuyShop()">🛒 种子</button>
-                <button class="header-btn" onclick="openItemShop()">🧪 道具</button>
-                <button class="header-btn" onclick="openCraftShop()">🔨 制作</button>
-                <button class="header-btn" onclick="openSellShop()">💰 出售</button>
+            <div class="user-card" onclick="selectUser('corn')">
+                <img src="images/corn-avatar.png" alt="松仁玉米">
+                <h2>松仁玉米</h2>
             </div>
         </div>
 
-        <div id="game-main">
-            <div class="section">
-                <div class="section-title">🌾 农田区域</div>
-                <div class="plots-container" id="farm-plots"></div>
+        <!-- 密码输入 -->
+        <div id="password-screen" class="hidden">
+            <img id="password-avatar" src="">
+            <h2 id="password-username"></h2>
+            <div class="password-input-wrapper">
+                <input type="password" id="login-password" placeholder="输入密码" autocomplete="off">
+                <button onclick="enterOS()">➔</button>
             </div>
-
-            <div class="section">
-                <div class="section-title">🐑 畜栏区域</div>
-                <div class="plots-container" id="ranch-plots"></div>
-            </div>
-
-            <div class="section">
-                <div class="section-title">🐟 水域区域</div>
-                <div class="plots-container" id="pond-plots"></div>
-            </div>
-        </div>
-
-        <div id="cat-npc" class="hidden" style="position: fixed; bottom: 80px; right: 20px; cursor: grab; z-index: 500;">
-            <div style="text-align: center; user-select: none;">
-                <div style="font-size: 80px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));">😺</div>
-                <div style="background: rgba(255,255,255,0.9); padding: 4px 8px; border-radius: 10px; font-size: 11px; margin-top: -10px;">
-                    <div id="cat-name" style="font-weight: bold; color: #FF6B6B;">皇甫</div>
-                    <div style="font-size: 10px; color: #666;">点击互动</div>
-                </div>
-            </div>
+            <p id="login-error"></p>
+            <a class="back-link" onclick="backToUserSelection()">← 返回用户选择</a>
         </div>
     </div>
 
-    <div id="shop-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header header-buy">
-                <h2>🛒 种子商店</h2>
-                <button class="modal-close" onclick="closeBuyShop()">✕</button>
-            </div>
-            <div class="shop-tabs">
-                <button class="shop-tab active" data-type="farm" onclick="switchShopTab('farm')">🌾 种植</button>
-                <button class="shop-tab" data-type="ranch" onclick="switchShopTab('ranch')">🐑 畜牧</button>
-                <button class="shop-tab" data-type="pond" onclick="switchShopTab('pond')">🐟 水产</button>
-            </div>
-            <div class="modal-items" id="shop-items"></div>
-        </div>
-    </div>
+    <!-- ==================== 我们的专属 OS ==================== -->
+    <main id="desktop" class="hidden">
 
-    <div id="item-shop-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header header-item">
-                <h2>🧪 道具商店</h2>
-                <button class="modal-close" onclick="closeItemShop()">✕</button>
+        <!-- 桌面图标 -->
+        <div class="desktop-icons">
+            <div class="icon" ondblclick="openWindow('gallery')">
+                <img src="images/icon-gallery.png" alt="回忆画廊">
+                <span>回忆画廊.exe</span>
             </div>
-            <div class="shop-tabs">
-                <button class="shop-tab active" data-type="fertilizer" onclick="switchItemTab('fertilizer')">🌱 化肥</button>
-                <button class="shop-tab" data-type="fishfood" onclick="switchItemTab('fishfood')">🐟 鱼食</button>
-            </div>
-            <div class="modal-items" id="item-shop-items"></div>
-        </div>
-    </div>
-
-    <div id="inventory-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header header-inventory">
-                <h2>🎒 我的背包</h2>
-                <button class="modal-close" onclick="closeInventory()">✕</button>
-            </div>
-            <div class="modal-items" id="inventory-items"></div>
-        </div>
-    </div>
-
-    <div id="sell-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header header-sell">
-                <h2>💰 出售商店</h2>
-                <button class="modal-close" onclick="closeSellShop()">✕</button>
-            </div>
-            <div class="modal-items" id="sell-items"></div>
-        </div>
-    </div>
-
-    <div id="craft-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header header-craft">
-                <h2>🔨 制作台</h2>
-                <button class="modal-close" onclick="closeCraftShop()">✕</button>
-            </div>
-            <div id="crafting-queue" style="padding: 10px 15px; background: #f0f0f0;"></div>
-            <div class="modal-items" id="craft-items"></div>
-        </div>
-    </div>
-
-    <div id="mailbox-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header header-mail">
-                <h2>📬 信箱</h2>
-                <button class="modal-close" onclick="closeMailbox()">✕</button>
-            </div>
-            <div class="modal-items" id="mailbox-items"></div>
-        </div>
-    </div>
-
-    <div id="mail-detail-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header" style="background: linear-gradient(135deg, #66BB6A, #43A047);">
-                <h2>📧 <span id="mail-subject">信件</span></h2>
-                <button class="modal-close" onclick="closeMailDetail()">✕</button>
-            </div>
-            <div class="modal-items">
-                <div style="padding: 5px 0; border-bottom: 1px solid #eee; margin-bottom: 15px;">
-                    <div style="font-size: 12px; color: #666;">来自：<span id="mail-from" style="font-weight: bold;"></span></div>
-                    <div style="font-size: 11px; color: #999; margin-top: 3px;">时间：<span id="mail-time"></span></div>
-                </div>
-                <div id="mail-content" style="font-size: 14px; line-height: 1.8; white-space: pre-line; color: #333;"></div>
-                <div id="mail-special-action" style="margin-top: 20px;"></div>
+            <div class="icon" ondblclick="openWindow('manor')">
+                <img src="images/icon-manor.png" alt="我们的庄园">
+                <span>我们的庄园.exe</span>
             </div>
         </div>
-    </div>
 
-    <div id="cat-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header header-cat">
-                <h2>😺 猫猫互动</h2>
-                <button class="modal-close" onclick="closeCatPanel()">✕</button>
-            </div>
-            <div class="modal-items">
-                <div style="text-align: center; padding: 15px; background: #f9f9f9; border-radius: 10px; margin-bottom: 15px;">
-                    <div style="font-size: 60px; margin-bottom: 10px;">😺</div>
-                    <div style="font-size: 16px; font-weight: bold; color: #FF6B6B; margin-bottom: 8px;">皇甫</div>
-                    <div id="cat-dialogue" style="font-size: 13px; color: #666; font-style: italic; margin-bottom: 12px;">"喵~ 你好呀！"</div>
-                    
-                    <div style="margin: 8px 0;">
-                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
-                            <span>💕 好感度</span>
-                            <span id="cat-affection-text">500/1000</span>
-                        </div>
-                        <div style="width: 100%; height: 8px; background: #e0e0e0; border-radius: 4px; overflow: hidden;">
-                            <div id="cat-affection-bar" style="height: 100%; width: 50%; background: linear-gradient(90deg, #FF69B4, #FF1493); transition: width 0.3s;"></div>
-                        </div>
-                    </div>
-
-                    <div style="margin: 8px 0;">
-                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
-                            <span>😊 情绪值</span>
-                            <span id="cat-mood-text">100/100</span>
-                        </div>
-                        <div style="width: 100%; height: 8px; background: #e0e0e0; border-radius: 4px; overflow: hidden;">
-                            <div id="cat-mood-bar" style="height: 100%; width: 100%; background: linear-gradient(90deg, #4CAF50, #8BC34A); transition: width 0.3s;"></div>
-                        </div>
+        <!-- 所有窗口的容器 -->
+        <div id="window-container">
+            <!-- 回忆画廊 窗口 -->
+            <div id="gallery-window" class="window hidden">
+                <div class="title-bar">
+                    <div class="title-bar-text">🖼️ 回忆画廊</div>
+                    <div class="title-bar-controls">
+                        <button aria-label="Minimize" onclick="minimizeWindow('gallery')">—</button>
+                        <button aria-label="Maximize" onclick="maximizeWindow('gallery')">□</button>
+                        <button aria-label="Close" onclick="closeWindow('gallery')">✕</button>
                     </div>
                 </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-                    <button class="sell-btn" style="background: #FF69B4; padding: 12px;" onclick="interactCat('pet')">🤲 摸头</button>
-                    <button class="sell-btn" style="background: #FFD700; padding: 12px;" onclick="interactCat('praise')">👍 夸奖</button>
-                    <button class="sell-btn" style="background: #FF6347; padding: 12px;" onclick="interactCat('hit')">👊 揍</button>
-                    <button class="sell-btn" style="background: #9C27B0; padding: 12px;" onclick="openCatFeedMenu()">🍖 投喂</button>
+                <div class="window-body">
+                    <!-- 用 iframe 嵌入回忆画廊 -->
+                    <iframe src="gallery.html" frameborder="0"></iframe>
                 </div>
+            </div>
 
-                <div style="font-size: 11px; color: #999; padding: 10px; background: #f0f0f0; border-radius: 8px;">
-                    💡 提示：情绪值低于20时，猫猫会不理你哦！投喂可以恢复情绪~
+            <!-- 我们的庄园 窗口（游戏） -->
+            <div id="manor-window" class="window hidden">
+                <div class="title-bar">
+                    <div class="title-bar-text">🏡 我们的庄园</div>
+                    <div class="title-bar-controls">
+                        <button aria-label="Minimize" onclick="minimizeWindow('manor')">—</button>
+                        <button aria-label="Maximize" onclick="maximizeWindow('manor')">□</button>
+                        <button aria-label="Close" onclick="closeWindow('manor')">✕</button>
+                    </div>
+                </div>
+                <div class="window-body">
+                    <!-- 这里嵌入你现在的 game.html -->
+                    <iframe src="game.html" frameborder="0"></iframe>
                 </div>
             </div>
         </div>
+
+        <!-- 任务栏 -->
+        <div class="taskbar">
+            <button id="start-button">
+                <img src="images/windows-icon.png" alt="Start">
+                <span>开始</span>
+            </button>
+            <div id="taskbar-apps"></div>
+        </div>
+
+        <!-- 开始菜单 -->
+        <div id="start-menu" class="hidden">
+            <ul>
+                <li onclick="logOut()">
+                    <img src="images/icon-logout.png" alt="注销">
+                    <span>注销</span>
+                </li>
+            </ul>
+        </div>
+    </main>
+
+    <!-- ==================== 管理员后台 (彩蛋) ==================== -->
+    <div id="admin-panel" class="hidden">
+        <div class="admin-header">
+            <h1>&gt;&gt; Administrator Access Granted_</h1>
+            <p>// Welcome, Developer "Sunflower"</p>
+        </div>
+        
+        <div class="code-modal-content">
+            <div class="code-column">
+                <h4>HTML: 骨骼 🦴</h4>
+                <div class="code-image-wrapper">
+                    <img src="images/code_html.png" alt="HTML Code" onclick="openImageViewer(this.src)">
+                </div>
+            </div>
+            <div class="code-column">
+                <h4>CSS: 衣服 🎨</h4>
+                <div class="code-image-wrapper">
+                    <img src="images/code_css.png" alt="CSS Code" onclick="openImageViewer(this.src)">
+                </div>
+            </div>
+            <div class="code-column">
+                <h4>JS: 灵魂 🧠</h4>
+                <div class="code-image-wrapper">
+                    <img src="images/code_js.png" alt="JavaScript Code" onclick="openImageViewer(this.src)">
+                </div>
+            </div>
+        </div>
+
+        <button class="proceed-btn" onclick="proceedToHub()">Proceed to Main Hub_</button>
     </div>
 
-    <div id="toast"></div>
-
-    <div id="blessing-modal">
-        <div class="blessing-content">
-            <h1>🎉 恭喜你！🎉</h1>
-            <p>你收获了最珍贵的<strong>松仁玉米</strong>！</p>
-            <p>就像我们的友谊一样</p>
-            <p>经过精心培育，终于开花结果</p>
-            <p>🌽💛🌻</p>
-            <p style="font-size: 30px; margin-top: 20px;">生日快乐，孙钰！</p>
-            <button class="blessing-close" onclick="closeBlessing()">收下这份祝福 ✨</button>
+    <!-- ==================== 图片查看器（放大代码截图） ==================== -->
+    <div id="imageViewerModal" class="hidden">
+        <div class="image-viewer-overlay" onclick="closeImageViewer()"></div>
+        <div class="image-viewer-content">
+            <img id="viewerImage" src="" alt="放大图片">
+            <button class="close-viewer" onclick="closeImageViewer()">✕</button>
         </div>
     </div>
 
-    <div id="clover-blessing-modal">
-        <div class="blessing-content">
-            <h1>🍀 传说中的四叶草！🍀</h1>
-            <p>经过你精心的培育</p>
-            <p>终于诞生了这世上最珍贵的四叶草</p>
-            <p>它闪耀着奇迹的光芒</p>
-            <p>一定会为你带来好运...</p>
-            <p style="font-size: 28px; margin-top: 30px;">✨ 让你的农场不再孤独 ✨</p>
-            <button class="blessing-close" onclick="closeCloverBlessing()">收下这份奇迹</button>
-        </div>
-    </div>
-
-    <script src="game.js"></script>
+    <!-- ==================== 脚本 ==================== -->
+    <script src="script.js"></script>
 </body>
 </html>

@@ -160,24 +160,26 @@ function openWindow(appName) {
     taskbarBtn.classList.add('active');
 }
 
-// --- 关闭窗口 ---
 function closeWindow(appName) {
     const windowEl = document.getElementById(`${appName}-window`);
     if (windowEl) {
         windowEl.classList.add('hidden');
 
-        // 从任务栏上移除对应的按钮
         const taskbarBtn = document.getElementById(`task-${appName}`);
         if (taskbarBtn) {
             taskbarBtn.remove();
         }
 
-        // 远程静音（针对回忆画廊）
-        if (appName === 'gallery') {
-            const iframe = windowEl.querySelector('iframe');
-            if(iframe && iframe.contentWindow && typeof iframe.contentWindow.toggleMusic === 'function'){
-                iframe.contentWindow.toggleMusic();
-            }
+        const iframe = windowEl.querySelector('iframe');
+
+        // 如果是回忆画廊，调用它的 toggleMusic
+        if (appName === 'gallery' && iframe && iframe.contentWindow && typeof iframe.contentWindow.toggleMusic === 'function') {
+            iframe.contentWindow.toggleMusic();
+        }
+
+        // ✅ 【核心修改】如果是庄园游戏，调用它的 stopBgm
+        if (appName === 'manor' && iframe && iframe.contentWindow && typeof iframe.contentWindow.stopBgm === 'function') {
+            iframe.contentWindow.stopBgm();
         }
     }
 }
@@ -399,3 +401,37 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+// ==================== 全局交互监听，用于激活BGM ====================
+
+let hasInteracted = false;
+
+function handleFirstInteraction() {
+    if (hasInteracted) {
+        // 只需要触发一次
+        document.removeEventListener('click', handleFirstInteraction);
+        document.removeEventListener('keydown', handleFirstInteraction);
+        return;
+    }
+    
+    hasInteracted = true;
+    console.log('[Desktop] First user interaction detected!');
+    
+    // 尝试激活庄园游戏的BGM
+    const manorWindow = document.getElementById('manor-window');
+    if (manorWindow) {
+        const iframe = manorWindow.querySelector('iframe');
+        // 检查函数是否存在，然后调用
+        if (iframe && iframe.contentWindow && typeof iframe.contentWindow.activateBgm === 'function') {
+            console.log('[Desktop] Activating manor BGM...');
+            iframe.contentWindow.activateBgm();
+        }
+    }
+    
+    // 移除监听器
+    document.removeEventListener('click', handleFirstInteraction);
+    document.removeEventListener('keydown', handleFirstInteraction);
+}
+
+// 监听整个页面的点击和键盘事件
+document.addEventListener('click', handleFirstInteraction);
+document.addEventListener('keydown', handleFirstInteraction);
