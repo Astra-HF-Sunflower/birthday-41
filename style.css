@@ -1258,3 +1258,9 @@ button[aria-label="Close"] {
             transform: scale(1.15);
             background: rgba(255, 20, 147, 0.9); /* 深粉色 */
         }
+        /* ==================== 全局输入框解禁 ==================== */
+input[type="text"],
+input[type="password"] {
+    user-select: auto !important; /* 允许选中和输入 */
+    -webkit-user-select: auto !important; /* 兼容老版 Chrome/Safari */
+}

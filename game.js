@@ -12,6 +12,48 @@
    - 信箱系统（农场命名、延迟送猫）
    
 ===================================================================== */
+// =====================================================================
+//                        💬 对话树配置
+// =====================================================================
+
+const CAT_DIALOG_TREES = {
+    // --- 首次见面的对话 ---
+     // --- 首次见面的对话 ---
+firstMeeting: [
+    { id: 1, text: "（一只小猫咪从一个神秘的礼盒里探出头来，好奇地看着你...）" },
+    { id: 2, text: "喵...！主人！你就是...传说中的41吧！" },
+    { 
+        id: 3, 
+        text: "主人好~ 我还没有名字呢，可以帮我取一个吗？",
+        choices: [
+            { text: "当然！让我想想...", nextNodeId: 4 },
+            { text: "一只猫要什么名字？", nextNodeId: 5 }
+        ]
+    },
+    { id: 4, text: "太好了！我叫什么名字好呢？", special: 'prompt_cat_name' }, // ✅ 特殊事件改成给猫取名
+    { 
+        id: 5, 
+        text: "呜...坏家伙，那...你先叫我“猫猫”吧...",
+        choices: [
+            { text: "（还是给它取个名字吧）", nextNodeId: 4 }
+        ]
+    }
+],
+    // --- 日常对话（好感度 < 200） ---
+    dailyLowAffection: [
+        { id: 1, text: "有吃的吗？我饿了。" },
+        { id: 2, text: "今天天气不错，适合睡觉... Zzz..." },
+        { id: 3, text: "别老看着我，快去干活啦！" }
+    ],
+    
+    // --- 日常对话（好感度 >= 800） ---
+    dailyHighAffection: [
+        { id: 1, text: "见到你真开心！今天也要一起加油哦！" },
+        { id: 2, text: "（蹭蹭你的腿）最喜欢你啦！" },
+        { id: 3, text: "这个庄园因为有你，才变得这么美好~" }
+    ]
+    // ... 以后可以加更多对话树，比如 catTheft, specialOrder, etc.
+};
 // ==================== 🐱 猫猫动画配置 ====================
 
 const CAT_ANIMATIONS = {
@@ -354,7 +396,7 @@ let gameState = {
     currentItemTab: 'fertilizer',
     selectedPlot: null,
     stats: { totalHarvests: 0, cornHarvested: false },
-    cat: { unlocked: false, affection: 500, mood: 100, lastInteraction: 0, lastAction: null, status: 'normal' },
+    cat: { unlocked: false,  name: '猫猫',affection: 500, mood: 100, lastInteraction: 0, lastAction: null, status: 'normal' },
     farmName: null,
     cloverCraftTime: 0,
     mails: [],
@@ -369,6 +411,12 @@ function initGame() {
    // 如果没有激活的订单，就生成新的
     if (!gameState.activeOrders || gameState.activeOrders.length === 0) {
         generateOrders();
+            if (gameState.cat.unlocked) {
+        showCat();
+        // ✅ 确保猫猫名字被正确设置
+        document.querySelectorAll('#cat-name').forEach(el => el.textContent = gameState.cat.name);
+    }
+
     }
     
     initPlots();
@@ -845,7 +893,7 @@ function checkCraftingQueue() {
 // ==================== 📬 邮件系统 ====================
 function initMailSystem() {
     if (gameState.mails.length === 0) {
-        gameState.mails.push({ id: 'welcome', from: '庄园管理局', subject: '欢迎来到你的庄园！', content: `亲爱的新庄园主：\n\n恭喜你获得了这片美丽的土地！\n\n这里将成为你和朋友们的专属天地。\n种下希望的种子，收获珍贵的回忆。\n\n在开始之前，请为你的庄园取一个名字吧~\n这将是你们友谊的见证！\n\n祝你：\n种植顺利，收获满满！\n\n——庄园管理局`, read: false, timestamp: Date.now(), special: 'farm-naming' });
+        gameState.mails.push({ id: 'welcome', from: '庄园管理局', subject: '欢迎来到你的庄园！', content: `亲爱的新庄园主：\n\n恭喜你获得了这片美丽的土地！\n\n这里将成为你和朋友们的专属天地。\n种下希望的种子，收获珍贵的回忆。\n\n在开始之前，请为你的庄园取一个名字吧~\n这将是你们友谊的见证！\n\n祝你：\n种植顺利，收获满满！\n\n(程序员说...这个地方会不断更新扩大哦！有时间的话...偶尔回来看看吧！\n\n——庄园管理局`, read: false, timestamp: Date.now(), special: 'farm-naming' });
         gameState.unreadMails = 1; saveGame();
         setTimeout(() => { openMailbox(); }, 1000);
     }
@@ -853,20 +901,54 @@ function initMailSystem() {
 }
 function openMailbox() { renderMailList(); document.getElementById('mailbox-modal').classList.add('show'); }
 function closeMailbox() { document.getElementById('mailbox-modal').classList.remove('show'); }
-function renderMailList() {
+function renderMailList() { 
     const container = document.getElementById('mailbox-items'); const mails = gameState.mails;
     if (mails.length === 0) { container.innerHTML = '<div class="inventory-empty">信箱空空如也~</div>'; return; }
     container.innerHTML = mails.map((mail, index) => { const date = new Date(mail.timestamp); const timeStr = `${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2,'0')}`; return `<div class="shop-item" onclick="readMail(${index})" style="background: ${mail.read ? '#f9f9f9' : '#fff9e6'}; border-left: 4px solid ${mail.read ? '#ddd' : '#FFD700'};"><div class="shop-item-icon">${mail.read ? '📭' : '📬'}</div><div class="shop-item-info"><div class="shop-item-name">${mail.subject} ${mail.read ? '' : '✨'}</div><div class="shop-item-desc">来自：${mail.from} | ${timeStr}</div></div></div>`; }).join('');
 }
+// ==================== 读取邮件 ====================
 function readMail(index) {
     const mail = gameState.mails[index];
-    if (!mail.read) { mail.read = true; gameState.unreadMails = Math.max(0, gameState.unreadMails - 1); updateMailBadge(); saveGame(); }
-    document.getElementById('mail-subject').textContent = mail.subject; document.getElementById('mail-from').textContent = mail.from; const date = new Date(mail.timestamp); document.getElementById('mail-time').textContent = date.toLocaleString('zh-CN'); document.getElementById('mail-content').textContent = mail.content;
+    if (!mail) return; // 安全检查
+
+    // 1. 标记为已读
+    if (!mail.read) {
+        mail.read = true;
+        gameState.unreadMails = Math.max(0, gameState.unreadMails - 1);
+        updateMailBadge();
+        saveGame();
+    }
+
+    // 2. 更新读信弹窗的内容
+    document.getElementById('mail-subject').textContent = mail.subject;
+    document.getElementById('mail-from').textContent = mail.from;
+    const date = new Date(mail.timestamp);
+    document.getElementById('mail-time').textContent = date.toLocaleString('zh-CN');
+    document.getElementById('mail-content').textContent = mail.content;
+
+    // 3. 处理邮件的特殊操作（比如命名、收礼物）
     const actionDiv = document.getElementById('mail-special-action');
-    if (mail.special === 'farm-naming' && !gameState.farmName) { actionDiv.innerHTML = `<div style="background: #f0f0f0; padding: 15px; border-radius: 10px;"><label style="display: block; margin-bottom: 8px; font-weight: bold;">为你的农场取个名字：</label><input type="text" id="farm-name-input" placeholder="例如：阳光农场" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; margin-bottom: 10px;"><button class="sell-btn" style="width: 100%; background: #4CAF50;" onclick="submitFarmName()">确认命名</button></div>`; } 
-    else if (mail.special === 'cat-gift') { actionDiv.innerHTML = `<button class="sell-btn" style="width: 100%; background: #FF69B4;" onclick="acceptCatGift()">接受这份礼物 😺</button>`; } 
-    else { actionDiv.innerHTML = ''; }
-    closeMailbox(); document.getElementById('mail-detail-modal').classList.add('show');
+    actionDiv.innerHTML = ''; // 每次都先清空
+
+    // --- 如果是“农场命名”邮件，并且还没命名 ---
+    if (mail.special === 'farm-naming' && !gameState.farmName) {
+        actionDiv.innerHTML = `
+            <div style="background: #f0f0f0; padding: 15px; border-radius: 10px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: bold;">为你的农场取个名字：</label>
+                <input type="text" id="farm-name-input" placeholder="例如：阳光农场" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; margin-bottom: 10px;">
+                <button class="sell-btn" style="width: 100%; background: #4CAF50;" onclick="submitFarmName()">确认命名</button>
+            </div>
+        `;
+    } 
+    // --- 如果是“接受猫猫礼物”邮件 ---
+    else if (mail.special === 'cat-gift') {
+        actionDiv.innerHTML = `<button class="sell-btn" style="width: 100%; background: #FF69B4;" onclick="acceptCatGift()">接受这份礼物 😺</button>`;
+    }
+    // (未来可以加 else if 来处理更多特殊邮件)
+
+    // 4. 关闭信箱，打开读信弹窗
+    closeMailbox();
+    document.getElementById('mail-detail-modal').classList.add('show');
 }
 function closeMailDetail() { document.getElementById('mail-detail-modal').classList.remove('show'); }
 function submitFarmName() {
@@ -896,11 +978,24 @@ function sendCatMail() {
     gameState.cloverCraftTime = 0; saveGame();
 }
 function acceptCatGift() {
-    if (gameState.cat.unlocked) { showToast('你已经有猫猫了！'); return; }
-    gameState.cat.unlocked = true; showCat(); saveGame(); closeMailDetail();
-    showToast('🎉 猫猫加入了你的农场！\n\n点击右下角的猫猫可以互动哦~');
-}
+    if (gameState.cat.unlocked) {
+        showToast('你已经有猫猫了！');
+        return;
+    }
 
+    gameState.cat.unlocked = true;
+    showCat();
+    saveGame();
+    
+    closeMailDetail();
+    
+    // ✅ 【核心修改】不再弹窗，而是开始首次见面对话
+    setTimeout(() => {
+        startDialogue('firstMeeting');
+    }, 1000); // 延迟1秒，让猫猫先出现
+}
+ closeMailDetail();
+  
 // ==================== 🍀 彩蛋弹窗 ====================
 function showCloverBlessing() {
     const modal = document.getElementById('clover-blessing-modal'); modal.classList.add('show');
@@ -909,10 +1004,11 @@ function showCloverBlessing() {
 function closeCloverBlessing() { document.getElementById('clover-blessing-modal').classList.remove('show'); }
 
 // =====================================================================
-//                        🐱 猫猫系统 V2.0 (悬浮UI版)
+//                        🐱 猫猫系统 V2.1 (对话树版)
 // =====================================================================
 
-let catBubbleTimer = null; // 用于对话气泡的计时器
+let catBubbleTimer = null;
+let currentDialogue = null; // ✅ 新增：追踪当前对话状态
 
 // --- 显示猫猫 ---
 function showCat() {
@@ -922,32 +1018,217 @@ function showCat() {
 
 // --- 播放动画/切换立绘 ---
 function setCatState(state) {
-    const cfg = CAT_ANIMATIONS[state] || CAT_ANIMATIONS.idle;
-    const imgEl = document.getElementById('cat-image');
-    const videoEl = document.getElementById('cat-video');
-    if (!imgEl || !videoEl) return;
+    // ... (这个函数保持不变，所以这里省略了)
+}
 
-    try { videoEl.pause(); } catch (e) {}
-    videoEl.onended = null;
+// --- 显示对话气泡 ---
+function showCatBubble(text, duration = 4000) {
+    const bubble = document.getElementById('cat-dialogue-bubble');
+    const textEl = document.getElementById('cat-bubble-text');
+    if (!bubble || !textEl) return;
 
-    if (cfg.type === 'video') {
-        imgEl.classList.add('hidden');
-        videoEl.classList.remove('hidden');
-        videoEl.src = cfg.src;
-        videoEl.currentTime = 0;
-        const playPromise = videoEl.play();
-        if (playPromise) {
-            playPromise.catch(err => {
-                if (err.name !== 'AbortError') console.error(`[CatVideo] Playback failed:`, err);
-            });
-        }
-        videoEl.onended = () => setCatState('idle');
-    } else {
-        videoEl.classList.add('hidden');
-        videoEl.src = '';
-        imgEl.classList.remove('hidden');
-        imgEl.src = cfg.src;
+    textEl.textContent = text;
+    bubble.classList.remove('hidden');
+
+    if (catBubbleTimer) clearTimeout(catBubbleTimer);
+    if (duration > 0) {
+        catBubbleTimer = setTimeout(() => {
+            bubble.classList.add('hidden');
+        }, duration);
     }
+}
+
+// --- 切换小按钮显示/隐藏 ---
+function toggleCatActions(show) {
+    const panel = document.getElementById('cat-mini-actions');
+    if (panel) {
+        if (show) {
+            panel.classList.remove('hidden');
+        } else {
+            panel.classList.add('hidden');
+        }
+    }
+}
+
+// ✅ 【核心重构】开始一段对话
+function startDialogue(treeId) {
+    const tree = CAT_DIALOG_TREES[treeId];
+    if (!tree) return;
+
+    currentDialogue = {
+        tree: tree,
+        currentNodeIndex: 0
+    };
+    
+    // 开始对话时，先隐藏互动按钮
+    toggleCatActions(false);
+    
+    displayCurrentDialogueNode();
+}
+
+// ✅ 【核心重构】显示当前对话节点
+function displayCurrentDialogueNode() {
+    if (!currentDialogue) return;
+
+    const node = currentDialogue.tree[currentDialogue.currentNodeIndex];
+    if (!node) {
+        // 对话结束
+        endDialogue();
+        return;
+    }
+
+    showCatBubble(node.text, node.choices ? 0 : 4000); // 如果有选项，气泡不自动消失
+
+    // 创建选项按钮
+    const choicesContainer = document.createElement('div');
+    choicesContainer.id = 'temp-choices-container';
+    choicesContainer.style.position = 'absolute';
+    choicesContainer.style.bottom = '100%';
+    choicesContainer.style.left = '50%';
+    choicesContainer.style.transform = 'translateX(-50%)';
+    choicesContainer.style.marginBottom = '45px';
+    choicesContainer.style.display = 'flex';
+    choicesContainer.style.flexDirection = 'column';
+    choicesContainer.style.gap = '6px';
+    choicesContainer.style.width = '200px';
+
+    if (node.choices) {
+        node.choices.forEach(choice => {
+            const btn = document.createElement('button');
+            btn.className = 'sell-btn';
+            btn.style.background = '#64B5F6';
+            btn.textContent = choice.text;
+            btn.onclick = () => {
+                // 移除选项按钮
+                document.getElementById('temp-choices-container').remove();
+                // 寻找下一个节点
+                const nextNode = currentDialogue.tree.find(n => n.id === choice.nextNodeId);
+                if (nextNode) {
+                    currentDialogue.currentNodeIndex = currentDialogue.tree.indexOf(nextNode);
+                    displayCurrentDialogueNode();
+                } else {
+                    endDialogue();
+                }
+            };
+            choicesContainer.appendChild(btn);
+        });
+    }
+
+    // 处理特殊事件：猫猫取名
+    if (node.special === 'prompt_cat_name') {
+        const nameInputWrapper = document.createElement('div');
+        nameInputWrapper.style.display = 'flex';
+        nameInputWrapper.style.flexDirection = 'column';
+        nameInputWrapper.style.gap = '6px';
+        nameInputWrapper.style.zIndex = '1000';
+        nameInputWrapper.style.position = 'relative';
+        
+        const inputField = document.createElement('input');
+        inputField.type = 'text';
+        inputField.id = 'cat-name-input-dialogue';
+        inputField.placeholder = '输入猫猫的名字...';
+        inputField.style.width = '100%';
+        inputField.style.padding = '8px';
+        inputField.style.borderRadius = '6px';
+        inputField.style.border = '1px solid #ccc';
+        inputField.style.boxSizing = 'border-box';
+        inputField.style.fontSize = '14px';
+        
+        const submitBtn = document.createElement('button');
+        submitBtn.className = 'sell-btn';
+        submitBtn.textContent = '就叫这个！';
+        submitBtn.style.width = '100%';
+        submitBtn.style.background = '#4CAF50';
+        submitBtn.style.padding = '8px';
+        submitBtn.style.cursor = 'pointer';
+        submitBtn.style.zIndex = '1001';
+        submitBtn.style.pointerEvents = 'auto';
+        
+        submitBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const name = inputField.value.trim();
+            
+            if (!name) {
+                showToast('❌ 请输入一个名字！');
+                return;
+            }
+            
+            gameState.cat.name = name;
+            document.querySelectorAll('#cat-name').forEach(el => el.textContent = name);
+            showToast(`✅ 太好了！从现在起，我就叫【${name}】啦！`);
+            saveGame();
+            
+            // 移除输入框，结束对话
+            document.getElementById('temp-choices-container').remove();
+            endDialogue();
+        });
+        
+        nameInputWrapper.appendChild(inputField);
+        nameInputWrapper.appendChild(submitBtn);
+        choicesContainer.appendChild(nameInputWrapper);
+        
+        // 自动聚焦到输入框
+        setTimeout(() => inputField.focus(), 100);
+    }
+    
+    document.getElementById('cat-wrapper').appendChild(choicesContainer);
+
+    // 如果没有选项，自动进入下一句
+    if (!node.choices && !node.special) {
+        setTimeout(() => {
+            currentDialogue.currentNodeIndex++;
+            displayCurrentDialogueNode();
+        }, 2500); // 每句话停留2.5秒
+    }
+}
+
+// ✅ 【核心重构】结束对话
+function endDialogue() {
+    currentDialogue = null;
+    showCatBubble("喵~", 2000); // 显示一个简短的默认气泡
+    toggleCatActions(true);    // 恢复互动按钮
+}
+
+// --- 初始化猫猫拖拽和点击 ---
+function initCatDragging() {
+    const catEl = document.getElementById('cat-npc');
+    let isDragging = false;
+    let dragTimeout;
+
+    catEl.addEventListener('click', (e) => {
+        if (isDragging || !gameState.cat.unlocked) return;
+        
+        // 如果正在对话，点击猫猫可以跳过当前对话
+        if (currentDialogue) {
+            // (未来可以加这个功能，暂时先不加)
+            return;
+        }
+
+        // 切换互动按钮
+        toggleCatActions();
+        const cat = gameState.cat;
+        showCatBubble(`💕好感: ${Math.floor(cat.affection)}/1000 | 😊情绪: ${Math.floor(cat.mood)}/100`);
+    });
+
+    // ... (拖拽逻辑保持不变)
+}
+
+// --- 猫猫互动逻辑 ---
+function interactCat(action) {
+    if (currentDialogue) {
+        showToast("正在和猫猫说话呢，先别动手动脚！");
+        return;
+    }
+    // ... (后面的逻辑保持不变)
+}
+
+// --- 投喂菜单和逻辑 ---
+function openCatFeedMenu() {
+    if (currentDialogue) {
+        showToast("正在和猫猫说话呢，晚点再喂吧！");
+        return;
+    }
+    // ... (后面的逻辑保持不变)
 }
 
 // --- 显示对话气泡 ---
@@ -977,13 +1258,15 @@ function initCatDragging() {
     let isDragging = false;
     let dragTimeout;
 
-    catEl.addEventListener('click', (e) => {
-        // 如果不是在拖拽过程中结束的点击，就切换按钮
-        if (!isDragging && gameState.cat.unlocked) {
-            toggleCatActions();
-            showCatBubble('喵~ 想干嘛？');
-        }
-    });
+   catEl.addEventListener('click', (e) => {
+    if (!isDragging && gameState.cat.unlocked) {
+        toggleCatActions();
+        // ✅ 显示好感度和情绪值
+        const cat = gameState.cat;
+        showCatBubble(`💕好感: ${Math.floor(cat.affection)}/1000 | 😊情绪: ${Math.floor(cat.mood)}/100`);
+    }
+});
+   
 
     catEl.addEventListener('mousedown', (e) => {
         if (!gameState.cat.unlocked) return;
@@ -1056,11 +1339,12 @@ function interactCat(action) {
     saveGame();
 }
 
-// --- 投喂菜单和逻辑 ---
+// ==================== 打开投喂菜单 ====================
 function openCatFeedMenu() {
-    const feedables = Object.entries(gameState.inventory).filter(([id, count]) => {
+    const feedableCrops = Object.entries(gameState.inventory).filter(([id, count]) => {
         const baseId = id.split('_')[0];
-        return baseId !== 'clover' && count > 0 && PRODUCTS_CONFIG[baseId];
+        if (baseId === 'clover') return false;
+        return count > 0 && PRODUCTS_CONFIG[baseId];
     });
 
     const feedableFerts = Object.entries(gameState.items || {}).filter(([id, count]) => {
@@ -1072,8 +1356,59 @@ function openCatFeedMenu() {
         return;
     }
 
-    // ... (后面的菜单 HTML 逻辑保持不变)
+    // ✅ 【核心】创建并显示一个临时的弹窗菜单
+    const menuHtml = `
+        <div id="temp-feed-menu" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                    background: rgba(0,0,0,0.7); display: flex; align-items: center; 
+                    justify-content: center; z-index: 3000;" 
+             onclick="document.getElementById('temp-feed-menu').remove()">
+             
+            <div style="background: white; border-radius: 15px; padding: 15px; 
+                        max-width: 350px; max-height: 80%; overflow-y: auto;" 
+                 onclick="event.stopPropagation()">
+                 
+                <h3 style="margin-bottom: 12px; font-size: 16px; color: #333;">选择食物投喂</h3>
+                
+                ${feedableCrops.length > 0 ? '<div style="font-size: 12px; color: #999; margin: 8px 0;">🌾 作物：</div>' : ''}
+                ${feedableCrops.map(([itemId, count]) => {
+                    const baseId = itemId.split('_')[0];
+                    const product = PRODUCTS_CONFIG[baseId];
+                    return `
+                        <div style="padding: 10px; margin: 6px 0; background: #f0f0f0; 
+                                    border-radius: 8px; cursor: pointer;"
+                             onclick="feedCat('${itemId}'); document.getElementById('temp-feed-menu').remove();">
+                            <div style="font-size: 16px;">${product.emoji} ${product.name} (x${count})</div>
+                        </div>
+                    `;
+                }).join('')}
+                
+                ${feedableFerts.length > 0 ? '<div style="font-size: 12px; color: #999; margin: 8px 0;">🧪 道具（慎用）：</div>' : ''}
+                ${feedableFerts.map(([itemId, count]) => {
+                    const fert = FERTILIZERS_CONFIG[itemId];
+                    return `
+                        <div style="padding: 10px; margin: 6px 0; background: #ffe0e0; 
+                                    border: 1px dashed #ff6b6b; border-radius: 8px; cursor: pointer;"
+                             onclick="feedCatFertilizer('${itemId}'); document.getElementById('temp-feed-menu').remove();">
+                            <div style="font-size: 16px;">${fert.emoji} ${fert.name} (x${count})</div>
+                            <div style="font-size: 11px; color: #999;">⚠️ 不建议喂这个...</div>
+                        </div>
+                    `;
+                }).join('')}
+                
+                <button style="width: 100%; padding: 10px; margin-top: 8px; background: #ddd; 
+                               border: none; border-radius: 8px; cursor: pointer; font-size: 13px;"
+                        onclick="document.getElementById('temp-feed-menu').remove()">
+                    取消
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // 将菜单添加到页面上
+    document.body.insertAdjacentHTML('beforeend', menuHtml);
 }
+    // ... (后面的菜单 HTML 逻辑保持不变)
+
 
 function feedCat(itemId) {
     // ... (原有的 feedCat 逻辑，在最后调用 setCatState 和 showCatBubble)
@@ -1250,36 +1585,30 @@ function deliverOrder(orderId) {
     renderSellShop(); // 重新渲染出售界面
 }
 // =====================================================================
-//                        🧪 调试 / 控制台模式
+//                        🧪 调试 / 控制台模式 V2.0
 // =====================================================================
 
 window.dev = {
     /**
      * 增加金币
-     * 用法：dev.addGold() 或 dev.addGold(5000)
+     * dev.addGold() 或 dev.addGold(50000)
      */
-    addGold(amount = 1000) {
+    addGold(amount = 10000) {
         gameState.gold += amount;
-        if (typeof updateGoldDisplay === 'function') {
-            updateGoldDisplay();
-        }
+        updateGoldDisplay();
         saveGame();
         console.log(`[dev] 金币 +${amount}，当前：${gameState.gold}`);
     },
 
     /**
-     * 增加作物/产物到背包（包括星级）
-     * id       : PRODUCTS_CONFIG 里的键，比如 'wheat','corn','flour','appleJam'
-     * amount   : 数量，默认1
-     * star     : 星级，0=无星，1/2/3星。只有带星的作物需要（如 'corn', 3）
-     * 用法：
-     *   dev.addItem('wheat', 20)         // 20个小麦
-     *   dev.addItem('corn', 5, 3)        // 5个三星玉米
-     *   dev.addItem('flour', 10)         // 10份面粉
+     * 增加产物/作物到背包
+     * dev.addItem('wheat', 20)       // 20个小麦(无星级)
+     * dev.addItem('corn', 5, 3)      // 5个三星玉米
+     * dev.addItem('flour', 10)       // 10份面粉
      */
     addItem(id, amount = 1, star = 0) {
         if (!PRODUCTS_CONFIG[id]) {
-            console.warn(`[dev] 未找到物品：${id}，请检查 PRODUCTS_CONFIG`);
+            console.warn(`[dev] 未找到物品：${id}，请用 dev.listItems() 查看可用ID`);
             return;
         }
         const key = star > 0 ? `${id}_${star}` : id;
@@ -1287,81 +1616,79 @@ window.dev = {
         gameState.inventory[key] += amount;
 
         saveGame();
-        if (typeof renderInventory === 'function') {
-            renderInventory();
-        }
-        console.log(`[dev] 背包物品 +${amount}：${key}，当前数量：${gameState.inventory[key]}`);
+        if (typeof renderInventory === 'function') renderInventory();
+        console.log(`[dev] 背包物品 +${amount}：${key}`);
     },
 
     /**
-     * 增加化肥/鱼食道具
-     * id     : FERTILIZERS_CONFIG 或 FISHFOOD_CONFIG 里的键，
-     *          如 'poopFert','speedFert','cloverFert','basicFood','advFood'
-     * amount : 数量，默认1
-     * 用法：
-     *   dev.addTool('poopFert', 5)        // 5个泄芽翔
-     *   dev.addTool('cloverFert', 2)
-     *   dev.addTool('basicFood', 10)
+     * 增加道具到背包
+     * dev.addTool('poopFert', 5)     // 5个泄芽翔
+     * dev.addTool('cloverFert')      // 1个四叶草化肥
      */
     addTool(id, amount = 1) {
         const tool = FERTILIZERS_CONFIG[id] || FISHFOOD_CONFIG[id];
         if (!tool) {
-            console.warn(`[dev] 未找到道具：${id}，请检查 FERTILIZERS_CONFIG/FISHFOOD_CONFIG`);
+            console.warn(`[dev] 未找到道具：${id}，请用 dev.listTools() 查看可用ID`);
             return;
         }
         if (!gameState.items[id]) gameState.items[id] = 0;
         gameState.items[id] += amount;
 
         saveGame();
-        if (typeof renderInventory === 'function') {
-            renderInventory();
-        }
-        console.log(`[dev] 道具 +${amount}：${id}，当前数量：${gameState.items[id]}`);
+        if (typeof renderInventory === 'function') renderInventory();
+        console.log(`[dev] 道具 +${amount}：${id}`);
+    },
+    
+    /**
+     * ✅【新增】一键获取传说合成材料
+     * dev.getLegendaryMats()
+     */
+    getLegendaryMats() {
+        this.addItem('sunflowerSeed', 1, 3);
+        this.addItem('corn', 1, 3);
+        console.log('[dev] 已添加 1个三星向日葵种子 和 1个三星玉米！');
     },
 
     /**
-     * 列出所有可用的产物ID（方便你查名字）
-     * 用法：dev.listItems()
+     * ✅【新增】解锁猫猫（跳过四叶草合成）
+     * dev.unlockCat()
      */
-    listItems() {
-        console.log('[dev] 可用产物ID（PRODUCTS_CONFIG）：');
-        console.table(Object.keys(PRODUCTS_CONFIG));
-    },
-
-    /**
-     * 列出所有可用化肥/鱼食ID
-     * 用法：dev.listTools()
-     */
-    listTools() {
-        console.log('[dev] 化肥：');
-        console.table(Object.keys(FERTILIZERS_CONFIG));
-        console.log('[dev] 鱼食：');
-        console.table(Object.keys(FISHFOOD_CONFIG));
-    },
-
-    /**
-     * 直接切换猫猫动画（方便单独预览每个视频）
-     * 用法：dev.cat('pet') / dev.cat('poop') / dev.cat('hit') ...
-     */
-    cat(state = 'idle') {
-        if (typeof setCatState === 'function') {
-            setCatState(state);
-            console.log(`[dev] 猫猫状态 -> ${state}`);
+    unlockCat() {
+        if (typeof acceptCatGift === 'function' && !gameState.cat.unlocked) {
+            acceptCatGift();
+            console.log('[dev] 已通过作弊码解锁猫猫！');
         } else {
-            console.warn('[dev] setCatState 未定义');
+            console.log('[dev] 猫猫已经解锁了。');
         }
-    }
+    },
+
+    /**
+     * ✅【新增】重置游戏（清空存档）
+     * dev.reset()
+     */
+    reset() {
+        if (confirm('你确定要重置游戏吗？所有进度将丢失！')) {
+            localStorage.clear();
+            window.location.reload();
+        }
+    },
+
+    listItems() { console.log('[dev] 可用产物ID：', Object.keys(PRODUCTS_CONFIG)); },
+    listTools() { console.log('[dev] 可用道具ID：', Object.keys({...FERTILIZERS_CONFIG, ...FISHFOOD_CONFIG})); },
+    cat(state = 'idle') { if (typeof setCatState === 'function') setCatState(state); }
 };
 
 // 启动时在控制台提示一下
 console.log(
-    '%c[dev] 调试模式已启用：',
+    '%c[dev] 调试模式 V2.0 已启用：',
     'color:#FF69B4;font-weight:bold;',
-    '\n  dev.addGold(1000)',
+    '\n  dev.addGold(50000)',
     '\n  dev.addItem("wheat", 20)',
     '\n  dev.addItem("corn", 5, 3)',
-    '\n  dev.addTool("poopFert", 3)',
-    '\n  dev.listItems() / dev.listTools()',
+    '\n  dev.addTool("cloverFert")',
+    '\n  dev.getLegendaryMats()  // 一键获取传说材料',
+    '\n  dev.unlockCat()         // 直接解锁猫猫',
+    '\n  dev.reset()             // 清空存档',
     '\n  dev.cat("pet")'
 );
 // =====================================================================
