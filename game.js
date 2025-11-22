@@ -9,7 +9,44 @@
    4. [Fix] 移除重复的 initCatDragging 定义，合并交互逻辑
    
 ===================================================================== */
-
+// ==================== 🏆 成就系统配置 ====================
+const ACHIEVEMENTS_CONFIG = {
+    firstPlant: {
+        id: 'firstPlant',
+        name: '开荒者',
+        desc: '种下你的第一颗种子。\n"我们的梦想开始萌发！。"',
+        emoji: '🌱',
+        hidden: false
+    },
+    harvestCorn: {
+        id: 'harvestCorn',
+        name: '松仁传说',
+        desc: '收获传说中的松仁玉米。\n"至高无上的皇帝玉米！"',
+        emoji: '🌽',
+        hidden: false
+    },
+    harvestSunflower: {
+        id: 'harvestSunflower',
+        name: '向阳而生',
+        desc: '收获一朵向日葵。\n"小向日葵会永远像玉米开放！"',
+        emoji: '🌻',
+        hidden: false
+    },
+    craftClover: {
+        id: 'craftClover',
+        name: '奇迹工匠',
+        desc: '合成传说中的四叶草。\n"41一定会幸运的！"',
+        emoji: '🍀',
+        hidden: false
+    },
+    maxCatAffection: {
+        id: 'maxCatAffection',
+        name: '最佳主人！',
+        desc: '感谢41这么认真的玩这个游戏，\n还如此认真的喂养猫猫。\n猫猫爱你！',
+        emoji: '💖',
+        hidden: true // 隐藏成就，完成前不显示
+    }
+};
 // ==================== 🏗️ 配置区域 ====================
 
 const CAT_DIALOG_TREES = {
@@ -188,14 +225,32 @@ let gameState = {
     farmName: null,
     cloverCraftTime: 0,
     mails: [],
-    unreadMails: 0
+    unreadMails: 0,
+    achievements: [],
+    lastViewedAchievementCount: 0  // ✅ 新增：记录上次查看时的成就数量
 };
-
 // ==================== 🎮 初始化与循环 ====================
 function initGame() {
     console.log('🎮 游戏启动中...');
     loadGame();
+     // ✅ 强制确保成就系统字段存在
+    if (!gameState.achievements) gameState.achievements = [];
+    if (gameState.lastViewedAchievementCount === undefined) {
+        gameState.lastViewedAchievementCount = 0;
+    }
     
+    // 如果之前解锁过成就，但没有这个字段，初始化为当前数量（视为已读）
+    if (gameState.achievements.length > 0 && gameState.lastViewedAchievementCount === 0) {
+        console.log('[成就] 检测到旧存档，初始化已读标记');
+        gameState.lastViewedAchievementCount = gameState.achievements.length;
+        saveGame();
+    }
+     // 初始化成就系统
+    if (!gameState.achievements) gameState.achievements = [];
+    if (gameState.lastViewedAchievementCount === undefined) {
+        gameState.lastViewedAchievementCount = 0;
+    }
+    updateAchievementBadge();
     // 订单初始化
     if (!gameState.activeOrders || gameState.activeOrders.length === 0) {
         generateOrders();
@@ -220,7 +275,26 @@ function initGame() {
     setInterval(catMoodRecover, 60000);
     setInterval(checkDelayedEvents, 1000);
     
+      // ✅ 游戏启动后尝试自动播放 BGM
+    console.log('[游戏] 尝试启动背景音乐...');
+    tryAutoPlayBgm();
+    
     console.log('✅ 游戏启动完成！');
+       // 更新成就徽章（显示未读的新成就数量）
+function updateAchievementBadge() {
+    const badge = document.getElementById('achievement-badge');
+    const currentCount = gameState.achievements.length;
+    const lastViewed = gameState.lastViewedAchievementCount || 0;
+    const newCount = currentCount - lastViewed; // 新增的成就数
+    
+    if (newCount > 0) {
+        badge.textContent = newCount;
+        badge.classList.remove('hidden');
+        badge.title = `有 ${newCount} 个新成就！`;
+    } else {
+        badge.classList.add('hidden');
+    }
+}
 }
 
 function gameLoop() {
@@ -314,6 +388,10 @@ function buyAndPlant(itemId) {
     saveGame();
     renderPlots();
     closeBuyShop();
+        // ✅ 成就检测：第一次种植
+    if (gameState.achievements && !gameState.achievements.includes('firstPlant')) {
+        unlockAchievement('firstPlant');
+    }
     const actionWord = item.type === 'farm' ? '种植' : '养殖';
     showToast(`✅ ${actionWord}了 ${item.name}！`);
 }
@@ -351,7 +429,15 @@ function harvestPlot(plotId) {
     gameState.stats.totalHarvests++;
     const uniqueItems = {}; harvestLog.forEach(h => { const key = h.canStar ? `${h.product.name}_${h.star}` : h.product.name; if (!uniqueItems[key]) uniqueItems[key] = { ...h, count: 0 }; uniqueItems[key].count++; });
     let message = '🎉 收获了：\n'; Object.values(uniqueItems).forEach(u => { const starStr = u.canStar ? '⭐'.repeat(u.star) : ''; message += `${u.product.emoji} ${u.product.name}${starStr} x${u.count}\n`; });
-    showToast(message);
+    showToast(message);    // ✅ 成就检测：收获玉米
+    if (item.id === 'corn' && !gameState.achievements.includes('harvestCorn')) {
+        unlockAchievement('harvestCorn');
+    }
+    
+    // ✅ 成就检测：收获向日葵
+    if (item.id === 'sunflower' && !gameState.achievements.includes('harvestSunflower')) {
+        unlockAchievement('harvestSunflower');
+    }
     playSfx('harvest');
     if (item.special && !gameState.stats.cornHarvested) { gameState.stats.cornHarvested = true; setTimeout(() => { showBlessing(); createFireworks(); }, 500); }
     plot.status = 'empty'; plot.item = null; plot.plantTime = 0; plot.growProgress = 0;
@@ -710,6 +796,10 @@ function interactCat(action) {
     }
     cat.lastInteraction = Date.now();
     saveGame();
+        // ✅ 成就检测：好感度1000
+    if (cat.affection >= 1000 && !gameState.achievements.includes('maxCatAffection')) {
+        unlockAchievement('maxCatAffection');
+    }
 }
 
 function openCatFeedMenu() {
@@ -761,6 +851,10 @@ function feedCat(itemId) {
     cat.mood = Math.min(100, cat.mood + moodGain);
     cat.lastInteraction = Date.now();
     saveGame(); renderInventory();
+        // ✅ 成就检测：好感度1000
+    if (cat.affection >= 1000 && !gameState.achievements.includes('maxCatAffection')) {
+        unlockAchievement('maxCatAffection');
+    }
 }
 
 function feedCatFertilizer(itemId) {
@@ -1029,6 +1123,13 @@ function checkCraftingQueue() {
             for (let resId in recipe.results) { if (!gameState.inventory[resId]) gameState.inventory[resId] = 0; gameState.inventory[resId] += recipe.results[resId]; }
             showToast(`✅ ${recipe.name} 制作完成！`);
             if (recipe.id === 'clover') { setTimeout(() => showCloverBlessing(), 1000); gameState.cloverCraftTime = Date.now(); }
+              if (recipe.id === 'clover') {
+        setTimeout(() => showCloverBlessing(), 1000);
+        gameState.cloverCraftTime = Date.now();
+        
+        // ✅ 成就检测：合成四叶草
+        unlockAchievement('craftClover');
+    }
         });
         gameState.craftingQueue = remainingJobs; saveGame(); renderCraftShop(); renderInventory();
     } else { renderCraftingQueue(); }
@@ -1191,18 +1292,19 @@ function playNextBgm() {
     updateBgmButton();
 }
 
-// 尝试自动播放 (由 OS 或初始化调用)
+// 尝试自动播放 (由 OS 调用，但需要用户在游戏内点击一次才真正播放)
 function tryAutoPlayBgm() {
-    console.log('[BGM] ✅ 收到播放指令');
+    console.log('[BGM] 收到父级 OS 的播放请求');
+    
+    // 1. 标记"准备播放"状态
     isBgmPlaying = true;
     updateBgmButton();
+    
+    // 2. 初始化音频对象
+    if (!bgmAudio) initBgm();
 
-    if (!bgmAudio) {
-        console.log('[BGM] 首次播放，正在初始化...');
-        initBgm();
-    }
-
-    console.log('[BGM] 尝试播放...');
+    // 3. ✅ 尝试播放，但不强求（如果被拦截就等用户手动点击音乐按钮）
+    console.log('[BGM] 尝试播放（如果被拦截，请点击游戏内的音乐按钮）');
     const promise = bgmAudio.play();
     if (promise !== undefined) {
         promise
@@ -1210,11 +1312,13 @@ function tryAutoPlayBgm() {
                 console.log('🎵 [BGM] 播放成功！');
             })
             .catch(error => {
-                console.log('⚠️ [BGM] 自动播放被浏览器拦截，等待用户点击...');
+                console.log('⚠️ [BGM] 自动播放被浏览器拦截');
+                console.log('💡 提示：请点击游戏窗口内的 "🔈 音乐" 按钮来手动播放');
+                // ✅ 被拦截时，不强制播放，只提示用户
+                showToast('💡 提示：\n请点击右上角的"🔈 音乐"按钮\n来播放背景音乐');
             });
     }
 }
-
 // 停止播放 (由 OS 调用)
 function stopBgm() {
     console.log('[BGM] 收到停止指令');
@@ -1252,37 +1356,34 @@ function updateBgmButton() {
     }
 }
 
-// ==================== 👂 全局监听器 ====================
+// ==================== 👂 游戏内交互监听器（智能版）====================
+let bgmAutoPlayed = false; // ✅ 标记：是否已经尝试过自动播放
+
 document.addEventListener('click', (e) => {
-    // 点击音效
+    // 1. 点击音效（仅按钮）
     if (e.target.tagName === 'BUTTON') {
         playSfx('click');
     }
 
-    // ✅ 首次点击自动激活音乐
-    if (!userHasInteracted) {
-        userHasInteracted = true;
-        console.log('👆 [系统] 检测到用户首次交互！');
-        
-        // 如果还没初始化过音乐，现在激活
-        if (!bgmAudio) {
-            console.log('[BGM] 首次交互，自动激活音乐系统');
-            tryAutoPlayBgm(); // 自动开启音乐
-        }
-    }
-
-    // 补救逻辑：如果应该播放但暂停了，立刻恢复
-    if (isBgmPlaying) {
+    // 2. ✅ 智能 BGM 恢复逻辑：
+    // 只要音乐"应该在播放"（isBgmPlaying = true）但实际"暂停了"（bgmAudio.paused）
+    // 就在用户点击游戏内任意位置时，立刻恢复播放
+    if (isBgmPlaying && !bgmAutoPlayed) {
         if (!bgmAudio) initBgm();
+        
         if (bgmAudio.paused) {
-            console.log('🔧 [BGM] 检测到音乐暂停，尝试恢复播放...');
+            console.log('[BGM] 检测到用户在游戏内交互，自动播放音乐');
             bgmAudio.play()
-                .then(() => console.log('🎵 [BGM] 恢复成功！'))
-                .catch(err => console.error('❌ [BGM] 恢复失败', err));
+                .then(() => {
+                    console.log('🎵 [BGM] 自动播放成功！');
+                    bgmAutoPlayed = true; // 标记已成功，避免重复触发
+                })
+                .catch(err => {
+                    console.warn('[BGM] 播放依然被拦截:', err);
+                });
         }
     }
 });
-
 // ==================== 🔗 绑定接口 ====================
 window.activateBgm = tryAutoPlayBgm;
 window.stopBgm = stopBgm;
@@ -1300,12 +1401,28 @@ function loadGame() {
     const saved = localStorage.getItem('farmGame');
     if (saved) {
         try {
-            const loaded = JSON.parse(saved); gameState = { ...gameState, ...loaded };
-            if (!gameState.cat) gameState.cat = { unlocked: false, name: '猫猫', affection: 500, mood: 100, lastInteraction: 0, lastAction: null, status: 'normal' };
-        } catch (e) { console.warn('⚠️ 存档损坏'); }
+            const loaded = JSON.parse(saved);
+            
+            // 合并数据，保留新版本新增的字段
+            gameState = { ...gameState, ...loaded };
+            
+            // ✅ 兼容性检查：确保所有新字段都存在
+            if (!gameState.cat) {
+                gameState.cat = { unlocked: false, name: '猫猫', affection: 500, mood: 100, lastInteraction: 0, lastAction: null, status: 'normal' };
+            }
+            if (!gameState.achievements) {
+                gameState.achievements = [];
+            }
+            if (gameState.lastViewedAchievementCount === undefined) {
+                gameState.lastViewedAchievementCount = 0;
+            }
+            
+            console.log('✅ 存档加载成功');
+        } catch (e) {
+            console.warn('⚠️ 存档损坏');
+        }
     }
 }
-
 // ✅ 系统接口对接
 window.activateBgm = tryAutoPlayBgm;
 window.stopBgm = stopBgm;
@@ -1319,7 +1436,146 @@ window.dev = {
     reset() { localStorage.clear(); window.location.reload(); }
 };
 // =====================================================================
-//           🛠️ 开发者上帝模式 V6.0 (功能核 + 隐形面板)
+//                        🏆 成就系统逻辑
+// =====================================================================
+
+// 解锁成就
+function unlockAchievement(achievementId) {
+    const achievement = ACHIEVEMENTS_CONFIG[achievementId];
+    if (!achievement) return;
+    
+    // 如果已经解锁过，不重复触发
+    if (gameState.achievements.includes(achievementId)) return;
+    
+    // 添加到已解锁列表
+    gameState.achievements.push(achievementId);
+    saveGame();
+    
+    console.log(`🏆 [成就解锁] ${achievement.name}`);
+    
+    // 显示通知
+    showToast(`🏆 成就达成！\n${achievement.emoji} ${achievement.name}\n${achievement.desc.split('\n')[0]}`);
+    
+    // 更新徽章
+    updateAchievementBadge();
+    
+    // ✅ 特殊成就：猫猫好感度1000
+    if (achievementId === 'maxCatAffection') {
+        setTimeout(() => {
+            showCatLove();
+        }, 1000);
+    }
+}
+
+// 更新成就徽章（显示已解锁数量）
+function updateAchievementBadge() {
+    const badge = document.getElementById('achievement-badge');
+    const count = gameState.achievements.length;
+    const total = Object.keys(ACHIEVEMENTS_CONFIG).length;
+    
+    if (count > 0) {
+        badge.textContent = count;
+        badge.classList.remove('hidden');
+        badge.title = `已解锁 ${count}/${total} 个成就`;
+    } else {
+        badge.classList.add('hidden');
+    }
+}
+// 打开成就面板
+function openAchievements() {
+    toggleModal(true);
+    renderAchievements();
+    document.getElementById('achievements-modal').classList.add('show');
+    
+    // ✅ 标记为已读：更新"上次查看时的成就数量"
+    gameState.lastViewedAchievementCount = gameState.achievements.length;
+    saveGame();
+    
+    // ✅ 立即更新徽章（数字消失）
+    updateAchievementBadge();
+}
+// 关闭成就面板
+function closeAchievements() {
+    toggleModal(false);
+    document.getElementById('achievements-modal').classList.remove('show');
+}
+
+// 渲染成就列表
+function renderAchievements() {
+    const container = document.getElementById('achievements-list');
+    const unlocked = gameState.achievements;
+    
+    let html = '';
+    
+    for (let key in ACHIEVEMENTS_CONFIG) {
+        const achievement = ACHIEVEMENTS_CONFIG[key];
+        const isUnlocked = unlocked.includes(achievement.id);
+        
+        // 隐藏成就：未解锁时不显示
+        if (achievement.hidden && !isUnlocked) continue;
+        
+        if (isUnlocked) {
+            // 已解锁
+            html += `
+                <div class="shop-item" style="background: linear-gradient(135deg, #fff9e6, #ffffff); border-left: 4px solid gold;">
+                    <div class="shop-item-icon" style="font-size: 50px;">${achievement.emoji}</div>
+                    <div class="shop-item-info">
+                        <div class="shop-item-name" style="color: #FF8C00; font-weight: bold;">${achievement.name}</div>
+                        <div class="shop-item-desc" style="white-space: pre-line;">${achievement.desc}</div>
+                    </div>
+                </div>
+            `;
+        } else {
+            // 未解锁
+            html += `
+                <div class="shop-item" style="background: #f5f5f5; opacity: 0.6;">
+                    <div class="shop-item-icon" style="font-size: 50px;">🔒</div>
+                    <div class="shop-item-info">
+                        <div class="shop-item-name" style="color: #999;">？？？</div>
+                        <div class="shop-item-desc" style="color: #999;">未解锁</div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+    
+    if (html === '') {
+        html = '<div class="inventory-empty">暂无成就，去探索吧！</div>';
+    }
+    
+    container.innerHTML = html;
+}
+
+// 显示"猫猫爱你"特效
+function showCatLove() {
+    const modal = document.getElementById('cat-love-modal');
+    modal.style.display = 'flex';
+    
+    // 爱心雨特效
+    for (let i = 0; i < 30; i++) {
+        setTimeout(() => {
+            const heart = document.createElement('div');
+            heart.textContent = '💖';
+            heart.style.cssText = `
+                position: absolute;
+                font-size: ${Math.random() * 30 + 20}px;
+                left: ${Math.random() * 100}%;
+                top: ${Math.random() * 100}%;
+                animation: firework 3s ease-out;
+                pointer-events: none;
+            `;
+            modal.appendChild(heart);
+            setTimeout(() => heart.remove(), 3000);
+        }, i * 100);
+    }
+}
+
+// 关闭"猫猫爱你"
+function closeCatLove() {
+    document.getElementById('cat-love-modal').style.display = 'none';
+}
+// =====================================================================
+//           🛠️ 开发者上帝模式 V7.0 (完整版 + 存档修复)
 // =====================================================================
 
 // 1. 定义所有作弊功能函数
@@ -1347,7 +1603,6 @@ window.dev = {
             gameState.cat.unlocked = true;
             gameState.cat.name = "测试喵";
             showCat();
-            // 强制更新UI
             document.querySelectorAll('#cat-name').forEach(el => el.textContent = "测试喵");
             showToast('🐱 猫猫已生成！');
         } else {
@@ -1355,24 +1610,23 @@ window.dev = {
         }
 
         // 2. 发放猫粮大礼包
-        // 爱吃的
-        gameState.inventory['sashimi'] = (gameState.inventory['sashimi'] || 0) + 10; // 生鱼片
-        gameState.inventory['corn'] = (gameState.inventory['corn'] || 0) + 10;       // 玉米
-        gameState.inventory['fishMeat'] = (gameState.inventory['fishMeat'] || 0) + 20; // 鱼肉
+        gameState.inventory['sashimi'] = (gameState.inventory['sashimi'] || 0) + 10;
+        gameState.inventory['corn'] = (gameState.inventory['corn'] || 0) + 10;
+        gameState.inventory['fishMeat'] = (gameState.inventory['fishMeat'] || 0) + 20;
+        gameState.items['poopFert'] = (gameState.items['poopFert'] || 0) + 5;
+        gameState.items['speedFert'] = (gameState.items['speedFert'] || 0) + 5;
         
-        // 讨厌的 (化肥)
-        gameState.items['poopFert'] = (gameState.items['poopFert'] || 0) + 5;  // 粑粑
-        gameState.items['speedFert'] = (gameState.items['speedFert'] || 0) + 5; // 化学肥料
+        // 3. 发放传说材料
+        gameState.inventory['sunflowerSeed_3'] = (gameState.inventory['sunflowerSeed_3'] || 0) + 5;
+        gameState.inventory['corn_3'] = (gameState.inventory['corn_3'] || 0) + 5;
 
-        // 刷新界面
         updateGoldDisplay();
         renderInventory(); 
         saveGame();
         
         console.log('🐱 猫粮已发放！');
-        showToast('🍱 已发放：猫猫 + 生鱼片x10 + 玉米x10 + 粑粑x5');
+        showToast('🍱 已发放：猫猫 + 生鱼片x10 + 玉米x10 + 传说材料');
         
-        // 自动打开背包提示用户
         setTimeout(() => openInventory(), 500);
     },
 
@@ -1400,6 +1654,60 @@ window.dev = {
         saveGame();
         showToast(`🚀 时间魔法：${count} 个作物已成熟！`);
         console.log(`🚀 催熟了 ${count} 个作物`);
+    },
+
+    // 💬 测试对话系统
+    testDialogue() {
+        if (!gameState.cat.unlocked) {
+            gameState.cat.unlocked = true;
+            showCat();
+            saveGame();
+        }
+        
+        startDialogue('firstMeeting');
+        console.log('💬 [调试] 强制触发对话树：firstMeeting');
+        showToast('💬 对话系统已启动！');
+    },
+
+    // 🔧 修复存档（强制初始化字段）
+    fixSave() {
+        console.log('[修复] 开始检查存档...');
+        
+        // 初始化所有必要字段
+        if (!gameState.achievements) {
+            gameState.achievements = [];
+            console.log('[修复] 添加 achievements 字段');
+        }
+        
+        if (gameState.lastViewedAchievementCount === undefined) {
+            gameState.lastViewedAchievementCount = gameState.achievements.length;
+            console.log(`[修复] 初始化 lastViewedAchievementCount = ${gameState.achievements.length}`);
+        }
+        
+        if (!gameState.cat) {
+            gameState.cat = { 
+                unlocked: false, 
+                name: '猫猫', 
+                affection: 500, 
+                mood: 100, 
+                lastInteraction: 0, 
+                lastAction: null, 
+                status: 'normal' 
+            };
+            console.log('[修复] 添加 cat 字段');
+        }
+        
+        saveGame();
+        updateAchievementBadge();
+        
+        console.log('✅ [修复] 存档已修复完成！');
+        console.log('当前状态:', {
+            成就数: gameState.achievements.length,
+            已查看数: gameState.lastViewedAchievementCount,
+            新成就数: gameState.achievements.length - gameState.lastViewedAchievementCount
+        });
+        
+        showToast('✅ 存档字段已修复！\n成就徽章应该正常了');
     }
 };
 
@@ -1435,11 +1743,17 @@ window.dev = {
         <button onclick="dev.testCat()" style="width:100%; background:#002200; color:#00ff00; border:1px solid #00ff00; margin-bottom:8px; cursor:pointer; padding:8px; border-radius:4px; font-weight:bold;">
             🐱 召唤猫猫套餐
         </button>
+        <button onclick="dev.testDialogue()" style="width:100%; background:#002200; color:#00ff00; border:1px solid #00ff00; margin-bottom:8px; cursor:pointer; padding:8px; border-radius:4px;">
+            💬 测试对话树
+        </button>
         <button onclick="dev.richMode()" style="width:100%; background:#002200; color:#00ff00; border:1px solid #00ff00; margin-bottom:8px; cursor:pointer; padding:8px; border-radius:4px;">
             💰 拨款 10万
         </button>
         <button onclick="dev.growAll()" style="width:100%; background:#002200; color:#00ff00; border:1px solid #00ff00; margin-bottom:8px; cursor:pointer; padding:8px; border-radius:4px;">
             🚀 一键成熟
+        </button>
+        <button onclick="dev.fixSave()" style="width:100%; background:#003300; color:#00ff00; border:1px solid #00ff00; margin-bottom:8px; cursor:pointer; padding:8px; border-radius:4px;">
+            🔧 修复存档
         </button>
         <button onclick="dev.reset()" style="width:100%; background:#330000; color:#ff5555; border:1px solid #ff5555; cursor:pointer; padding:8px; border-radius:4px; font-weight:bold;">
             💥 删档毁灭
@@ -1466,9 +1780,8 @@ window.dev = {
         }
     });
 
-    console.log('%c🕵️ 隐形调试面板 V6.0 已就绪。按 [Ctrl + Shift + D] 呼出。', 'color: #00ff00; background: #000; padding: 5px;');
+    console.log('%c🕵️ 隐形调试面板 V7.0 已就绪。按 [Ctrl + Shift + D] 呼出。', 'color: #00ff00; background: #000; padding: 5px;');
     
-    // 首次进入提示一下（检测到没存档时）
     if(!localStorage.getItem('farmGame')) {
          showToast('🕵️ 开发者提示：\n按 Ctrl+Shift+D 打开上帝面板');
     }

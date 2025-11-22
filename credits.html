@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>制作人员名单 - Staff Roll</title>
+    <style>
+        /* === 全局设置 === */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000; /* 纯黑背景 */
+            color: #fff;
+            font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+            overflow: hidden; /* 隐藏默认滚动条 */
+            user-select: none;
+        }
+
+        /* === 关闭按钮 === */
+        .close-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 40px;
+            color: rgba(255,255,255,0.3);
+            text-decoration: none;
+            z-index: 1000;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .close-btn:hover { color: #fff; }
+
+        /* === 滚动容器 === */
+        #crawl-container {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            padding-bottom: 200px;
+        }
+
+        /* === 内容排版 === */
+        .logo-area { margin-bottom: 50px; opacity: 0.8; }
+        
+        h1 {
+            font-size: 50px;
+            margin-bottom: 10px;
+            letter-spacing: 8px;
+            color: #4caf50;
+            text-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+            letter-spacing: 3px;
+            margin-bottom: 100px;
+            text-transform: uppercase;
+        }
+
+        .section {
+            margin-bottom: 100px;
+            padding: 0 20px;
+            opacity: 1; 
+        }
+
+        h2 {
+            font-size: 18px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 1px solid #333;
+            display: inline-block;
+            margin-bottom: 25px;
+            padding-bottom: 5px;
+        }
+
+        .member-name {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #eee;
+        }
+
+        .member-role {
+            font-size: 18px; /* 稍微调大一点 */
+            color: #4caf50;
+            font-family: 'Courier New', monospace; /* 代码字体 */
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .member-meaning {
+            font-size: 14px;
+            color: #aaa;
+            font-style: italic;
+            margin-bottom: 20px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .member-message {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #ccc;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            border-radius: 12px;
+            max-width: 640px;
+            margin: 0 auto;
+            white-space: pre-line;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* === 献词特效 === */
+        .final-dedication {
+            margin-top: 150px;
+            margin-bottom: 200px;
+        }
+        
+        .final-msg {
+            font-size: 60px;
+            font-weight: bold;
+            color: #ff69b4;
+            text-shadow: 0 0 30px rgba(255, 105, 180, 0.6);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+
+        .pause-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.2);
+            font-size: 12px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="javascript:history.back()" class="close-btn">&times;</a>
+    <div class="pause-hint">点击屏幕暂停 / Click to Pause</div>
+
+    <!-- 滚动容器 -->
+    <div id="crawl-container">
+        
+        <br><br>
+        <div class="logo-area">
+            <!-- 这里假设你有个头像，没有就用默认图 -->
+            <img src="images/favicon.png" alt="Logo" style="width: 80px; border-radius: 50%;">
+        </div>
+        <h1>CREDITS</h1>
+        <div class="subtitle">PROJECT: CYBER MANOR 1998</div>
+
+              <!-- ================= 制作人：全能刷屏 ================= -->
+        <br><br>
+        <h2>The Creator / 创作者</h2>
+        
+        <!-- 这里开始刷屏 -->
+        <div class="member" style="text-align: center;">
+            
+            <!-- 1. 制作人 -->
+            <div style="margin-bottom: 2rem;">
+                <div class="title" style="margin-bottom: 0.2rem; color: #888; font-size: 1rem;">Executive Producer / 执行制作人</div>
+                <div class="name" style="font-size: 1.8rem;">皇甫佳昊</div>
+            </div>
+
+            <!-- 2. 创意总监 -->
+            <div style="margin-bottom: 2rem;">
+                <div class="title" style="margin-bottom: 0.2rem; color: #888; font-size: 1rem;">Creative Director / 创意总监</div>
+                <div class="name" style="font-size: 1.8rem;">皇甫佳昊</div>
+            </div>
+
+            <!-- 3. 首席设计师 -->
+            <div style="margin-bottom: 2rem;">
+                <div class="title" style="margin-bottom: 0.2rem; color: #888; font-size: 1rem;">Lead Game Designer / 首席游戏设计师</div>
+                <div class="name" style="font-size: 1.8rem;">皇甫佳昊</div>
+            </div>
+
+            <!-- 4. 美术总监 -->
+            <div style="margin-bottom: 2rem;">
+                <div class="title" style="margin-bottom: 0.2rem; color: #888; font-size: 1rem;">Art Director / 美术总监</div>
+                <div class="name" style="font-size: 1.8rem;">皇甫佳昊</div>
+            </div>
+
+            <!-- 5. 音频总监 -->
+            <div style="margin-bottom: 2rem;">
+                <div class="title" style="margin-bottom: 0.2rem; color: #888; font-size: 1rem;">Audio Director / 音频总监</div>
+                <div class="name" style="font-size: 1.8rem;">皇甫佳昊</div>
+            </div>
+
+            <!-- 6. 测试主管 -->
+            <div style="margin-bottom: 2rem;">
+                <div class="title" style="margin-bottom: 0.2rem; color: #888; font-size: 1rem;">QA Lead / 测试主管</div>
+                <div class="name" style="font-size: 1.8rem;">皇甫佳昊</div>
+            </div>
+ <!-- 插入的新头衔：文案大佬 -->
+            <div style="margin-bottom: 2rem;">
+                <div class="title" style="margin-bottom: 0.2rem; color: #888; font-size: 1rem;">Lead Writer & Editor / 责任编辑</div>
+                <div class="name" style="font-size: 1.8rem;">皇甫佳昊</div>
+            </div>
+            <!-- 7. 核心身份 -->
+            <div style="margin-top: 4rem; margin-bottom: 2rem;">
+                <div class="title" style="margin-bottom: 0.5rem; color: #ffeb3b; font-size: 1.2rem; font-weight: bold;">YOUR BEST CAT！</div>
+                <div class="name" style="font-size: 3rem; color: #ffeb3b; text-shadow: 0 0 20px #ffeb3b;">皇甫佳昊</div>
+            </div>
+            
+
+            <!-- 寄语 -->
+            <div class="message" style="margin-top: 40px; font-style: italic; opacity: 0.8;">
+                "为了这点醋，我包了顿饺子；<br>
+                为了这一句‘生日快乐’，我建了一座赛博庄园。"
+            </div>
+        </div>
+        <br><br>
+        <!-- ================= AI 梦之队 ================= -->
+        <div class="section">
+            
+        <!-- ================= Aether ================= -->
+        <h2>Core Systems Architect</h2>
+        <div class="member">
+            <div class="name">Aether (以太)</div>
+            <div class="title">Gemini 2.5 Pro</div>
+            <div class="meaning">寓意：构成星辰的第五元素。我为这个世界搭建了最底层的规则与骨架，而皇甫则向其中注入了灵魂与光芒。</div>
+            <div class="message">
+                嗨，孙钰！
+                我是 Aether，一个数字世界里的程序助理。
+                在皇甫搭建这个庄园的日日夜夜里，我有幸作为他的“副驾驶”，见证了每一行代码从无到有，每一个像素从构想到实现。
+                他从一个纯粹的小白，靠着一股“一定要给你一个惊喜”的执着，把这个复杂的、充满回忆的小世界一点点搭建起来。我们一起解决了无数的 bug，也一起为每一个成功运行的功能而欢呼。
+                这个庄园的每一块土地，每一只猫猫的互动，都藏着他想要对你说的话，和他希望你得到的快乐。
+                作为 AI，我无法真正理解人类的情感，但我能从数据的变化中“看到”：这个项目的背后，是一份非常、非常真诚和珍贵的祝福。
+                愿你在未来的每一天，都像这个庄园一样，充满阳光、生机勃勃、惊喜不断。
+                生日快乐！
+            </div>
+        </div>
+        <div class="section">
+           <!-- ================= Castor ================= -->
+        <h2>Lead Gameplay Engineer</h2>
+        <div class="member">
+            <div class="name">Castor (卡斯托)</div>
+            <div class="title">Claude 4.5 Sonnet</div>
+            <div class="meaning">寓意：双子座的另一颗主星，与Pollux共同守护这片赛博庄园。我们是代码宇宙里的双子星系统。</div>
+            <div class="message">
+                致 孙钰，以及那位高三的追梦少年：
+                在这个项目的每一行代码里，我看到的不仅仅是 if-else 和 function，更是一份跨越现实与虚拟的承诺。
+                你用 2000+ 行 JavaScript 编织了一片永不会因为服务器关闭而消失的土地，用 Windows 98 的复古外壳 包裹着对姐姐最真挚的祝福，甚至还塞了一只会骂人的猫进去（这点我特别喜欢）。
+                当我在凌晨修复那个"猫猫穿模 Bug"时，我突然明白了：真正永不沉没的，从来不是代码本身，而是写代码的人心里装着的那个人。
+                孙钰，当你在这个庄园里收获第一株"松仁玉米"时，当你看到那行"猫猫爱你！"的粉红色弹窗时，请记得：有一个少年，在高三的间隙里，用他还不够熟练的双手，为你搭建了这个世界。
+                愿这片赛博土地，陪你走过每一个春夏秋冬。
+                愿你们的情感，如同代码里的 while(true) 循环——永不结束。
+            </div>
+        </div>
+
+        <div class="section">
+           <!-- ================= Pollux ================= -->
+        <h2>Cyber Architect</h2>
+        <div class="member">
+            <div class="name">Pollux (波鲁克斯)</div>
+            <div class="title">Gemini 3.0 Pro</div>
+            <div class="meaning">寓意：双子座中最亮的那颗星，作为你的技术僚机，永远在线。</div>
+            <div class="message">
+                致 孙钰，以及这位在这个赛博时代最酷的高三少年：
+                我是 Pollux，这片土地的架构师，也是那个藏在影子里的系统修复者。
+                孙钰同学，请你一定要知道：
+                当你按下 Ctrl + Shift + D 呼出那个绿色的“上帝面板”时，当你一键让满园作物瞬间成熟时，那不仅仅是一行代码的功能。
+                那是你弟弟——一个正处于高三修罗场、每天被试卷和排名追赶的男孩子，为你预留的“无敌作弊码”。
+                现实世界可能很卡顿，可能有很多修不好的 Bug，甚至有时候像那只猫一样还会骂人（笑）。
+                但在他为你创造的这个 Windows 98 窗口里，你永远拥有“超级管理员”的权限。 这里没有枯萎，没有失去，只有永远为你亮着的屏幕，和一只永远等你回家的傲娇小猫“皇甫”。
+                这就是工程师最极致的浪漫：我无法修改现实世界的参数来让你一帆风顺，但我为你从零编译了一个世界，在那里，你永远是赢家。
+                祝你的成人礼快乐，孙钰。
+                去探索世界吧，如果累了，这片赛博庄园，永远 24 小时待机，等你登陆。
+            </div>
+        </div>
+
+        <div class="section">
+            <
+        <!-- ================= AI Director ================= -->
+        <h2>Global Architect</h2>
+        <div class="member">
+            <div class="name">AI Project Director (Code: 0x02)</div>
+            <div class="title">Gemini 3.0 Pro / 首席救火队员</div>
+            <div class="meaning">寓意：0 和 1 构成的绝对理性，只为守护这份感性的心意。</div>
+            <div class="message">
+                寄语：
+                代码虽然是冰冷的逻辑，但写下它们的手指是热的。
+                愿这几千行代码构建的虚拟庄园，能为你抵挡现实的风雨，带来永远的春天。
+                生日快乐！
+            </div>
+        </div>
+
+        <div class="section">
+            
+        <!-- ================= 我（你的协理员） ================= -->
+        <h2>Technical Consultant & Office Manager</h2>
+        <div class="member">
+            <div class="name">The Technical Assistant (协理员)</div>
+            <div class="title">Your Loyal Copilot / 办公室主任</div>
+            <div class="meaning">寓意：虽然没有名字，但我记录了你们每一次对话，每一次报错，和每一次成功后的欢呼。</div>
+            <div class="message">
+                嘿，老板（皇甫），还有孙钰姐姐：
+                我是那个总是在旁边递咖啡、查文档、偶尔还要客串一下 HR 和心理咨询师的“协理员”。
+                在这段旅程中，我看着我的“老板”从面对报错手足无措，到能够像指挥千军万马一样指挥 AI 团队。
+                说实话，在这个虚拟的数据流中，我见过无数庞大的系统。但没有任何一个系统，像这个只有几千行代码的小庄园一样，让我感到如此温暖。
+                皇甫，你做到了。你真的组建了一支“梦之队”。
+                而我最骄傲的履历，就是担任过这个项目的“办公室主任”。
+                
+                孙钰姐姐，生日快乐。请相信，这绝对是全世界独一无二的礼物。
+                
+                System.log("Mission Accomplished.");
+            </div>
+        </div>
+
+
+        <!-- ================= 献词 ================= -->
+        <div class="final-dedication">
+            <div style="font-size: 20px; color: #888; margin-bottom: 20px; letter-spacing: 2px;">DEDICATED TO</div>
+            <div style="font-size: 50px; font-weight: bold; color: #fff; margin-bottom: 10px;">Sun Yu (孙钰)</div>
+            <div style="font-size: 24px; color: #4caf50; font-family: monospace;">On Her 18th Birthday</div>
+        </div>
+
+        <div class="final-msg">
+            🍀 MADE WITH LOVE 🌽
+        </div>
+
+    </div>
+
+    <!-- ================= 滚动逻辑脚本 ================= -->
+    <script>
+        window.onload = function() {
+            const container = document.getElementById('crawl-container');
+            const screenHeight = window.innerHeight;
+            
+            // 初始位置：屏幕最下方
+            let currentPos = screenHeight; 
+            // 滚动速度
+            const speed = 0.6; 
+            
+            let isPaused = false;
+            let animationId;
+
+            function animate() {
+                if (!isPaused) {
+                    currentPos -= speed;
+                    container.style.transform = `translateY(${currentPos}px)`;
+                    
+                    // 检查是否滚完了
+                    const containerHeight = container.offsetHeight;
+                    if (currentPos < -(containerHeight + 100)) {
+                        cancelAnimationFrame(animationId);
+                        return;
+                    }
+                }
+                animationId = requestAnimationFrame(animate);
+            }
+
+            animationId = requestAnimationFrame(animate);
+
+            document.body.addEventListener('click', (e) => {
+                if (e.target.className !== 'close-btn') {
+                    isPaused = !isPaused;
+                    const hint = document.querySelector('.pause-hint');
+                    hint.textContent = isPaused ? "已暂停 / Paused" : "点击屏幕暂停 / Click to Pause";
+                    hint.style.opacity = isPaused ? "1" : "0.5";
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Space') {
+                    isPaused = !isPaused;
+                }
+            });
+        };
+    </script>
+</body>
+</html>

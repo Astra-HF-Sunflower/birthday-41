@@ -55,7 +55,11 @@
             <div class="icon" ondblclick="openWindow('manor')">
                 <img src="images/icon-manor.png" alt="我们的庄园">
                 <span>我们的庄园.exe</span>
-            </div>
+                <div class="icon" onclick="alert('🚧 施工中...\n这里计划做一个消消乐小游戏，敬请期待！')">
+    <img src="images/icon-candy.png" alt="消消乐">
+    <span>消消乐.exe</span>
+</div>
+            
         </div>
 
         <!-- 所有窗口的容器 -->
@@ -113,37 +117,56 @@
         </div>
     </main>
 
-    <!-- ==================== 管理员后台 (彩蛋) ==================== -->
+     <!-- ==================== 管理员后台 (Developer Hub) ==================== -->
     <div id="admin-panel" class="hidden">
         <div class="admin-header">
-            <h1>&gt;&gt; Administrator Access Granted_</h1>
-            <p>// Welcome, Developer "Sunflower"</p>
+            <h1>&gt;&gt; ADMINISTRATOR_HUB</h1>
+            <p>// Welcome, Developer "Sunflower". System Ready.</p>
         </div>
         
-        <div class="code-modal-content">
-            <div class="code-column">
-                <h4>HTML: 骨骼 🦴</h4>
-                <div class="code-image-wrapper">
-                    <img src="images/code_html.png" alt="HTML Code" onclick="openImageViewer(this.src)">
+        <!-- 区域1：源代码档案 (展示你的努力) -->
+        <div class="admin-section">
+            <h3 class="section-title">🛠️ 源代码档案 (Source Code)</h3>
+            <div class="code-modal-content">
+                <div class="code-column">
+                    <h4>HTML: 骨骼</h4>
+                    <div class="code-image-wrapper">
+                        <img src="images/code_html.png" alt="HTML Code" onclick="openImageViewer(this.src)">
+                    </div>
                 </div>
-            </div>
-            <div class="code-column">
-                <h4>CSS: 衣服 🎨</h4>
-                <div class="code-image-wrapper">
-                    <img src="images/code_css.png" alt="CSS Code" onclick="openImageViewer(this.src)">
+                <div class="code-column">
+                    <h4>CSS: 皮肤</h4>
+                    <div class="code-image-wrapper">
+                        <img src="images/code_css.png" alt="CSS Code" onclick="openImageViewer(this.src)">
+                    </div>
                 </div>
-            </div>
-            <div class="code-column">
-                <h4>JS: 灵魂 🧠</h4>
-                <div class="code-image-wrapper">
-                    <img src="images/code_js.png" alt="JavaScript Code" onclick="openImageViewer(this.src)">
+                <div class="code-column">
+                    <h4>JS: 灵魂</h4>
+                    <div class="code-image-wrapper">
+                        <img src="images/code_js.png" alt="JavaScript Code" onclick="openImageViewer(this.src)">
+                    </div>
                 </div>
             </div>
         </div>
 
-        <button class="proceed-btn" onclick="proceedToHub()">Proceed to Main Hub_</button>
-    </div>
+        <!-- 区域2：核心机密 (制作人员名单) -->
+        <div class="admin-section" style="margin-top: 30px; text-align: center;">
+            <h3 class="section-title">❤️ 核心数据 (The Heart)</h3>
+            
+            <!-- 这是一个巨大的、发光的按钮 -->
+            <div class="credits-launcher" onclick="window.location.href='credits.html'">
+                <div class="launcher-icon">🎬</div>
+                <div class="launcher-text">
+                    <h2>播放制作人员名单</h2>
+                    <p>View Staff Roll & Credits</p>
+                </div>
+                <div class="launcher-arrow">➔</div>
+            </div>
+        </div>
 
+        <!-- 底部返回按钮 -->
+        <button class="proceed-btn" onclick="proceedToHub()" style="margin-top: 40px;">➔ 返回 OS 桌面</button>
+    </div>
     <!-- ==================== 图片查看器（放大代码截图） ==================== -->
     <div id="imageViewerModal" class="hidden">
         <div class="image-viewer-overlay" onclick="closeImageViewer()"></div>

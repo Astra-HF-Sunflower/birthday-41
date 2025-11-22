@@ -578,6 +578,10 @@
     opacity: 0;
     pointer-events: none;
 }
+@keyframes heartBeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
     </style>
 </head>
 <body>
@@ -593,7 +597,10 @@
                 <button class="header-btn" onclick="openMailbox()" style="position: relative;">
                     📬 信箱
                     <span id="mail-badge" class="hidden" style="position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 11px; display: flex; align-items: center; justify-content: center;">0</span>
-                </button>
+                </button><button class="header-btn" onclick="openAchievements()" style="position: relative;">
+    🏆 成就
+    <span id="achievement-badge" class="hidden" style="position: absolute; top: -5px; right: -5px; background: gold; color: black; border-radius: 50%; width: 18px; height: 18px; font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: bold;">0</span>
+</button>
                 <!-- ✅ 新增：音乐按钮 -->
 <button class="header-btn" id="bgm-button" onclick="toggleBgm()">🔈 音乐</button>
                 <button class="header-btn" onclick="openInventory()">🎒 背包</button>
@@ -725,7 +732,26 @@
             <div class="modal-items" id="mailbox-items"></div>
         </div>
     </div>
+<!-- 成就弹窗 -->
+<div id="achievements-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header" style="background: linear-gradient(135deg, #FFD700, #FFA500);">
+            <h2>🏆 成就系统</h2>
+            <button class="modal-close" onclick="closeAchievements()">✕</button>
+        </div>
+        <div class="modal-items" id="achievements-list"></div>
+    </div>
+</div>
 
+<!-- 猫猫爱你特效弹窗 -->
+<div id="cat-love-modal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,105,180,0.9); display: none; align-items: center; justify-content: center; z-index: 4000;">
+    <div style="text-align: center; color: white; animation: heartBeat 1s infinite;">
+        <div style="font-size: 80px; margin-bottom: 20px;">💖</div>
+        <h1 style="font-size: 48px; text-shadow: 0 0 20px rgba(255,255,255,0.8);">猫猫爱你！</h1>
+        <p style="font-size: 20px; margin-top: 15px;">好感度已达到最高！</p>
+        <button class="blessing-close" onclick="closeCatLove()" style="margin-top: 30px;">收下这份爱意 💕</button>
+    </div>
+</div>
     <div id="mail-detail-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header" style="background: linear-gradient(135deg, #66BB6A, #43A047);">

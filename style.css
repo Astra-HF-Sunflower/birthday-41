@@ -394,97 +394,59 @@ button[aria-label="Close"] {
     height: 100%;
 }
 
-/* ==================== 管理员后台 ==================== */
-#admin-panel { 
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%; 
-    background: #0d1117; 
-    color: #c9d1d9; 
-    display: flex; 
-    flex-direction: column; 
-    justify-content: center; 
-    align-items: center; 
-    z-index: 99998; 
-    opacity: 1; 
-    transition: opacity 1s; 
+/* ==================== 管理员后台修复补丁 ==================== */
+
+/* 1. 强制限制图片大小 */
+.code-image-wrapper {
+    width: 100%;
+    height: 150px; /* 固定高度 */
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    transition: all 0.3s;
 }
 
-.admin-header { 
-    font-family: 'Courier New', Courier, monospace; 
-    text-align: center; 
-    margin-bottom: 20px; 
+.code-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 关键：让图片填满盒子，不拉伸，多余的裁掉 */
+    object-position: top center; /* 从顶部开始显示 */
 }
 
-.admin-header h1 { 
-    color: #58a6ff; 
-    font-size: 2rem; 
+.code-image-wrapper:hover {
+    transform: scale(1.05);
+    border-color: #4CC9F0;
 }
 
-.admin-header p { 
-    color: #8b949e; 
+/* 2. 排版修正：让三个代码列并排显示 */
+.code-modal-content {
+    display: flex;
+    gap: 15px; /* 列之间的间距 */
+    justify-content: space-between;
+    width: 100%;
 }
 
-.proceed-btn { 
-    margin-top: 20px; 
-    background: none; 
-    border: 1px solid #30363d; 
-    color: #58a6ff; 
-    padding: 10px 20px; 
-    font-family: 'Courier New', Courier, monospace; 
-    cursor: pointer; 
-    transition: all 0.3s; 
+.code-column {
+    flex: 1; /* 三列等宽 */
+    background: rgba(0,0,0,0.2);
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
 }
 
-.proceed-btn:hover { 
-    background: #30363d; 
-    color: white; 
+.code-column h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #aaa;
+    font-size: 14px;
 }
 
-#admin-panel .code-modal-content { 
-    position: relative; 
-    display: flex; 
-    flex-direction: row; 
-    gap: 20px; 
-    width: 80vw; 
-    max-width: 1000px; 
-    height: 60vh; 
-    background: #161b22; 
-    padding: 20px; 
-    border-radius: 15px; 
-    border: 1px solid #30363d; 
-    overflow: hidden; 
+/* 3. 确保按钮一定在视线内 */
+.credits-launcher {
+    margin-top: 30px !important; /* 强制增加间距 */
+    background: linear-gradient(135deg, #FF6B6B, #FF8E53); /* 确保有颜色 */
 }
-
-#admin-panel .code-column { 
-    flex: 1; 
-    display: flex; 
-    flex-direction: column; 
-    min-width: 0; 
-    overflow: hidden; 
-}
-
-#admin-panel .code-column h4 { 
-    color: #ecf0f1; 
-    text-align: center; 
-    margin-bottom: 15px; 
-    flex-shrink: 0; 
-}
-
-#admin-panel .code-image-wrapper { 
-    flex-grow: 1; 
-    overflow-y: auto; 
-    border-radius: 8px; 
-}
-
-#admin-panel .code-image-wrapper img { 
-    width: 100%; 
-    display: block; 
-    cursor: zoom-in;
-}
-
 /* ==================== 图片查看器 ==================== */
 #imageViewerModal {
     position: fixed;
