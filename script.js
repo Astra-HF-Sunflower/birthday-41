@@ -435,3 +435,22 @@ function handleFirstInteraction() {
 // 监听整个页面的点击和键盘事件
 document.addEventListener('click', handleFirstInteraction);
 document.addEventListener('keydown', handleFirstInteraction);
+// ==================== 移动端适配：图标单击打开 ====================
+document.addEventListener('DOMContentLoaded', () => {
+    // 检测是否为移动设备（简单判断触摸能力）
+    const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+    if (isMobile) {
+        console.log('[OS] Mobile device detected. Switching icons to single-click.');
+        const icons = document.querySelectorAll('.icon');
+        icons.forEach(icon => {
+            // 获取原本的双击指令
+            const dblclickAttr = icon.getAttribute('ondblclick');
+            if (dblclickAttr) {
+                // 移除双击，改为单击
+                icon.removeAttribute('ondblclick');
+                icon.setAttribute('onclick', dblclickAttr);
+            }
+        });
+    }
+});
