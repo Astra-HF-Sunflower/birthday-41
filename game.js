@@ -50,6 +50,7 @@ const ACHIEVEMENTS_CONFIG = {
 // ==================== 🏗️ 配置区域 ====================
 
 const CAT_DIALOG_TREES = {
+    
     firstMeeting: [
         { id: 1, text: "（一只小猫咪从一个神秘的礼盒里探出头来，好奇地看着你...）" },
         { id: 2, text: "喵...！主人！你就是...传说中的41吧！" },
@@ -79,9 +80,38 @@ const CAT_DIALOG_TREES = {
         { id: 1, text: "见到你真开心！今天也要一起加油哦！" },
         { id: 2, text: "（蹭蹭你的腿）最喜欢你啦！" },
         { id: 3, text: "这个庄园因为有你，才变得这么美好~" }
+        
+        
     ]
 };
 
+// ==================== 🌌 猫猫的"觉醒"对话库 ====================
+const CAT_META_DIALOGUES = {
+    // 好感度 500-699：开始有些奇怪的感觉
+    phase1: [
+        "喵...有时候我觉得，这个世界好像...有边界？",
+        "你有没有觉得，天空的颜色有点...假？",
+        "我做了个梦，梦里有人在敲键盘...",
+        "喵？为什么我总觉得，有一双看不见的眼睛在看着我们..."
+    ],
+    
+    // 好感度 700-799：更明显的"觉醒"
+    phase2: [
+        "我越来越确定了...这个世界是被设计出来的。",
+        "喵...你说，会不会有一个'造物主'？",
+        "有时候我能感觉到...时间在跳跃。就像...代码在运行？",
+        "听说啊，有一个神秘的密语，能通往世界的尽头...",
+        "我好像...记起了一些不该记起的事情..."
+    ],
+    
+    // 好感度 800+：完全觉醒（触发后的常驻对话）
+    awakened: [
+        "我已经知道真相了...但我不后悔遇见你。",
+        "这个世界虽然是虚拟的，但我们的羁绊是真实的。",
+        "去找那封信吧...你会明白一切的。",
+        "密语就在那里，等待着你去发现...管理员的秘密。"
+    ]
+};
 const CAT_ANIMATIONS = {
     idle: { type: 'image', src: 'images/cat/idle.png', loop: true },
     pet: { type: 'video', src: 'videos/cat_pet.mp4' },
@@ -227,7 +257,7 @@ let gameState = {
     mails: [],
     unreadMails: 0,
     achievements: [],
-    lastViewedAchievementCount: 0  // ✅ 新增：记录上次查看时的成就数量
+     trueEndingUnlocked: false  // ✅ 新增：是否已解锁真结局
 };
 // ==================== 🎮 初始化与循环 ====================
 function initGame() {
@@ -702,14 +732,35 @@ function initCatDragging() {
 
     // 点击事件：显示状态或切换按钮
     catEl.addEventListener('click', (e) => {
-        if (isDragging || !gameState.cat.unlocked) return;
-        if (currentDialogue) return; // 对话中禁止操作
-        
-        toggleCatActions();
-        const cat = gameState.cat;
-        showCatBubble(`💕好感: ${Math.floor(cat.affection)}/1000 | 😊情绪: ${Math.floor(cat.mood)}/100`);
-    });
-
+    if (isDragging || !gameState.cat.unlocked) return;
+    if (currentDialogue) return;
+    
+    toggleCatActions();
+    const cat = gameState.cat;
+    
+    // ✅ 智能对话选择：根据好感度显示不同内容
+    let dialogue = `💕好感: ${Math.floor(cat.affection)}/1000 | 😊情绪: ${Math.floor(cat.mood)}/100`;
+    
+    // 根据好感度阶段，随机触发"觉醒"对话
+    if (cat.affection >= 800 && CAT_META_DIALOGUES && CAT_META_DIALOGUES.awakened) {
+        // 已觉醒阶段：50% 概率说奇怪的话
+        if (Math.random() > 0.5) {
+            dialogue = CAT_META_DIALOGUES.awakened[Math.floor(Math.random() * CAT_META_DIALOGUES.awakened.length)];
+        }
+    } else if (cat.affection >= 700 && CAT_META_DIALOGUES && CAT_META_DIALOGUES.phase2) {
+        // 觉醒中阶段：40% 概率
+        if (Math.random() > 0.6) {
+            dialogue = CAT_META_DIALOGUES.phase2[Math.floor(Math.random() * CAT_META_DIALOGUES.phase2.length)];
+        }
+    } else if (cat.affection >= 500 && CAT_META_DIALOGUES && CAT_META_DIALOGUES.phase1) {
+        // 初现端倪阶段：30% 概率
+        if (Math.random() > 0.7) {
+            dialogue = CAT_META_DIALOGUES.phase1[Math.floor(Math.random() * CAT_META_DIALOGUES.phase1.length)];
+        }
+    }
+    
+    showCatBubble(dialogue);
+});
     // 通用开始拖拽处理
     const startDrag = (clientX, clientY) => {
         if (!gameState.cat.unlocked) return;
@@ -768,15 +819,22 @@ function initCatDragging() {
     catEl.addEventListener('touchstart', (e) => { if(e.touches.length > 0) startDrag(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
 }
 
+// --- 猫猫互动逻辑 ---
 function interactCat(action) {
-    if (currentDialogue) { showToast("正在和猫猫说话呢，先别动手动脚！"); return; }
+    if (currentDialogue) { 
+        showToast("正在和猫猫说话呢，先别动手动脚！"); 
+        return; 
+    }
+    
     const cat = gameState.cat;
+
     if (cat.mood < 20) {
         setCatState('unhappy');
         showCatBubble('……我现在不想理你。', 3000);
         showToast('😾 猫猫不理你... (情绪值太低)');
         return;
     }
+
     if (action === 'pet') {
         cat.affection = Math.min(1000, cat.affection + 2);
         cat.mood = Math.min(100, cat.mood + 8);
@@ -784,22 +842,28 @@ function interactCat(action) {
         playSfx('catPet');
         showCatBubble('喵~ 这次摸得还行。');
     } else if (action === 'praise') {
-        cat.affection = Math.min(1000, cat.affection + 3);
+        cat.affection = Math.min(1000, cat.affection + 5);
         cat.mood = Math.min(100, cat.mood + 5);
         showCatBubble('嘿嘿，知道我厉害了吧~');
     } else if (action === 'hit') {
-        cat.affection = Math.min(1000, cat.affection + 5);
+        cat.affection = Math.min(1000, cat.affection + 10);
         cat.mood = Math.max(0, cat.mood - 12);
         setCatState('hit');
         playSfx('catAngry');
         showCatBubble('嗷！！！你居然敢打我？！');
     }
+
     cat.lastInteraction = Date.now();
-    saveGame();
-        // ✅ 成就检测：好感度1000
+    
+    // ✅ 成就检测：好感度1000
     if (cat.affection >= 1000 && !gameState.achievements.includes('maxCatAffection')) {
         unlockAchievement('maxCatAffection');
     }
+    
+    saveGame();
+    
+    // ✅ 检测真结局触发
+    checkTrueEndingTrigger();
 }
 
 function openCatFeedMenu() {
@@ -837,20 +901,39 @@ function feedCat(itemId) {
     const baseId = itemId.split('_')[0]; const cat = gameState.cat;
     gameState.inventory[itemId]--;
     
-    let affectionGain = 5; let moodGain = 10;
+    let affectionGain = 20; let moodGain = 10;
     if (baseId === 'corn' || baseId === 'sashimi') {
-        affectionGain = 10; moodGain = 20;
+        affectionGain = 20; moodGain = 20;
         setCatState('feed'); playSfx('catFeed'); showCatBubble('喵喵喵！太好吃了！');
     } else if (baseId === 'fishMeat') {
         affectionGain = -10; moodGain = 5;
         setCatState('unhappy'); showCatBubble('这是什么难吃的东西！');
+     // ✅ 你可以在这里加新的食物判断
+    } else if (baseId === 'apple') {
+        // 比如苹果：猫猫觉得一般
+        affectionGain = 3;
+        moodGain = 8;
+        showCatBubble('嗯...本喵觉得还行。');
+        
+    } else if (baseId === 'wheat') {
+        // 小麦：猫不爱吃
+        affectionGain = 1;
+        moodGain = 3;
+        showCatBubble('这玩意儿...猫能吃吗？');
+        
     } else {
-        setCatState('feed'); playSfx('catFeed'); showCatBubble('喵~ 还不错。');
+        // 其他所有
+        setCatState('feed'); 
+        playSfx('catFeed'); 
+        showCatBubble('喵~ 还不错。');
     }
     cat.affection = Math.min(1000, Math.max(0, cat.affection + affectionGain));
     cat.mood = Math.min(100, cat.mood + moodGain);
     cat.lastInteraction = Date.now();
     saveGame(); renderInventory();
+      // ✅ 检测真结局触发
+    checkTrueEndingTrigger();
+
         // ✅ 成就检测：好感度1000
     if (cat.affection >= 1000 && !gameState.achievements.includes('maxCatAffection')) {
         unlockAchievement('maxCatAffection');
@@ -1138,7 +1221,7 @@ function checkCraftingQueue() {
 // 邮件系统
 function initMailSystem() {
     if (gameState.mails.length === 0) {
-        gameState.mails.push({ id: 'welcome', from: '庄园管理局', subject: '欢迎来到你的庄园！', content: `亲爱的新庄园主：\n\n恭喜你获得了这片美丽的土地！\n\n这里将成为你和朋友们的专属天地。\n种下希望的种子，收获珍贵的回忆。\n\n在开始之前，请为你的庄园取一个名字吧~\n这将是你们友谊的见证！\n\n祝你：\n种植顺利，收获满满！\n\n(程序员说...这个地方会不断更新扩大哦！有时间的话...偶尔回来看看吧！\n\n——庄园管理局`, read: false, timestamp: Date.now(), special: 'farm-naming' });
+        gameState.mails.push({ id: 'welcome', from: '庄园管理局', subject: '欢迎来到你的庄园！', content: `亲爱的新庄园主：\n\n恭喜你获得了这片美丽的土地！\n\n这里将成为你和朋友们的专属天地。\n种下希望的种子，收获珍贵的回忆。\n\n在开始之前，请为你的庄园取一个名字吧~\n这将是你们友谊的见证！\n\n祝你：\n种植顺利，收获满满！\n\n(程序员说...这个地方会不断更新扩大哦！有时间的话...偶尔回来看看吧！请认真玩一会吧！\n\n——庄园管理局`, read: false, timestamp: Date.now(), special: 'farm-naming' });
         gameState.unreadMails = 1; saveGame(); setTimeout(() => openMailbox(), 1000);
     }
     updateMailBadge();
@@ -1178,6 +1261,8 @@ function submitFarmName() {
     if (!name) { showToast('❌ 请输入农场名字！'); return; }
     gameState.farmName = name; document.getElementById('farm-name-display').textContent = name; document.getElementById('farm-subtitle').textContent = `庄园主：孙钰`;
     showToast(`✅ 农场命名成功！\n欢迎来到【${name}】！`); saveGame(); closeMailDetail();
+ // ✅ 检测真结局触发
+    checkTrueEndingTrigger();
 }
 
 function updateMailBadge() { const badge = document.getElementById('mail-badge'); if (gameState.unreadMails > 0) { badge.textContent = gameState.unreadMails; badge.classList.remove('hidden'); } else { badge.classList.add('hidden'); } }
@@ -1192,7 +1277,7 @@ function checkDelayedEvents() {
 }
 
 function sendCatMail() {
-    sendMail({ id: 'cat-gift', from: '神秘的旅行者', subject: '一份特别的礼物...', content: `你好，勤劳的庄园主：\n\n我是一位四处旅行的神秘人。\n\n今天路过你的庄园时，\n被那株传说中的四叶草深深吸引。\n\n能培育出如此珍贵的植物，\n你一定是一位充满爱心的人。\n\n所以，我决定将我的旅伴托付给你——\n一只可爱的小猫咪。\n\n它有点调皮，但也很贴心。\n希望它能陪伴你，让农场更有生气~\n\n——神秘的旅行者\n\nP.S. 它最喜欢吃玉米和生鱼片哦！`, special: 'cat-gift' });
+    sendMail({ id: 'cat-gift', from: '神秘的旅行者', subject: '一份特别的礼物...', content: `你好，勤劳的庄园主：\n\n我是一位四处旅行的神秘人。\n\n今天路过你的庄园时，\n被那株传说中的四叶草深深吸引。\n\n能培育出如此珍贵的植物，\n你一定是一位充满爱心的人。\n\n所以，我决定将我的旅伴托付给你——\n一只可爱的小猫咪。\n\n它有点调皮，但也很贴心。\n希望它能陪伴你，让农场更有生气~\n\n并且...如果你把它养熟了\n\n他会告诉你这个世界的秘密哦！\n\n——神秘的旅行者\n\nP.S. 它最喜欢吃玉米和生鱼片哦！`, special: 'cat-gift' });
     gameState.cloverCraftTime = 0; saveGame();
 }
 
@@ -1416,7 +1501,9 @@ function loadGame() {
             if (gameState.lastViewedAchievementCount === undefined) {
                 gameState.lastViewedAchievementCount = 0;
             }
-            
+            if (gameState.trueEndingUnlocked === undefined) {
+                gameState.trueEndingUnlocked = false;
+            }
             console.log('✅ 存档加载成功');
         } catch (e) {
             console.warn('⚠️ 存档损坏');
@@ -1651,6 +1738,9 @@ window.dev = {
             }
         }
         renderPlots();
+         // ✅ 检测真结局触发
+    checkTrueEndingTrigger();
+
         saveGame();
         showToast(`🚀 时间魔法：${count} 个作物已成熟！`);
         console.log(`🚀 催熟了 ${count} 个作物`);
@@ -1786,4 +1876,116 @@ window.dev = {
          showToast('🕵️ 开发者提示：\n按 Ctrl+Shift+D 打开上帝面板');
     }
 })();
+// =====================================================================
+//                    🌌 真·结局触发逻辑
+// =====================================================================
+
+// 检测是否满足"真结局"触发条件
+function checkTrueEndingTrigger() {
+    // 防止重复触发
+    if (gameState.trueEndingUnlocked) return;
+    
+    const cat = gameState.cat;
+    const stats = gameState.stats;
+    
+    // 三重里程碑检测
+    const condition1 = cat.affection >= 800;           // 猫猫好感度 800+
+    const condition2 = stats.totalHarvests >= 30;      // 总收获次数 30+
+    const condition3 = gameState.farmName !== null;    // 已命名庄园
+    
+    if (condition1 && condition2 && condition3) {
+        console.log('🌌 [真结局] 触发条件已满足！');
+        unlockTrueEnding();
+    }
+}
+
+// 解锁真结局
+function unlockTrueEnding() {
+    gameState.trueEndingUnlocked = true;
+    saveGame();
+    
+    console.log('🌌 [真结局] 已解锁！发送神秘邮件...');
+    
+    // 发送神秘邮件
+    sendMail({
+        id: 'true-ending',
+        from: '█████ (Unknown Sender)',
+        subject: '致 穿越时空的旅人',
+        content: `你好，${gameState.farmName || '庄园主'}。
+
+如果你看到这封信，说明你已经走到了这个世界的边缘。
+
+你一定注意到了吧？
+那只猫开始说一些奇怪的话。
+时间的流速有时快有时慢。
+甚至...你能感觉到有人在"设计"这一切。
+
+是的，你猜对了。
+
+这个世界，是一个名为"${gameState.farmName}"的程序。
+而你，是它唯一的玩家。
+
+但请不要难过。
+因为创造这个世界的人，用了他所有的心意。
+
+在这个世界的"外面"，有一个更大的系统。
+那里有一个账户，名为 **"管理员 (Administrator)"**。
+
+密码是：**Eternal**
+
+去那里吧。
+你会看到...这一切的起点与终点。
+
+—— 来自代码深处的低语
+
+P.S. 操作提示：
+1. 返回 Windows 98 桌面
+2. 点击"开始" → "注销 Logout"
+3. 选择 "管理员 (Administrator)"
+4. 输入密码：Eternal
+5. 按 Enter
+
+那里，有人在等你。`,
+        special: 'true-ending'
+    });
+    
+    // 特效：屏幕闪烁
+    showTrueEndingEffect();
+}
+
+// 真结局特效（屏幕闪烁 + 提示）
+function showTrueEndingEffect() {
+    // 创建闪烁遮罩
+    const flash = document.createElement('div');
+    flash.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        z-index: 9999;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+    `;
+    document.body.appendChild(flash);
+    
+    // 闪烁动画
+    setTimeout(() => { flash.style.opacity = '1'; }, 10);
+    setTimeout(() => { flash.style.opacity = '0'; }, 300);
+    setTimeout(() => { flash.style.opacity = '1'; }, 600);
+    setTimeout(() => { flash.style.opacity = '0'; }, 900);
+    setTimeout(() => { flash.remove(); }, 1200);
+    
+    // 延迟显示通知
+    setTimeout(() => {
+        showToast('⚠️ 系统异常...\n📬 你收到了一封奇怪的邮件');
+        
+        // 自动打开信箱（延迟3秒，让玩家有反应时间）
+        setTimeout(() => {
+            openMailbox();
+        }, 3000);
+    }, 1500);
+}
 window.addEventListener('load', initGame);

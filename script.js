@@ -63,13 +63,13 @@ function enterOS() {
             setTimeout(() => { passwordScreen.classList.remove('shake'); }, 500);
         }
     } else if (selectedUser === 'sunflower') {
-        if (password === "080130") {
+        if (password === "Eternal") {
             errorMsg.style.color = "#58a6ff";
             errorMsg.textContent = ">> Access Granted. Entering Admin Panel...";
             setTimeout(proceedToAdmin, 1500);
         } else {
             errorMsg.style.color = "#e74c3c";
-            errorMsg.textContent = "连我生日都记不住！滚！";
+            errorMsg.textContent = "error！Insufficient permissions";
             passwordScreen.classList.add('shake');
             setTimeout(() => { passwordScreen.classList.remove('shake'); }, 500);
         }

@@ -166,27 +166,29 @@ body {
 }
 
 /* ==================== 桌面 OS 核心样式 ==================== */
-#desktop {
-    width: 100vw;
-    height: 100vh;
-    background-image: linear-gradient(to bottom, #0078D6, #3C93DC, #5AADDD);
-    position: relative;
-    overflow: hidden;
+/* ==================== 桌面图标布局修复 ==================== */
+.desktop-icons {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column; /* 关键：让图标竖着排，就不会重叠了 */
+    gap: 25px; /* 图标之间的间距 */
+    z-index: 10;
+    pointer-events: none; /* 让容器不挡鼠标 */
 }
 
-.desktop-icons { 
-    padding: 20px; 
-    display: flex; 
-    flex-direction: column; 
-    gap: 20px; 
+.icon {
+    width: 80px;
+    text-align: center;
+    cursor: pointer;
+    pointer-events: auto; /* 让图标本身可以点击 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.2s;
 }
-
-.icon { 
-    width: 80px; 
-    text-align: center; 
-    cursor: pointer; 
-}
-
+/* ... 原有的 .icon img 和 .icon span 样式保持不变 ... */
 .icon img { 
     width: 50px; 
     height: 50px; 
@@ -1145,63 +1147,31 @@ button[aria-label="Close"] {
     font-size: 14px;
     cursor: pointer;
 }
-
-/* ==================== 手机端适配 ==================== */
-@media (max-width: 768px) {
-    .desktop-icons { 
-        position: absolute; 
-        top: 50%; 
-        left: 50%; 
-        transform: translate(-50%, -50%); 
-    }
+/* ==================== 管理员后台手机适配修复 ==================== */
+#admin-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    z-index: 5000;
     
-    .taskbar { 
-        justify-content: center; 
-    }
+    /* 关键修复开始 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* 改成从顶部开始对齐，不要居中，防止挡住头部 */
+    padding-top: 60px; /* 顶部留出空间 */
+    padding-bottom: 100px; /* 底部留出空间 */
+    overflow-y: auto; /* 允许垂直滚动 */
+    -webkit-overflow-scrolling: touch; /* 让苹果手机滚动更丝滑 */
+    /* 关键修复结束 */
     
-    .window { 
-        width: 100vw; 
-        height: 100vh; 
-        top: 0; 
-        left: 0; 
-        max-width: none; 
-        max-height: none; 
-        z-index: 500; 
-    }
-    
-    .title-bar { 
-        border-radius: 0; 
-    }
-    
-    .title {
-        margin-bottom: 15px;
-    }
-    
-    .signature-main {
-        margin-top: 0;
-        margin-bottom: 40px;
-        font-size: 1.2rem;
-    }
-    
-    .date {
-        margin-top: 0;
-        margin-bottom: 70px;
-        font-size: 1rem;
-    }
-    
-    .page-nav-buttons {
-        display: block;
-    }
-    
-    .nav-dots {
-        display: none;
-    }
-    
-    #admin-panel .code-modal-content { 
-        flex-direction: column; 
-        height: 80vh; 
-    }
-}           /* ✅【全新】猫猫互动小按钮样式 */
+    color: #fff;
+    font-family: "Segoe UI", sans-serif;
+}
+          /* ✅【全新】猫猫互动小按钮样式 */
         .cat-action-btn {
             width: 40px;
             height: 40px;
@@ -1225,4 +1195,58 @@ input[type="text"],
 input[type="password"] {
     user-select: auto !important; /* 允许选中和输入 */
     -webkit-user-select: auto !important; /* 兼容老版 Chrome/Safari */
+}/* ==================== 歌词字幕样式 ==================== */
+.subtitle-container {
+    position: fixed;
+    bottom: 80px; /* 距离底部的位置 */
+    left: 0;
+    width: 100%;
+    text-align: center;
+    z-index: 500; /* 保证在滚动文字上面 */
+    pointer-events: none; /* 即使有字幕也不影响点击屏幕暂停 */
+    
+    /* 字体样式 */
+    font-size: 22px;
+    font-weight: normal;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8); /* 加重阴影，防背景干扰 */
+    font-family: "Microsoft YaHei", sans-serif;
+    letter-spacing: 1px;
+    
+    /* 动画过渡 */
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    opacity: 0; /* 默认隐藏，有歌词时显示 */
 }
+
+/* 激活状态（显示） */
+.subtitle-container.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 隐藏状态（上一句结束） */
+.subtitle-container.hidden {
+    opacity: 0;
+    transform: translateY(10px);
+}        /* ==================== 歌词安全区遮罩 ==================== */
+        .safe-zone-mask {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 300px; /* 遮罩高度，覆盖底部区域 */
+            
+            /* 核心魔法：从上到下的渐变 */
+            /* 上面是透明的，中间半透明，最下面是纯黑 */
+            background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.8) 40%, #000 80%);
+            
+            z-index: 1500; /* 层级：在滚动文字(默认0)之上，在歌词(2000)之下 */
+            pointer-events: none; /* 不挡鼠标点击 */
+        }
+
+        /* 确保歌词在遮罩之上 */
+        .subtitle-container {
+            z-index: 2000; 
+            /* 之前的样式保持不变... */
+            bottom: 60px; /* 稍微调整位置，让它处于纯黑区域 */
+        }
