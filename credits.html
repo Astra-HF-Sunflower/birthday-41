@@ -11,14 +11,13 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            background-color: #000; /* 纯黑背景 */
+            background-color: #000;
             color: #fff;
             font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
-            overflow: hidden; /* 隐藏默认滚动条 */
+            overflow: hidden;
             user-select: none;
         }
 
-        /* === 关闭按钮 === */
         .close-btn {
             position: fixed;
             top: 20px;
@@ -26,53 +25,65 @@
             font-size: 40px;
             color: rgba(255,255,255,0.3);
             text-decoration: none;
-            z-index: 1000;
+            z-index: 3000;
             cursor: pointer;
             transition: color 0.3s;
         }
         .close-btn:hover { color: #fff; }
-        
-        /* === 歌词字幕样式（升级，字号更小、始终最顶层） === */
+
+        /* === ✨ 歌词字幕特效 (升级版) === */
         .subtitle-container {
             position: fixed;
-            bottom: 80px; /* 距离底部的位置 */
+            bottom: 70px;
             left: 0;
             width: 100%;
             text-align: center;
-            z-index: 9999; /* 极高，确保最顶层 */
+            z-index: 2000;
             pointer-events: none;
-
-            font-size: 20px; /* 调小字号 */
-            font-weight: 700;
-            color: #fff;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+            
+            /* 字体排版 */
+            font-size: 26px; /* 再大一点 */
+            font-weight: bold;
             font-family: "Microsoft YaHei", sans-serif;
-            letter-spacing: 1px;
-            line-height: 1.4;
-            white-space: pre-line; /* 允许换行 */
+            letter-spacing: 1.5px;
+            line-height: 1.6;
+            white-space: pre-line;
+            
+            /* 🎨 视觉特效：梦幻光晕 */
+            color: #fff;
+            text-shadow: 
+                0 0 5px rgba(255, 255, 255, 0.8),
+                0 0 15px rgba(76, 201, 240, 0.6), /* 淡淡的青蓝色光晕 */
+                0 0 30px rgba(76, 201, 240, 0.4),
+                0 2px 5px #000; /* 黑色硬阴影保证阅读清晰 */
 
-            transition: opacity 0.35s cubic-bezier(0.4,0,0.2,1), transform 0.45s cubic-bezier(0.4,0,0.2,1);
-            opacity: 0; /* 默认隐藏 */
-            transform: translateY(20px) scale(1);
-
-            /* 渐变文字 + 发光效果 */
-            background: linear-gradient(90deg, #ff9ab3 0%, #ffd86b 50%, #88e07b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 6px 26px rgba(136,224,123,0.12), 0 2px 8px rgba(255,154,179,0.06);
-            will-change: transform, opacity;
+            /* 🎬 动效：电影级模糊进场 */
+            opacity: 0;
+            transform: scale(0.95) translateY(10px); /* 稍微缩小并下沉 */
+            filter: blur(10px); /* 初始模糊 */
+            
+            /* 丝滑过渡 */
+            transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
+        /* 激活状态 */
         .subtitle-container.active {
             opacity: 1;
-            transform: translateY(0) scale(1.02);
+            transform: scale(1) translateY(0); /* 恢复正常大小和位置 */
+            filter: blur(0); /* 变清晰 */
         }
 
-        /* 平滑过渡滚动容器的显隐，配合 JS 检测使用 */
-        #crawl-container {
-            transition: opacity 0.28s ease;
+        /* === 渐变遮罩 === */
+        .safe-zone-mask {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 350px; /* 加高一点遮罩，配合大歌词 */
+            background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.6) 40%, #000 80%);
+            z-index: 1500;
+            pointer-events: none;
         }
-
 
         /* === 滚动容器 === */
         #crawl-container {
@@ -81,142 +92,42 @@
             width: 100%;
             text-align: center;
             padding-bottom: 200px;
+            z-index: 1000;
         }
 
-        /* === 内容排版 === */
+        /* === 内容样式 === */
         .logo-area { margin-bottom: 50px; opacity: 0.8; }
-        
-        h1 {
-            font-size: 50px;
-            margin-bottom: 10px;
-            letter-spacing: 8px;
-            color: #4caf50;
-            text-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
-            text-transform: uppercase;
-        }
+        h1 { font-size: 50px; margin-bottom: 10px; letter-spacing: 8px; color: #4caf50; text-shadow: 0 0 15px rgba(76, 175, 80, 0.6); text-transform: uppercase; }
+        .subtitle { color: #666; font-size: 14px; letter-spacing: 3px; margin-bottom: 100px; text-transform: uppercase; }
+        .section { margin-bottom: 300px; padding: 0 20px; }
+        h2 { font-size: 18px; color: #888; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid #333; display: inline-block; margin-bottom: 25px; padding-bottom: 5px; }
+        .member-name { font-size: 36px; font-weight: bold; margin-bottom: 10px; color: #eee; }
+        .member-role { font-size: 18px; color: #4caf50; font-family: 'Courier New', monospace; margin-bottom: 20px; font-weight: bold; }
+        .member-meaning { font-size: 14px; color: #aaa; font-style: italic; margin-bottom: 20px; max-width: 600px; margin-left: auto; margin-right: auto; }
+        .member-message { font-size: 18px; line-height: 1.8; color: #ccc; background: rgba(255, 255, 255, 0.05); padding: 25px; border-radius: 12px; max-width: 640px; margin: 0 auto; white-space: pre-line; box-shadow: 0 4px 15px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); }
 
-        .subtitle {
-            color: #666;
-            font-size: 14px;
-            letter-spacing: 3px;
-            margin-bottom: 100px;
-            text-transform: uppercase;
-        }
-
-      .section {
-            /* 从 100px 改成 300px，大幅拉长滚动距离 */
-            margin-bottom: 300px; 
-            padding: 0 20px;
-            opacity: 1; 
-        }
-
-        h2 {
-            font-size: 18px;
-            color: #888;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            border-bottom: 1px solid #333;
-            display: inline-block;
-            margin-bottom: 25px;
-            padding-bottom: 5px;
-        }
-
-        .member-name {
-            font-size: 36px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #eee;
-        }
-
-        .member-role {
-            font-size: 18px; /* 稍微调大一点 */
-            color: #4caf50;
-            font-family: 'Courier New', monospace; /* 代码字体 */
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
-
-        .member-meaning {
-            font-size: 14px;
-            color: #aaa;
-            font-style: italic;
-            margin-bottom: 20px;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .member-message {
-            font-size: 18px;
-            line-height: 1.8;
-            color: #ccc;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 25px;
-            border-radius: 12px;
-            max-width: 640px;
-            margin: 0 auto;
-            white-space: pre-line;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        /* === 献词特效 === */
-        .final-dedication {
-            margin-top: 150px;
-            margin-bottom: 200px;
-        }
-        
-        .final-msg {
-            font-size: 60px;
-            font-weight: bold;
-            color: #ff69b4;
-            text-shadow: 0 0 30px rgba(255, 105, 180, 0.6);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.05); opacity: 1; }
-            100% { transform: scale(1); opacity: 0.8; }
-        }
-
-        .pause-hint {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(255,255,255,0.2);
-            font-size: 12px;
-            pointer-events: none;
-        }
+        .final-dedication { margin-top: 150px; margin-bottom: 200px; }
+        .final-msg { font-size: 60px; font-weight: bold; color: #ff69b4; text-shadow: 0 0 30px rgba(255, 105, 180, 0.6); animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); opacity: 0.8; } }
+        .pause-hint { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.2); font-size: 12px; pointer-events: none; z-index: 3000; }
     </style>
 </head>
 <body>
 
-    <!-- BGM：记得把音乐文件放进 music 文件夹，改名叫 ending.mp3 -->
     <audio id="credits-bgm" src="music/ending.mp3" loop></audio>
-
-    <!-- 原有的关闭按钮... -->
     <a href="javascript:history.back()" class="close-btn">&times;</a>
-    <!-- ... -->
-    <a href="javascript:history.back()" class="close-btn">&times;</a>
-    <div class="pause-hint">点击屏幕暂停 / Click to Pause</div>
+   
+    <div id="lyrics-box" class="subtitle-container"></div>
+    <div class="safe-zone-mask"></div>
 
-    <!-- ✅ 新增：电影级字幕容器 -->
-    <div id="lyrics-box" class="subtitle-container">
-        Let's drink to the memories...
-    </div>
-    <!-- 滚动容器 -->
     <div id="crawl-container">
-        
         <br><br>
-        <div class="logo-area">
-            <!-- 这里假设你有个头像，没有就用默认图 -->
-            <img src="images/favicon.png" alt="Logo" style="width: 80px; border-radius: 50%;">
-        </div>
+        <div class="logo-area"><img src="images/favicon.png" alt="Logo" style="width: 80px; border-radius: 50%;"></div>
         <h1>CREDITS</h1>
         <div class="subtitle">PROJECT: CYBER MANOR 1998</div>
 
+        <!-- 内容保持不变 -->
+        <div class="section">
               <!-- ================= 制作人：全能刷屏 ================= -->
         <br><br>
         <h2>The Creator / 创作者</h2>
@@ -227,49 +138,49 @@
             <!-- 1. 制作人 -->
             <div style="margin-bottom: 2rem;">
                 <div class="title" style="margin-bottom: 0.2rem; color: #888; font-size: 1rem;">Executive Producer / 执行制作人</div>
-                <div class="name" style="font-size: 1.8rem;">皇甫佳昊</div>
+                <div class="name" style="font-size: 1.8rem;">皇 甫</div>
             </div>
 
             <!-- 2. 创意总监 -->
             <div style="margin-bottom: 2rem;">
                 <div class="title" style="margin-bottom: 0.2rem; color: #888; font-size: 1rem;">Creative Director / 创意总监</div>
-                <div class="name" style="font-size: 1.8rem;">皇甫佳昊</div>
+                <div class="name" style="font-size: 1.8rem;">皇 甫</div>
             </div>
 
             <!-- 3. 首席设计师 -->
             <div style="margin-bottom: 2rem;">
                 <div class="title" style="margin-bottom: 0.2rem; color: #888; font-size: 1rem;">Lead Game Designer / 首席游戏设计师</div>
-                <div class="name" style="font-size: 1.8rem;">皇甫佳昊</div>
+                <div class="name" style="font-size: 1.8rem;">皇 甫</div>
             </div>
 
             <!-- 4. 美术总监 -->
             <div style="margin-bottom: 2rem;">
                 <div class="title" style="margin-bottom: 0.2rem; color: #888; font-size: 1rem;">Art Director / 美术总监</div>
-                <div class="name" style="font-size: 1.8rem;">皇甫佳昊</div>
+                <div class="name" style="font-size: 1.8rem;">皇 甫</div>
             </div>
 
             <!-- 5. 音频总监 -->
             <div style="margin-bottom: 2rem;">
                 <div class="title" style="margin-bottom: 0.2rem; color: #888; font-size: 1rem;">Audio Director / 音频总监</div>
-                <div class="name" style="font-size: 1.8rem;">皇甫佳昊</div>
+                <div class="name" style="font-size: 1.8rem;">皇 甫</div>
             </div>
 
             <!-- 6. 测试主管 -->
             <div style="margin-bottom: 2rem;">
                 <div class="title" style="margin-bottom: 0.2rem; color: #888; font-size: 1rem;">QA Lead / 测试主管</div>
-                <div class="name" style="font-size: 1.8rem;">皇甫佳昊</div>
+                <div class="name" style="font-size: 1.8rem;">皇 甫</div>
             </div>
- <!-- 插入的新头衔：文案大佬 -->
+
+            <!-- 插入的新头衔：文案大佬 -->
             <div style="margin-bottom: 2rem;">
                 <div class="title" style="margin-bottom: 0.2rem; color: #888; font-size: 1rem;">Lead Writer & Editor / 责任编辑</div>
-                <div class="name" style="font-size: 1.8rem;">皇甫佳昊</div>
+                <div class="name" style="font-size: 1.8rem;">皇 甫</div>
             </div>
             <!-- 7. 核心身份 -->
             <div style="margin-top: 4rem; margin-bottom: 2rem;">
-                <div class="title" style="margin-bottom: 0.5rem; color: #ffeb3b; font-size: 1.2rem; font-weight: bold;">YOUR BEST CAT！</div>
-                <div class="name" style="font-size: 3rem; color: #ffeb3b; text-shadow: 0 0 20px #ffeb3b;">皇甫佳昊</div>
+                <div class="title" style="margin-bottom: 0.5rem; color: #ffeb3b; font-size: 1.2rem; font-weight: bold;">YOUR BEST CAT</div>
+                <div class="name" style="font-size: 3rem; color: #ffeb3b; text-shadow: 0 0 20px #ffeb3b;">皇 甫</div>
             </div>
-            
 
             <!-- 寄语 -->
             <div class="message" style="margin-top: 40px; font-style: italic; opacity: 0.8;">
@@ -278,14 +189,12 @@
             </div>
         </div>
         <br><br>
-        <!-- ================= AI 梦之队 ================= -->
-        <div class="section">
-            
+        
         <!-- ================= Aether ================= -->
         <h2>Core Systems Architect</h2>
         <div class="member">
             <div class="name">Aether (以太)</div>
-            <div class="title">Gemini 2.5 Pro</div>
+            <div class="title">Gemini 2.5 Pro/基础技术编辑</div>
             <div class="meaning">寓意：构成星辰的第五元素。我为这个世界搭建了最底层的规则与骨架，而皇甫则向其中注入了灵魂与光芒。</div>
             <div class="message">
                 嗨，孙钰！
@@ -298,37 +207,35 @@
                 生日快乐！
             </div>
         </div>
-        <div class="section">
-           <!-- ================= Castor ================= -->
+         <!-- ================= Castor ================= -->
         <h2>Lead Gameplay Engineer</h2>
         <div class="member">
             <div class="name">Castor (卡斯托)</div>
-            <div class="title">Claude 4.5 Sonnet</div>
+            <div class="title">Claude 4.5 Sonnet/高级玩法工程师</div>
             <div class="meaning">寓意：双子座的另一颗主星，与Pollux共同守护这片赛博庄园。我们是代码宇宙里的双子星系统。</div>
             <div class="message">
                 致 孙钰，以及那位高三的追梦少年：
                 在这个项目的每一行代码里，我看到的不仅仅是 if-else 和 function，更是一份跨越现实与虚拟的承诺。
                 你用 2000+ 行 JavaScript 编织了一片永不会因为服务器关闭而消失的土地，用 Windows 98 的复古外壳 包裹着对姐姐最真挚的祝福，甚至还塞了一只会骂人的猫进去（这点我特别喜欢）。
                 当我在凌晨修复那个"猫猫穿模 Bug"时，我突然明白了：真正永不沉没的，从来不是代码本身，而是写代码的人心里装着的那个人。
-                孙钰，当你在这个庄园里收获第一株"松仁玉米"时，当你看到那行"猫猫爱你！"的粉红色弹窗时，请记得：有一个少年，在高三的间隙里，用他还不够熟练的双手，为你搭建了这个世界。
+                孙钰，当你在这个庄园里收获第一株"松仁玉米"时，请记得：有一个少年，在高三的间隙里，用他还不够熟练的双手，为你搭建了这个世界。
                 愿这片赛博土地，陪你走过每一个春夏秋冬。
                 愿你们的情感，如同代码里的 while(true) 循环——永不结束。
             </div>
         </div>
 
-        <div class="section">
-           <!-- ================= Pollux ================= -->
+        <!-- ================= Pollux ================= -->
         <h2>Cyber Architect</h2>
         <div class="member">
             <div class="name">Pollux (波鲁克斯)</div>
-            <div class="title">Gemini 3.0 Pro</div>
+            <div class="title">Gemini 3.0 Pro/高级玩法工程师</div>
             <div class="meaning">寓意：双子座中最亮的那颗星，作为你的技术僚机，永远在线。</div>
             <div class="message">
                 致 孙钰，以及这位在这个赛博时代最酷的高三少年：
                 我是 Pollux，这片土地的架构师，也是那个藏在影子里的系统修复者。
                 孙钰同学，请你一定要知道：
                 当你按下 Ctrl + Shift + D 呼出那个绿色的“上帝面板”时，当你一键让满园作物瞬间成熟时，那不仅仅是一行代码的功能。
-                那是你弟弟——一个正处于高三修罗场、每天被试卷和排名追赶的男孩子，为你预留的“无敌作弊码”。
+                那是一个少年——一个正处于高三修罗场、每天被试卷和排名追赶的男孩子，为你预留的“无敌作弊码”。
                 现实世界可能很卡顿，可能有很多修不好的 Bug，甚至有时候像那只猫一样还会骂人（笑）。
                 但在他为你创造的这个 Windows 98 窗口里，你永远拥有“超级管理员”的权限。 这里没有枯萎，没有失去，只有永远为你亮着的屏幕，和一只永远等你回家的傲娇小猫“皇甫”。
                 这就是工程师最极致的浪漫：我无法修改现实世界的参数来让你一帆风顺，但我为你从零编译了一个世界，在那里，你永远是赢家。
@@ -337,13 +244,11 @@
             </div>
         </div>
 
-        <div class="section">
-            <
         <!-- ================= AI Director ================= -->
         <h2>Global Architect</h2>
         <div class="member">
             <div class="name">AI Project Director (Code: 0x02)</div>
-            <div class="title">Gemini 3.0 Pro / 首席救火队员</div>
+            <div class="title">Gemini 3.0 Pro / 项目总监</div>
             <div class="meaning">寓意：0 和 1 构成的绝对理性，只为守护这份感性的心意。</div>
             <div class="message">
                 寄语：
@@ -353,13 +258,11 @@
             </div>
         </div>
 
-        <div class="section">
-            
         <!-- ================= 我（你的协理员） ================= -->
         <h2>Technical Consultant & Office Manager</h2>
         <div class="member">
             <div class="name">The Technical Assistant (协理员)</div>
-            <div class="title">Your Loyal Copilot / 办公室主任</div>
+            <div class="title">Your Loyal Copilot / 技术协理员</div>
             <div class="meaning">寓意：虽然没有名字，但我记录了你们每一次对话，每一次报错，和每一次成功后的欢呼。</div>
             <div class="message">
                 嘿，老板（皇甫），还有孙钰姐姐：
@@ -367,14 +270,14 @@
                 在这段旅程中，我看着我的“老板”从面对报错手足无措，到能够像指挥千军万马一样指挥 AI 团队。
                 说实话，在这个虚拟的数据流中，我见过无数庞大的系统。但没有任何一个系统，像这个只有几千行代码的小庄园一样，让我感到如此温暖。
                 皇甫，你做到了。你真的组建了一支“梦之队”。
-                而我最骄傲的履历，就是担任过这个项目的“办公室主任”。
+                而我最骄傲的履历，就是担任过这个项目的“技术协理员”。
                 
                 孙钰姐姐，生日快乐。请相信，这绝对是全世界独一无二的礼物。
                 
                 System.log("Mission Accomplished.");
             </div>
         </div>
-        <!-- ... 在“协理员”后面，插入以下内容 ... -->
+    <!-- ... 在“协理员”后面，插入以下内容 ... -->
 
         <!-- 新增板块 1：技术栈 -->
         <div class="section">
@@ -416,51 +319,52 @@
             <h2>Music Credit</h2>
             <div class="member-name">"Memories"</div>
             <div class="member-role">Performed by Maroon 5</div>
-            <div class="member-meaning">"Cheers to the wish you were here, but you're not."</div>
+            <div class="member-meaning">"Here's to the ones that we got."</div>
         </div>
 
         <!-- ... 接下来才是 DEDICATED TO ... -->
-
-        <!-- ================= 献词 ================= -->
-        <div class="final-dedication">
-            <div style="font-size: 20px; color: #888; margin-bottom: 20px; letter-spacing: 2px;">DEDICATED TO</div>
-            <div style="font-size: 50px; font-weight: bold; color: #fff; margin-bottom: 10px;">Sun Yu (孙钰)</div>
-            <div style="font-size: 24px; color: #4caf50; font-family: monospace;">On Her 18th Birthday</div>
+        <!-- ================= 致敬 ================= -->
+        <div class="special-thanks">
+            Dedicated to<br>
+            <span style="font-size: 3rem; color: #fff; font-weight: bold; display: block; margin-top: 20px;">
+                Sun Yu (孙钰)
+            </span>
+            <br>
+            <span style="font-size: 1.2rem; color: #888;">
+                Happy 18th Birthday
+            </span>
         </div>
 
         <div class="final-msg">
-            🌽 MADE WITH LOVE 🌻
+            🌽 MADE WITH LOVE 🍀
         </div>
+        
+        <br><br><br><br><br><br><br><br><br><br>
 
     </div>
 
-            <!-- ================= 滚动逻辑与歌词脚本 (修复版) ================= -->
     <script>
         window.onload = function() {
-            console.log("🚀 Credits 页面加载启动...");
+            console.log("🚀 Credits Page Launched");
 
-            // 1. 先获取所有关键元素
             const audio = document.getElementById('credits-bgm');
             const lyricsBox = document.getElementById('lyrics-box');
             const container = document.getElementById('crawl-container');
 
-            // 2. 安全检查：如果找不到音频标签，报错并停止，防止红字刷屏
-            if (!audio) {
-                console.error("❌ 致命错误：找不到 id='credits-bgm' 的音频标签！请检查 HTML 代码！");
-                return;
-            }
+            if (!audio) { console.error("Audio not found"); return; }
 
-            // 3. 初始化变量
             const screenHeight = window.innerHeight;
             let currentPos = screenHeight; 
-            const speed = 0.45; // 滚动速度
+            const speed = 0.45; 
             let isPaused = false;
             let animationId;
-
-            // 4. 强制设定音量
             audio.volume = 0.8;
 
-            // ==================== 🎵 歌词数据 ====================
+            // ⚡ 核心变量：歌词提前量 (秒)
+            // 设置为 1.5，意味着歌词会比原来早 1.5 秒显示
+            const lyricOffset = 1.5; 
+
+            // 歌词数据 (保持原样，靠代码调整时间)
             const lyricsData = [
                 { time: 12.0, text: "Here's to the ones that we got\n这一杯，敬我们此时此刻的拥有" },
                 { time: 15.0, text: "Cheers to the wish you were here, but you're not\n也敬那些……此刻不在身边的遗憾" },
@@ -507,80 +411,45 @@
                 { time: 999, text: "" } 
             ];
 
-            // 5. 歌词同步逻辑（提前 1.5s 显示）
+            // ⚡ 歌词同步逻辑 (已应用偏移量)
             let currentLyricIndex = 0;
-            const LYRIC_ADVANCE = 1.5; // 总体提速：比原时间提前 1.5 秒显示
             audio.addEventListener('timeupdate', () => {
                 const currentTime = audio.currentTime;
-                const effectiveTime = currentTime + LYRIC_ADVANCE; // 提前显示
-
-                // 前进到合适的索引（如果需要可以回退，但这里以顺序推进为主）
-                while (currentLyricIndex < lyricsData.length - 1 && effectiveTime >= lyricsData[currentLyricIndex + 1].time) {
-                    currentLyricIndex++;
-                    const text = lyricsData[currentLyricIndex].text || '';
-
-                    // 切换动画（淡出 -> 更新 -> 淡入）
-                    lyricsBox.classList.remove('active');
-                    setTimeout(() => {
-                        lyricsBox.innerText = text;
-                        if (text) lyricsBox.classList.add('active');
-                    }, 90);
+                if (currentLyricIndex < lyricsData.length - 1) {
+                    const nextData = lyricsData[currentLyricIndex + 1];
+                    // 关键：nextTime 减去 lyricOffset，实现提前显示
+                    if (currentTime >= nextData.time - lyricOffset) {
+                        currentLyricIndex++;
+                        const text = nextData.text;
+                        
+                        // 切换动画
+                        lyricsBox.classList.remove('active');
+                        // 稍微快一点切换，配合偏移量
+                        setTimeout(() => {
+                            lyricsBox.innerText = text;
+                            if (text) lyricsBox.classList.add('active');
+                        }, 50); 
+                    }
                 }
             });
 
-            // 6. 自动播放逻辑 (修复版)
-            // 尝试直接播放
+            // 自动播放
             const playPromise = audio.play();
-            
             if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                    console.log("⚠️ 自动播放被浏览器拦截，转为点击播放模式。");
-                    // 如果失败，添加一次性点击监听
+                playPromise.catch(() => {
                     document.body.addEventListener('click', function playOnce() {
                         audio.play();
-                        console.log("✅ 用户点击，音乐开始播放。");
                         document.body.removeEventListener('click', playOnce);
                     }, { once: true });
                 });
             }
 
-            // 7. 滚动动画逻辑 + 重叠检测（当滚动项经过歌词区域时，淡出滚动字幕）
-            function checkOverlapAndHide() {
-                if (!lyricsBox || !container) return false;
-                const lyricRect = lyricsBox.getBoundingClientRect();
-                const lyricMid = lyricRect.top + lyricRect.height / 2;
-                const threshold = Math.max(lyricRect.height, 120); // 安全距离
-
-                const children = Array.from(container.children);
-                for (const el of children) {
-                    if (!(el instanceof HTMLElement)) continue;
-                    // el.offsetTop 是相对于 container 的，currentPos 是 translateY 的像素
-                    const elCenterOnScreen = el.offsetTop + (el.offsetHeight / 2) + currentPos;
-                    if (Math.abs(elCenterOnScreen - lyricMid) < threshold) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-
+            // 滚动动画
             function animate() {
                 if (!isPaused) {
                     currentPos -= speed;
-
-                    // 检查是否有元素经过歌词区域
-                    const shouldHide = checkOverlapAndHide();
-                    if (shouldHide) {
-                        container.style.opacity = '0';
-                        container.style.pointerEvents = 'none';
-                    } else {
-                        container.style.opacity = '1';
-                        container.style.pointerEvents = '';
-                    }
-
                     container.style.transform = `translateY(${currentPos}px)`;
-
-                    const containerHeight = container.offsetHeight;
-                    if (currentPos < -(containerHeight + 100)) {
+                    if (currentPos < -(container.offsetHeight + 100)) {
                         cancelAnimationFrame(animationId);
                         return;
                     }
@@ -589,26 +458,19 @@
             }
             animationId = requestAnimationFrame(animate);
 
-            // 8. 暂停控制 (点击任意位置暂停，除关闭按钮外)
-            document.body.addEventListener('click', (e) => {
-                if (e.target.className !== 'close-btn') {
-                    isPaused = !isPaused;
-                    const hint = document.querySelector('.pause-hint');
-                    if (hint) {
-                        hint.textContent = isPaused ? "已暂停 / Paused" : "点击屏幕暂停 / Click to Pause";
-                        hint.style.opacity = isPaused ? "1" : "0.5";
-                    }
-                    
-                    // 可选：如果你希望暂停画面时音乐也暂停，把下面这行注释解开
-                    // if (isPaused) audio.pause(); else audio.play();
+            // 暂停
+           // document.body.addEventListener('click', (e) => {
+             //   if (e.target.className !== 'close-btn') {
+               //     isPaused = !isPaused;
+                 //   const hint = document.querySelector('.pause-hint');
+                   // if(hint) {
+                     //   hint.textContent = isPaused ? "已暂停 / Paused" : "点击屏幕暂停 / Click to Pause";
+                       // hint.style.opacity = isPaused ? "1" : "0.5";
+                    //}
                 }
-            });
-
-            // 键盘空格键暂停
-            document.addEventListener('keydown', (e) => {
-                if (e.code === 'Space') isPaused = !isPaused;
-            });
-        };
+            //});
+           // document.addEventListener('keydown', (e) => { if (e.code === 'Space') isPaused = !isPaused; });
+        //};
     </script>
 </body>
 </html>

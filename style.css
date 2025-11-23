@@ -166,29 +166,27 @@ body {
 }
 
 /* ==================== 桌面 OS 核心样式 ==================== */
-/* ==================== 桌面图标布局修复 ==================== */
-.desktop-icons {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    display: flex;
-    flex-direction: column; /* 关键：让图标竖着排，就不会重叠了 */
-    gap: 25px; /* 图标之间的间距 */
-    z-index: 10;
-    pointer-events: none; /* 让容器不挡鼠标 */
+#desktop {
+    width: 100vw;
+    height: 100vh;
+    background-image: linear-gradient(to bottom, #0078D6, #3C93DC, #5AADDD);
+    position: relative;
+    overflow: hidden;
 }
 
-.icon {
-    width: 80px;
-    text-align: center;
-    cursor: pointer;
-    pointer-events: auto; /* 让图标本身可以点击 */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: transform 0.2s;
+.desktop-icons { 
+    padding: 20px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 20px; 
 }
-/* ... 原有的 .icon img 和 .icon span 样式保持不变 ... */
+
+.icon { 
+    width: 80px; 
+    text-align: center; 
+    cursor: pointer; 
+}
+
 .icon img { 
     width: 50px; 
     height: 50px; 
@@ -396,58 +394,29 @@ button[aria-label="Close"] {
     height: 100%;
 }
 
-/* ==================== 管理员后台修复补丁 ==================== */
-
-/* 1. 强制限制图片大小 */
-.code-image-wrapper {
-    width: 100%;
-    height: 150px; /* 固定高度 */
-    overflow: hidden;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.code-image-wrapper img {
+/* ==================== 管理员后台手机适配修复 ==================== */
+#admin-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover; /* 关键：让图片填满盒子，不拉伸，多余的裁掉 */
-    object-position: top center; /* 从顶部开始显示 */
-}
-
-.code-image-wrapper:hover {
-    transform: scale(1.05);
-    border-color: #4CC9F0;
-}
-
-/* 2. 排版修正：让三个代码列并排显示 */
-.code-modal-content {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    z-index: 5000;
+    
+    /* 关键修复开始 */
     display: flex;
-    gap: 15px; /* 列之间的间距 */
-    justify-content: space-between;
-    width: 100%;
-}
-
-.code-column {
-    flex: 1; /* 三列等宽 */
-    background: rgba(0,0,0,0.2);
-    padding: 10px;
-    border-radius: 10px;
-    text-align: center;
-}
-
-.code-column h4 {
-    margin-top: 0;
-    margin-bottom: 10px;
-    color: #aaa;
-    font-size: 14px;
-}
-
-/* 3. 确保按钮一定在视线内 */
-.credits-launcher {
-    margin-top: 30px !important; /* 强制增加间距 */
-    background: linear-gradient(135deg, #FF6B6B, #FF8E53); /* 确保有颜色 */
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* 改成从顶部开始对齐，不要居中，防止挡住头部 */
+    padding-top: 60px; /* 顶部留出空间 */
+    padding-bottom: 100px; /* 底部留出空间 */
+    overflow-y: auto; /* 允许垂直滚动 */
+    -webkit-overflow-scrolling: touch; /* 让苹果手机滚动更丝滑 */
+    /* 关键修复结束 */
+    
+    color: #fff;
+    font-family: "Segoe UI", sans-serif;
 }
 /* ==================== 图片查看器 ==================== */
 #imageViewerModal {
@@ -1147,31 +1116,63 @@ button[aria-label="Close"] {
     font-size: 14px;
     cursor: pointer;
 }
-/* ==================== 管理员后台手机适配修复 ==================== */
-#admin-panel {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    z-index: 5000;
+
+/* ==================== 手机端适配 ==================== */
+@media (max-width: 768px) {
+    .desktop-icons { 
+        position: absolute; 
+        top: 50%; 
+        left: 50%; 
+        transform: translate(-50%, -50%); 
+    }
     
-    /* 关键修复开始 */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start; /* 改成从顶部开始对齐，不要居中，防止挡住头部 */
-    padding-top: 60px; /* 顶部留出空间 */
-    padding-bottom: 100px; /* 底部留出空间 */
-    overflow-y: auto; /* 允许垂直滚动 */
-    -webkit-overflow-scrolling: touch; /* 让苹果手机滚动更丝滑 */
-    /* 关键修复结束 */
+    .taskbar { 
+        justify-content: center; 
+    }
     
-    color: #fff;
-    font-family: "Segoe UI", sans-serif;
-}
-          /* ✅【全新】猫猫互动小按钮样式 */
+    .window { 
+        width: 100vw; 
+        height: 100vh; 
+        top: 0; 
+        left: 0; 
+        max-width: none; 
+        max-height: none; 
+        z-index: 500; 
+    }
+    
+    .title-bar { 
+        border-radius: 0; 
+    }
+    
+    .title {
+        margin-bottom: 15px;
+    }
+    
+    .signature-main {
+        margin-top: 0;
+        margin-bottom: 40px;
+        font-size: 1.2rem;
+    }
+    
+    .date {
+        margin-top: 0;
+        margin-bottom: 70px;
+        font-size: 1rem;
+    }
+    
+    .page-nav-buttons {
+        display: block;
+    }
+    
+    .nav-dots {
+        display: none;
+    }
+    
+    #admin-panel .code-modal-content { 
+        flex-direction: column; 
+        height: 80vh; 
+    }
+}           /* ✅【全新】猫猫互动小按钮样式 */
         .cat-action-btn {
             width: 40px;
             height: 40px;
@@ -1195,58 +1196,176 @@ input[type="text"],
 input[type="password"] {
     user-select: auto !important; /* 允许选中和输入 */
     -webkit-user-select: auto !important; /* 兼容老版 Chrome/Safari */
-}/* ==================== 歌词字幕样式 ==================== */
-.subtitle-container {
+}/* ==================== 🤖 管理员后台 V3.0 (赛博科技风) ==================== */
+
+#admin-panel {
     position: fixed;
-    bottom: 80px; /* 距离底部的位置 */
-    left: 0;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: #050510; /* 深黑蓝背景 */
+    z-index: 5000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    font-family: "Courier New", monospace; /* 强制等宽字体，更有代码感 */
+}
+
+/* 动态背景网格 */
+.cyber-grid-bg {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: 
+        linear-gradient(rgba(76, 201, 240, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(76, 201, 240, 0.1) 1px, transparent 1px);
+    background-size: 40px 40px;
+    z-index: -1;
+    opacity: 0.3;
+}
+
+.admin-content-wrapper {
     width: 100%;
+    max-width: 800px;
+    padding: 40px 20px 100px 20px; /* 底部留空 */
+    z-index: 1;
+}
+
+/* 头部样式 */
+.cyber-header {
     text-align: center;
-    z-index: 500; /* 保证在滚动文字上面 */
-    pointer-events: none; /* 即使有字幕也不影响点击屏幕暂停 */
-    
-    /* 字体样式 */
-    font-size: 22px;
-    font-weight: normal;
-    color: rgba(255, 255, 255, 0.9);
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8); /* 加重阴影，防背景干扰 */
-    font-family: "Microsoft YaHei", sans-serif;
+    margin-bottom: 40px;
+    border-bottom: 2px solid #4CC9F0;
+    padding-bottom: 20px;
+}
+
+.cyber-glitch {
+    font-size: 32px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 2px 2px #F72585, -2px -2px #4CC9F0; /* 故障风阴影 */
+    letter-spacing: 4px;
+    margin-bottom: 10px;
+}
+
+.cyber-status {
+    font-size: 12px;
+    color: #aaa;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.blink { animation: blinker 1s linear infinite; color: #4CAF50; }
+@keyframes blinker { 50% { opacity: 0; } }
+
+/* 区块通用样式 */
+.cyber-section {
+    background: rgba(16, 20, 30, 0.8);
+    border: 1px solid #333;
+    border-left: 4px solid #4CC9F0; /* 左侧亮条 */
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 0 20px rgba(76, 201, 240, 0.1);
+    position: relative;
+}
+
+.cyber-section.highlight-section {
+    border-left-color: #F72585; /* 核心区域换成粉色 */
+    background: rgba(30, 10, 20, 0.6);
+}
+
+.cyber-title {
+    color: #4CC9F0;
+    font-size: 16px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-transform: uppercase;
     letter-spacing: 1px;
-    
-    /* 动画过渡 */
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    opacity: 0; /* 默认隐藏，有歌词时显示 */
 }
 
-/* 激活状态（显示） */
-.subtitle-container.active {
-    opacity: 1;
-    transform: translateY(0);
+/* 代码截图修复 & 扫描线特效 */
+.code-modal-content {
+    display: flex;
+    gap: 15px;
+}
+.code-column { flex: 1; }
+.code-label {
+    font-size: 10px; color: #666; margin-bottom: 5px; text-align: center;
 }
 
-/* 隐藏状态（上一句结束） */
-.subtitle-container.hidden {
-    opacity: 0;
-    transform: translateY(10px);
-}        /* ==================== 歌词安全区遮罩 ==================== */
-        .safe-zone-mask {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 300px; /* 遮罩高度，覆盖底部区域 */
-            
-            /* 核心魔法：从上到下的渐变 */
-            /* 上面是透明的，中间半透明，最下面是纯黑 */
-            background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.8) 40%, #000 80%);
-            
-            z-index: 1500; /* 层级：在滚动文字(默认0)之上，在歌词(2000)之下 */
-            pointer-events: none; /* 不挡鼠标点击 */
-        }
+.code-image-wrapper {
+    height: 120px;
+    overflow: hidden;
+    border: 1px solid #444;
+    position: relative;
+    cursor: pointer;
+}
 
-        /* 确保歌词在遮罩之上 */
-        .subtitle-container {
-            z-index: 2000; 
-            /* 之前的样式保持不变... */
-            bottom: 60px; /* 稍微调整位置，让它处于纯黑区域 */
-        }
+.code-image-wrapper img {
+    width: 100%; height: 100%; object-fit: cover; object-position: top;
+    filter: grayscale(80%); /* 默认黑白，更有科技感 */
+    transition: 0.3s;
+}
+.code-image-wrapper:hover img { filter: grayscale(0%); }
+
+/* 扫描线动画 */
+.scan-line {
+    position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+    background: rgba(76, 201, 240, 0.8);
+    box-shadow: 0 0 10px #4CC9F0;
+    animation: scan 3s linear infinite;
+    pointer-events: none;
+}
+@keyframes scan { 0% {top: 0;} 100% {top: 100%;} }
+
+/* 那个巨大的按钮 (启动器) */
+.credits-launcher {
+    background: linear-gradient(90deg, #F72585 0%, #7209B7 100%);
+    padding: 2px; /* 伪装成边框 */
+    cursor: pointer;
+    transition: transform 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+.credits-launcher:hover { transform: scale(1.02); }
+
+.launcher-content {
+    background: #111; /* 内部深色 */
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    color: #fff;
+}
+.credits-launcher:hover .launcher-content { background: #1a0b15; }
+
+.launcher-icon { font-size: 30px; margin-right: 15px; }
+.launcher-text h2 { margin: 0; font-size: 16px; color: #F72585; letter-spacing: 1px; }
+.launcher-text p { margin: 5px 0 0 0; font-size: 11px; color: #888; }
+.launcher-arrow { margin-left: auto; color: #F72585; font-weight: bold; }
+
+/* 底部返回按钮 */
+.cyber-back-btn {
+    width: 100%;
+    padding: 15px;
+    background: transparent;
+    border: 1px solid #4CC9F0;
+    color: #4CC9F0;
+    font-family: "Courier New", monospace;
+    cursor: pointer;
+    transition: 0.3s;
+    font-weight: bold;
+}
+.cyber-back-btn:hover {
+    background: rgba(76, 201, 240, 0.1);
+    box-shadow: 0 0 15px rgba(76, 201, 240, 0.3);
+    text-shadow: 0 0 5px #4CC9F0;
+}
+
+/* 手机适配 */
+@media (max-width: 600px) {
+    .code-modal-content { flex-direction: row; } /* 保持横排但可能挤 */
+    .code-image-wrapper { height: 80px; }
+    .cyber-glitch { font-size: 24px; }
+}

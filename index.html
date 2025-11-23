@@ -55,11 +55,7 @@
             <div class="icon" ondblclick="openWindow('manor')">
                 <img src="images/icon-manor.png" alt="我们的庄园">
                 <span>我们的庄园.exe</span>
-                <div class="icon" onclick="alert('🚧 施工中...\n这里计划做一个消消乐小游戏，敬请期待！')">
-    <img src="images/icon-candy.png" alt="消消乐">
-    <span>消消乐.exe</span>
-</div>
-            
+            </div>
         </div>
 
         <!-- 所有窗口的容器 -->
@@ -80,7 +76,10 @@
                 </div>
             </div>
 
-            <!-- 我们的庄园 窗口（游戏） -->
+            <!-- 我们的庄园 窗口
+             
+            
+（游戏） -->
             <div id="manor-window" class="window hidden">
                 <div class="title-bar">
                     <div class="title-bar-text">🏡 我们的庄园</div>
@@ -117,56 +116,78 @@
         </div>
     </main>
 
-     <!-- ==================== 管理员后台 (Developer Hub) ==================== -->
+       <!-- ==================== 管理员后台 (V3.0 赛博核心版) ==================== -->
     <div id="admin-panel" class="hidden">
-        <div class="admin-header">
-            <h1>&gt;&gt; ADMINISTRATOR_HUB</h1>
-            <p>// Welcome, Developer "Sunflower". System Ready.</p>
-        </div>
-        
-        <!-- 区域1：源代码档案 (展示你的努力) -->
-        <div class="admin-section">
-            <h3 class="section-title">🛠️ 源代码档案 (Source Code)</h3>
-            <div class="code-modal-content">
-                <div class="code-column">
-                    <h4>HTML: 骨骼</h4>
-                    <div class="code-image-wrapper">
-                        <img src="images/code_html.png" alt="HTML Code" onclick="openImageViewer(this.src)">
-                    </div>
-                </div>
-                <div class="code-column">
-                    <h4>CSS: 皮肤</h4>
-                    <div class="code-image-wrapper">
-                        <img src="images/code_css.png" alt="CSS Code" onclick="openImageViewer(this.src)">
-                    </div>
-                </div>
-                <div class="code-column">
-                    <h4>JS: 灵魂</h4>
-                    <div class="code-image-wrapper">
-                        <img src="images/code_js.png" alt="JavaScript Code" onclick="openImageViewer(this.src)">
-                    </div>
+        <!-- 动态背景网格 -->
+        <div class="cyber-grid-bg"></div>
+
+        <div class="admin-content-wrapper">
+            <div class="cyber-header">
+                <div class="cyber-glitch" data-text="SYSTEM_ROOT_ACCESS">SYSTEM_ROOT_ACCESS</div>
+                <div class="cyber-status">
+                    <span>USER: <strong style="color: #F72585;">SUNFLOWER</strong></span>
+                    <span class="blink">_ONLINE</span>
+                    <span>SECURITY: <strong style="color: #4CC9F0;">0%</strong></span>
                 </div>
             </div>
-        </div>
-
-        <!-- 区域2：核心机密 (制作人员名单) -->
-        <div class="admin-section" style="margin-top: 30px; text-align: center;">
-            <h3 class="section-title">❤️ 核心数据 (The Heart)</h3>
             
-            <!-- 这是一个巨大的、发光的按钮 -->
-            <div class="credits-launcher" onclick="window.location.href='credits.html'">
-                <div class="launcher-icon">🎬</div>
-                <div class="launcher-text">
-                    <h2>播放制作人员名单</h2>
-                    <p>View Staff Roll & Credits</p>
+            <!-- 区域1：核心代码库 (Source Code) -->
+            <div class="cyber-section">
+                <div class="cyber-title">
+                    <span class="icon">💾</span> SOURCE_CODE_ARCHIVE
                 </div>
-                <div class="launcher-arrow">➔</div>
+                <div class="code-modal-content">
+                    <div class="code-column">
+                        <div class="code-label">HTML5::SKELETON</div>
+                        <div class="code-image-wrapper">
+                            <img src="images/code_html.png" alt="HTML" onclick="openImageViewer(this.src)">
+                            <div class="scan-line"></div>
+                        </div>
+                    </div>
+                    <div class="code-column">
+                        <div class="code-label">CSS3::SKIN</div>
+                        <div class="code-image-wrapper">
+                            <img src="images/code_css.png" alt="CSS" onclick="openImageViewer(this.src)">
+                            <div class="scan-line"></div>
+                        </div>
+                    </div>
+                    <div class="code-column">
+                        <div class="code-label">JS::SOUL</div>
+                        <div class="code-image-wrapper">
+                            <img src="images/code_js.png" alt="JS" onclick="openImageViewer(this.src)">
+                            <div class="scan-line"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <!-- 底部返回按钮 -->
-        <button class="proceed-btn" onclick="proceedToHub()" style="margin-top: 40px;">➔ 返回 OS 桌面</button>
+            <!-- 区域2：真·结局入口 (Credits) -->
+            <div class="cyber-section highlight-section">
+                <div class="cyber-title">
+                    <span class="icon">❤️</span> HIDDEN_MEMORY_FRAGMENT
+                </div>
+                
+                <!-- 那个巨大的按钮 -->
+                <div class="credits-launcher" onclick="window.location.href='credits.html'">
+                    <div class="launcher-deco"></div>
+                    <div class="launcher-content">
+                        <div class="launcher-icon">🎬</div>
+                        <div class="launcher-text">
+                            <h2>INITIALIZE_CREDITS_ROLL</h2>
+                            <p>>> 播放制作人员名单 & 致辞</p>
+                        </div>
+                        <div class="launcher-arrow">➔</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部返回 -->
+            <button class="cyber-back-btn" onclick="proceedToHub()">
+                &lt; LOGOUT & RETURN_TO_OS /&gt;
+            </button>
+        </div>
     </div>
+
     <!-- ==================== 图片查看器（放大代码截图） ==================== -->
     <div id="imageViewerModal" class="hidden">
         <div class="image-viewer-overlay" onclick="closeImageViewer()"></div>

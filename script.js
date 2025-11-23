@@ -69,7 +69,7 @@ function enterOS() {
             setTimeout(proceedToAdmin, 1500);
         } else {
             errorMsg.style.color = "#e74c3c";
-            errorMsg.textContent = "error！Insufficient permissions";
+            errorMsg.textContent = "连我生日都记不住！滚！";
             passwordScreen.classList.add('shake');
             setTimeout(() => { passwordScreen.classList.remove('shake'); }, 500);
         }
