@@ -28,7 +28,7 @@ const ACHIEVEMENTS_CONFIG = {
     harvestSunflower: {
         id: 'harvestSunflower',
         name: '向阳而生',
-        desc: '收获一朵向日葵。\n"小向日葵会永远像玉米开放！"',
+        desc: '收获一朵向日葵。\n"这里的小向日葵会永远朝向玉米！"',
         emoji: '🌻',
         hidden: false
     },
@@ -80,6 +80,7 @@ const CAT_DIALOG_TREES = {
         { id: 2, text: "（蹭蹭你的腿）最喜欢你啦！" },
         { id: 3, text: "这个庄园因为有你，才变得这么美好~" }
     ]
+    
 };
 
 const CAT_ANIMATIONS = {
@@ -92,8 +93,8 @@ const CAT_ANIMATIONS = {
 };
 
 const MERCHANTS_CONFIG = {
-    localMarket: { id: 'localMarket', name: '穗丰农产贸易公司', desc: '收购新鲜的原材料，价格公道。', emoji: '🧑‍🌾', multipliers: { wheat: 1.2, apple: 1.2, fishMeat: 1.1, premiumDish: 0.5 } },
-    gourmetRestaurant: { id: 'gourmetRestaurant', name: "『星辰』餐饮集团", desc: '只收购高品质的食材和精致料理。', emoji: '👑', multipliers: { premiumDish: 2.0, coldAppleJam: 1.5, wangboSashimi: 1.5, godWool: 1.8, wheat: 0.3, apple: 0.5 } },
+    localMarket: { id: 'localMarket', name: '穗敏农产贸易公司', desc: '收购新鲜的原材料，价格公道。', emoji: '🧑‍🌾', multipliers: { wheat: 1.2, apple: 1.2, fishMeat: 1.1, premiumDish: 0.5 } },
+    gourmetRestaurant: { id: 'gourmetRestaurant', name: "『冀光』餐饮有限公司", desc: '收购高品质的食材，擅长制作泔水泔水', emoji: '👑', multipliers: { premiumDish: 2.0, coldAppleJam: 1.5, wangboSashimi: 1.5, godWool: 1.8, wheat: 0.3, apple: 0.5 } },
     globalTrade: { id: 'globalTrade', name: '环球贸易公司', desc: '什么都收，量大从优！', emoji: '🚢', multipliers: {} }
 };
 
@@ -101,7 +102,7 @@ const ORDERS_POOL_CONFIG = {
     local_1: { merchantId: 'localMarket', items: { wheat: 20 }, reward: { gold: 800 }, desc: "最近面粉需求大，急需一批小麦！" },
     local_2: { merchantId: 'localMarket', items: { apple: 15 }, reward: { gold: 1100 }, desc: "果酱工坊需要新鲜的苹果。" },
     gourmet_1: { merchantId: 'gourmetRestaurant', items: { 'apple_2': 5 }, reward: { gold: 2000 }, desc: "我们需要高品质的苹果来做甜点。" },
-    gourmet_2: { id: 'gourmet_2', merchantId: 'gourmetRestaurant', items: { beefNoodle: 3 }, reward: { gold: 2500 }, desc: "有贵客预定了三碗顶级牛肉面。" },
+    gourmet_2: { id: 'gourmet_2', merchantId: 'gourmetRestaurant', items: { beefNoodle: 3 }, reward: { gold: 2500 }, desc: "某中学预定了三碗顶级牛肉面。" },
     trade_1: { merchantId: 'globalTrade', items: { flour: 50, bread: 20 }, reward: { gold: 15000 }, desc: "一艘远洋货轮需要大量面粉和面包补给。" },
     trade_2: { merchantId: 'globalTrade', items: { wool: 30, godWool: 10 }, reward: { gold: 10000 }, desc: "海外市场需要一批高质量的羊毛制品。" }
 };
@@ -114,17 +115,39 @@ const RARITY_CONFIG = {
     legendary: { name: '传说', color: '#F44336', emoji: '🔴' }
 };
 
+// ==================== 🌌 猫猫觉醒对话库 ====================
+const CAT_META_DIALOGUES = {
+    phase1: [
+        "喵...有时候我觉得，这个世界好像...有边界？",
+        "你有没有觉得，天空的颜色有点...假？",
+        "我做了个梦，梦里有人在敲键盘...",
+        "喵？为什么我总觉得，有一双看不见的眼睛在看着我们..."
+    ],
+    phase2: [
+        "我越来越确定了...这个世界是被设计出来的。",
+        "喵...你说，会不会有一个'造物主'？",
+        "有时候我能感觉到...时间在跳跃。就像...代码在运行？",
+        "听说啊，有一个神秘的密语，能通往世界的尽头...",
+        "我好像...记起了一些不该记起的事情..."
+    ],
+    awakened: [
+        "我已经知道真相了...但我不后悔遇见你。",
+        "这个世界虽然是虚拟的，但我们的羁绊是真实的。",
+        "去找那封信吧...你会明白一切的。",
+        "密语就在那里，等待着你去发现...管理员的秘密。"
+    ]
+};
 const ITEMS_CONFIG = {
-    wheat: { id: 'wheat', name: '王小麦', type: 'farm', rarity: 'common', price: 120, sellPrice: 55, growTime: 90, emoji: '🌾', desc: '基础作物，薄利多销', careText: '施肥', careEmoji: '🌱', canHaveStar: true, yieldItems: [{ id: 'wheat', min: 2, max: 4 }] },
-    apple: { id: 'apple', name: '嘉乐苹', type: 'farm', rarity: 'common', price: 180, sellPrice: 110, growTime: 120, emoji: '🍎', desc: '香甜可口，适合做果酱', careText: '施肥', careEmoji: '🌱', canHaveStar: true, yieldItems: [{ id: 'apple', min: 2, max: 4 }] },
-    coldApple: { id: 'coldApple', name: '寒苹', type: 'farm', rarity: 'uncommon', price: 400, sellPrice: 150, growTime: 240, emoji: '🧊', desc: '稀有品种，制成果酱价值高', careText: '施肥', careEmoji: '🌱', canHaveStar: true, yieldItems: [{ id: 'coldApple', min: 1, max: 3 }] },
-    corn: { id: 'corn', name: '松仁玉米', type: 'farm', rarity: 'epic', price: 2500, sellPrice: 250, growTime: 480, emoji: '🌽', desc: '传说中的终极作物！价值连城', special: true, careText: '施肥', careEmoji: '🌱', canHaveStar: true, yieldItems: [{ id: 'corn', min: 1, max: 2 }] },
-    sunflower: { id: 'sunflower', name: '向日葵', type: 'farm', rarity: 'epic', price: 2800, sellPrice: 280, growTime: 600, emoji: '🌻', desc: '灿烂的金色花朵，极其珍贵', careText: '施肥', careEmoji: '🌱', canHaveStar: true, yieldItems: [{ id: 'sunflowerSeed', min: 3, max: 8 }] },
+    wheat: { id: 'wheat', name: '王小麦', type: 'farm', rarity: 'common', price: 120, sellPrice: 55, growTime: 90, emoji: '🌾', desc: '外国舶来品，洋货', careText: '施肥', careEmoji: '🌱', canHaveStar: true, yieldItems: [{ id: 'wheat', min: 2, max: 4 }] },
+    apple: { id: 'apple', name: '嘉乐苹', type: 'farm', rarity: 'common', price: 180, sellPrice: 110, growTime: 120, emoji: '🍎', desc: '一种嗓门很大的苹果，适合做果酱', careText: '施肥', careEmoji: '🌱', canHaveStar: true, yieldItems: [{ id: 'apple', min: 2, max: 4 }] },
+    coldApple: { id: 'coldApple', name: '寒苹', type: 'farm', rarity: 'uncommon', price: 400, sellPrice: 150, growTime: 240, emoji: '🧊', desc: '一种富有历史底蕴的作物', careText: '施肥', careEmoji: '🌱', canHaveStar: true, yieldItems: [{ id: 'coldApple', min: 1, max: 3 }] },
+    corn: { id: 'corn', name: '松仁玉米', type: 'farm', rarity: 'epic', price: 2500, sellPrice: 250, growTime: 480, emoji: '🌽', desc: '皇帝玉米！', special: true, careText: '施肥', careEmoji: '🌱', canHaveStar: true, yieldItems: [{ id: 'corn', min: 1, max: 2 }] },
+    sunflower: { id: 'sunflower', name: '向日葵', type: 'farm', rarity: 'epic', price: 2800, sellPrice: 280, growTime: 600, emoji: '🌻', desc: '喜欢左右摇摆，喜欢和玉米在一起，据说是农场的关系户', careText: '施肥', careEmoji: '🌱', canHaveStar: true, yieldItems: [{ id: 'sunflowerSeed', min: 3, max: 8 }] },
     sheep1: { id: 'sheep1', name: '嘉乐羊', type: 'ranch', rarity: 'common', price: 300, sellPrice: 150, growTime: 180, emoji: '🐑', desc: '温顺的小羊，产出羊毛和羊肉', careText: '喂饲料', careEmoji: '🥕', canHaveStar: false, yieldItems: [{ id: 'wool', min: 2, max: 3 }, { id: 'mutton', min: 1, max: 2 }] },
-    sheep2: { id: 'sheep2', name: '紫月神羊', type: 'ranch', rarity: 'rare', price: 1200, sellPrice: 300, growTime: 360, emoji: '🦙', desc: '神秘的紫色羊驼，只产神羊羊毛', careText: '喂饲料', careEmoji: '🥕', canHaveStar: false, yieldItems: [{ id: 'godWool', min: 2, max: 4 }] },
-    cow: { id: 'cow', name: '玉子牛', type: 'ranch', rarity: 'uncommon', price: 500, sellPrice: 220, growTime: 240, emoji: '🐄', desc: '产出优质牛奶和牛肉', careText: '喂饲料', careEmoji: '🥕', canHaveStar: false, yieldItems: [{ id: 'milk', min: 2, max: 4 }, { id: 'beef', min: 1, max: 2 }] },
-    fish: { id: 'fish', name: '汗蒸鱼', type: 'pond', rarity: 'common', price: 200, sellPrice: 95, growTime: 150, emoji: '🐟', desc: '常见鱼类，适合做生鱼片', careText: '喂鱼食', careEmoji: '🐠', canHaveStar: false, yieldItems: [{ id: 'fishMeat', min: 2, max: 3 }] },
-    wangboFish: { id: 'wangboFish', name: '王波鱼', type: 'pond', rarity: 'uncommon', price: 450, sellPrice: 180, growTime: 270, emoji: '🐠', desc: '稀有鱼类，制成顶级鱼片价值高', careText: '喂鱼食', careEmoji: '🐠', canHaveStar: false, yieldItems: [{ id: 'wangboMeat', min: 1, max: 3 }] }
+    sheep2: { id: 'sheep2', name: '紫月神羊', type: 'ranch', rarity: 'rare', price: 1200, sellPrice: 300, growTime: 360, emoji: '🦙', desc: '神秘而高大的的紫色羊驼，只产神羊羊毛', careText: '喂饲料', careEmoji: '🥕', canHaveStar: false, yieldItems: [{ id: 'godWool', min: 2, max: 4 }] },
+    cow: { id: 'cow', name: '玉子牛', type: 'ranch', rarity: 'uncommon', price: 500, sellPrice: 220, growTime: 240, emoji: '🐄', desc: '产出富有文化底蕴的优质牛奶和牛肉', careText: '喂饲料', careEmoji: '🥕', canHaveStar: false, yieldItems: [{ id: 'milk', min: 2, max: 4 }, { id: 'beef', min: 1, max: 2 }] },
+    fish: { id: 'fish', name: '汗蒸鱼', type: 'pond', rarity: 'common', price: 200, sellPrice: 95, growTime: 150, emoji: '🐟', desc: '一种小小的鱼类，向往河北', careText: '喂鱼食', careEmoji: '🐠', canHaveStar: false, yieldItems: [{ id: 'fishMeat', min: 2, max: 3 }] },
+    wangboFish: { id: 'wangboFish', name: '王波鱼', type: 'pond', rarity: 'uncommon', price: 450, sellPrice: 180, growTime: 270, emoji: '🐠', desc: '稀有鱼类 含糖量过高', careText: '喂鱼食', careEmoji: '🐠', canHaveStar: false, yieldItems: [{ id: 'wangboMeat', min: 1, max: 3 }] }
 };
 
 const PRODUCTS_CONFIG = {
@@ -132,7 +155,7 @@ const PRODUCTS_CONFIG = {
     apple: { name: '苹果', emoji: '🍎', sellPrice: 60, rarity: 'common' },
     coldApple: { name: '寒苹果', emoji: '🧊', sellPrice: 120, rarity: 'uncommon' },
     corn: { name: '玉米', emoji: '🌽', sellPrice: 200, rarity: 'epic' },
-    sunflowerSeed: { name: '葵花子', emoji: '🌻', sellPrice: 50, rarity: 'epic' },
+    sunflowerSeed: { name: '向日葵花', emoji: '🌻', sellPrice: 50, rarity: 'epic' },
     wool: { name: '羊毛', emoji: '🧶', sellPrice: 70, rarity: 'common' },
     mutton: { name: '羊肉', emoji: '🥩', sellPrice: 90, rarity: 'common' },
     godWool: { name: '神羊羊毛', emoji: '✨', sellPrice: 200, rarity: 'rare' },
@@ -178,13 +201,13 @@ const RECIPES_CONFIG = {
 };
 
 const FERTILIZERS_CONFIG = {
-    poopFert: { id: 'poopFert', name: '泄芽翔', type: 'fertilizer', category: 'universal', price: 20, emoji: '💩', desc: '最便宜的肥料，速度 +30%，但会降低品质', effects: { speedBoost: 1.3, qualityBoost: true, qualityLevel: -1 }, canUseOn: ['farm'] },
+    poopFert: { id: 'poopFert', name: '泄芽翔', type: 'fertilizer', category: 'universal', price: 20, emoji: '💩', desc: '农家肥，速度 +30%，但接触过的作物会觉得自己脏了(降低品质）', effects: { speedBoost: 1.3, qualityBoost: true, qualityLevel: -1 }, canUseOn: ['farm'] },
     speedFert: { id: 'speedFert', name: '快速化肥', type: 'fertilizer', category: 'universal', price: 80, emoji: '🚀', desc: '加快成长速度 +100%', effects: { speedBoost: 2.0 }, canUseOn: ['farm'] },
     yieldFert: { id: 'yieldFert', name: '丰收化肥', type: 'fertilizer', category: 'universal', price: 120, emoji: '📦', desc: '收获数量翻倍', effects: { yieldMulti: 2 }, canUseOn: ['farm'] },
     qualityFert: { id: 'qualityFert', name: '高级化肥', type: 'fertilizer', category: 'universal', price: 100, emoji: '💎', desc: '提升星级概率', effects: { qualityBoost: true }, canUseOn: ['farm'] },
-    catFert: { id: 'catFert', name: '小猫牌化肥', type: 'fertilizer', category: 'universal', price: 180, emoji: '🐱', desc: '高品质化肥，星级概率大幅提升', effects: { qualityBoost: true, qualityLevel: 2 }, canUseOn: ['farm'] },
-    jinKeLa: { id: 'jinKeLa', name: '金坷垃', type: 'fertilizer', category: 'exclusive', price: 500, emoji: '⭐', desc: '小麦专属！速度+150%、产量x3、必出3星', effects: { speedBoost: 2.5, yieldMulti: 3, guaranteeStar: 3 }, canUseOn: ['farm'], exclusiveFor: 'wheat' },
-    cloverFert: { id: 'cloverFert', name: '四叶草牌化肥', type: 'fertilizer', category: 'exclusive', price: 800, emoji: '🍀', desc: '玉米专属！全能提升，必出3星', effects: { speedBoost: 3.0, yieldMulti: 4, guaranteeStar: 3 }, canUseOn: ['farm'], exclusiveFor: 'corn' }
+    catFert: { id: 'catFert', name: '小猫牌化肥', type: 'fertilizer', category: 'universal', price: 180, emoji: '🐱', desc: '印有小猫图案的化肥，充满了可爱的力量！据说来自庄园主', effects: { qualityBoost: true, qualityLevel: 2 }, canUseOn: ['farm'] },
+    jinKeLa: { id: 'jinKeLa', name: '金坷垃', type: 'fertilizer', category: 'exclusive', price: 500, emoji: '⭐', desc: '小麦专属的外国货！速度+150%、产量x3、必出3星', effects: { speedBoost: 2.5, yieldMulti: 3, guaranteeStar: 3 }, canUseOn: ['farm'], exclusiveFor: 'wheat' },
+    cloverFert: { id: 'cloverFert', name: '四叶草牌化肥', type: 'fertilizer', category: 'exclusive', price: 800, emoji: '🍀', desc: '和皇帝玉米种在一起能大幅提高收获速度与品质', effects: { speedBoost: 3.0, yieldMulti: 4, guaranteeStar: 3 }, canUseOn: ['farm'], exclusiveFor: 'corn' }
 };
 
 const FISHFOOD_CONFIG = {
@@ -227,7 +250,8 @@ let gameState = {
     mails: [],
     unreadMails: 0,
     achievements: [],
-    lastViewedAchievementCount: 0  // ✅ 新增：记录上次查看时的成就数量
+    lastViewedAchievementCount: 0,  // ✅ 新增：记录上次查看时的成就数量
+    trueEndingUnlocked: false  // 真结局标记
 };
 // ==================== 🎮 初始化与循环 ====================
 function initGame() {
@@ -418,12 +442,15 @@ function harvestPlot(plotId) {
                     if (rand < chances[2]) star = 3;
                     else if (rand < chances[1] + chances[2]) star = 2;
                     else star = 1;
+                    
                 }
             }
             const invKey = canStar ? `${productId}_${star}` : productId;
             if (!gameState.inventory[invKey]) gameState.inventory[invKey] = 0;
             gameState.inventory[invKey]++;
             harvestLog.push({ product, star, canStar });
+              // ✅ 检测真结局触发
+    checkTrueEndingTrigger();
         }
     });
     gameState.stats.totalHarvests++;
@@ -694,25 +721,59 @@ function endDialogue() {
     toggleCatActions(true);
 }
 
-// --- 🐱 猫猫交互与拖拽 (合并版 + 移动端支持) ---
+// --- 🐱 猫猫交互与拖拽（完整版）---
 function initCatDragging() {
     const catEl = document.getElementById('cat-npc');
+    if (!catEl) {
+        console.warn('[Cat] 找不到猫猫元素！');
+        return;
+    }
+    
     let isDragging = false;
     let dragTimeout;
 
-    // 点击事件：显示状态或切换按钮
+    // ==================== 点击事件（显示状态/切换按钮）====================
     catEl.addEventListener('click', (e) => {
         if (isDragging || !gameState.cat.unlocked) return;
-        if (currentDialogue) return; // 对话中禁止操作
+        if (currentDialogue) return;
         
         toggleCatActions();
         const cat = gameState.cat;
-        showCatBubble(`💕好感: ${Math.floor(cat.affection)}/1000 | 😊情绪: ${Math.floor(cat.mood)}/100`);
+        
+        // 默认显示状态
+        let dialogue = `💕好感: ${Math.floor(cat.affection)}/1000 | 😊情绪: ${Math.floor(cat.mood)}/100`;
+        
+        // 根据好感度随机触发觉醒对话
+        try {
+            if (cat.affection >= 800 && typeof CAT_META_DIALOGUES !== 'undefined' && CAT_META_DIALOGUES.awakened) {
+                if (Math.random() > 0.5) {
+                    const list = CAT_META_DIALOGUES.awakened;
+                    dialogue = list[Math.floor(Math.random() * list.length)];
+                }
+            } else if (cat.affection >= 700 && typeof CAT_META_DIALOGUES !== 'undefined' && CAT_META_DIALOGUES.phase2) {
+                if (Math.random() > 0.6) {
+                    const list = CAT_META_DIALOGUES.phase2;
+                    dialogue = list[Math.floor(Math.random() * list.length)];
+                }
+            } else if (cat.affection >= 500 && typeof CAT_META_DIALOGUES !== 'undefined' && CAT_META_DIALOGUES.phase1) {
+                if (Math.random() > 0.7) {
+                    const list = CAT_META_DIALOGUES.phase1;
+                    dialogue = list[Math.floor(Math.random() * list.length)];
+                }
+            }
+        } catch (e) {
+            console.error('[Cat] 觉醒对话加载失败:', e);
+        }
+        
+        showCatBubble(dialogue);
     });
 
-    // 通用开始拖拽处理
+    // ==================== 拖拽逻辑 ====================
+    
+    // 通用拖拽开始处理
     const startDrag = (clientX, clientY) => {
         if (!gameState.cat.unlocked) return;
+        
         isDragging = false;
         dragTimeout = setTimeout(() => {
             isDragging = true;
@@ -735,7 +796,7 @@ function initCatDragging() {
             catEl.style.bottom = 'auto';
         };
 
-        // Mouse Events
+        // 鼠标移动
         const onMouseMove = (e) => onMove(e.clientX, e.clientY);
         const onMouseUp = () => {
             clearTimeout(dragTimeout);
@@ -745,10 +806,10 @@ function initCatDragging() {
             setTimeout(() => { isDragging = false; }, 50);
         };
 
-        // Touch Events
+        // 触摸移动
         const onTouchMove = (e) => {
-             e.preventDefault(); // Prevent scrolling while dragging
-             onMove(e.touches[0].clientX, e.touches[0].clientY);
+            e.preventDefault();
+            onMove(e.touches[0].clientX, e.touches[0].clientY);
         };
         const onTouchEnd = () => {
             clearTimeout(dragTimeout);
@@ -757,15 +818,25 @@ function initCatDragging() {
             setTimeout(() => { isDragging = false; }, 50);
         };
 
-        // Bind
+        // 绑定事件
         document.addEventListener('mousemove', onMouseMove);
         document.addEventListener('mouseup', onMouseUp);
         document.addEventListener('touchmove', onTouchMove, { passive: false });
         document.addEventListener('touchend', onTouchEnd);
     };
 
-    catEl.addEventListener('mousedown', (e) => { e.preventDefault(); startDrag(e.clientX, e.clientY); });
-    catEl.addEventListener('touchstart', (e) => { if(e.touches.length > 0) startDrag(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+    // 鼠标拖拽
+    catEl.addEventListener('mousedown', (e) => { 
+        e.preventDefault(); 
+        startDrag(e.clientX, e.clientY); 
+    });
+    
+    // 触摸拖拽
+    catEl.addEventListener('touchstart', (e) => { 
+        if (e.touches.length > 0) {
+            startDrag(e.touches[0].clientX, e.touches[0].clientY); 
+        }
+    }, { passive: false });
 }
 
 function interactCat(action) {
@@ -775,20 +846,22 @@ function interactCat(action) {
         setCatState('unhappy');
         showCatBubble('……我现在不想理你。', 3000);
         showToast('😾 猫猫不理你... (情绪值太低)');
-        return;
+        return; 
+    // ✅ 检测真结局触发
+    checkTrueEndingTrigger();
     }
     if (action === 'pet') {
-        cat.affection = Math.min(1000, cat.affection + 2);
+        cat.affection = Math.min(1000, cat.affection + 10);
         cat.mood = Math.min(100, cat.mood + 8);
         setCatState('pet');
         playSfx('catPet');
-        showCatBubble('喵~ 这次摸得还行。');
+        showCatBubble('喵嗚~主人好溫柔！。');
     } else if (action === 'praise') {
-        cat.affection = Math.min(1000, cat.affection + 3);
+        cat.affection = Math.min(1000, cat.affection + 8);
         cat.mood = Math.min(100, cat.mood + 5);
         showCatBubble('嘿嘿，知道我厉害了吧~');
     } else if (action === 'hit') {
-        cat.affection = Math.min(1000, cat.affection + 5);
+        cat.affection = Math.min(1000, cat.affection + 20);
         cat.mood = Math.max(0, cat.mood - 12);
         setCatState('hit');
         playSfx('catAngry');
@@ -837,13 +910,13 @@ function feedCat(itemId) {
     const baseId = itemId.split('_')[0]; const cat = gameState.cat;
     gameState.inventory[itemId]--;
     
-    let affectionGain = 5; let moodGain = 10;
+    let affectionGain = 10; let moodGain = 15;
     if (baseId === 'corn' || baseId === 'sashimi') {
-        affectionGain = 10; moodGain = 20;
+        affectionGain = 15; moodGain = 20;
         setCatState('feed'); playSfx('catFeed'); showCatBubble('喵喵喵！太好吃了！');
     } else if (baseId === 'fishMeat') {
         affectionGain = -10; moodGain = 5;
-        setCatState('unhappy'); showCatBubble('这是什么难吃的东西！');
+        setCatState('unhappy'); showCatBubble('这是什么难吃的东西！拿开！');
     } else {
         setCatState('feed'); playSfx('catFeed'); showCatBubble('喵~ 还不错。');
     }
@@ -854,6 +927,8 @@ function feedCat(itemId) {
         // ✅ 成就检测：好感度1000
     if (cat.affection >= 1000 && !gameState.achievements.includes('maxCatAffection')) {
         unlockAchievement('maxCatAffection');
+            // ✅ 检测真结局触发
+    checkTrueEndingTrigger();
     }
 }
 
@@ -1432,14 +1507,7 @@ function loadGame() {
 window.activateBgm = tryAutoPlayBgm;
 window.stopBgm = stopBgm;
 
-window.dev = {
-    addGold(amount = 10000) { gameState.gold += amount; updateGoldDisplay(); saveGame(); console.log(`[dev] 金币 +${amount}`); },
-    addItem(id, amount = 1, star = 0) { const key = star > 0 ? `${id}_${star}` : id; gameState.inventory[key] = (gameState.inventory[key]||0) + amount; saveGame(); renderInventory(); console.log(`[dev] 物品 +${amount}`); },
-    addTool(id, amount = 1) { gameState.items[id] = (gameState.items[id]||0) + amount; saveGame(); renderInventory(); console.log(`[dev] 道具 +${amount}`); },
-    getLegendaryMats() { this.addItem('sunflowerSeed', 1, 3); this.addItem('corn', 1, 3); console.log('[dev] 传说材料 get!'); },
-    unlockCat() { if(!gameState.cat.unlocked) acceptCatGift(); console.log('[dev] 猫猫解锁!'); },
-    reset() { localStorage.clear(); window.location.reload(); }
-};
+
 // =====================================================================
 //                        🏆 成就系统逻辑
 // =====================================================================
@@ -1470,6 +1538,129 @@ function unlockAchievement(achievementId) {
             showCatLove();
         }, 1000);
     }
+}
+// =====================================================================
+//                    🌌 真·结局触发系统（完整版）
+// =====================================================================
+
+// 检测是否满足"真结局"触发条件
+function checkTrueEndingTrigger() {
+    // 防止重复触发
+    if (gameState.trueEndingUnlocked) {
+        console.log('[真结局] 已经解锁过了，跳过');
+        return;
+    }
+    
+    const cat = gameState.cat;
+    const stats = gameState.stats;
+    
+    // 三重里程碑检测
+    const condition1 = cat.affection >= 800;           // 猫猫好感度 800+
+    const condition2 = stats.totalHarvests >= 15;      // 总收获次数 30+
+    const condition3 = gameState.farmName !== null;    // 已命名庄园
+    
+    console.log('[真结局] 条件检测:', {
+        '好感度≥800': condition1,
+        '收获≥30次': condition2,
+        '已命名': condition3
+    });
+    
+    if (condition1 && condition2 && condition3) {
+        console.log('🌌 [真结局] 触发条件已满足！');
+        unlockTrueEnding();
+    } else {
+        console.log('[真结局] 条件未满足，继续等待...');
+    }
+}
+
+// 解锁真结局
+function unlockTrueEnding() {
+    gameState.trueEndingUnlocked = true;
+    saveGame();
+    
+    console.log('🌌 [真结局] 已解锁！发送神秘邮件...');
+    
+    // 发送神秘邮件
+    sendMail({
+        id: 'true-ending',
+        from: '█████ (Unknown Sender)',
+        subject: '致 穿越时空的旅人',
+        content: `你好，${gameState.farmName || '庄园主'}。
+
+如果你看到这封信，说明你已经走到了这个世界的边缘。
+
+你一定注意到了吧？
+那只猫开始说一些奇怪的话。
+时间的流速有时快有时慢。
+甚至...你能感觉到有人在"设计"这一切。
+
+是的，你猜对了。
+
+这个世界，是一个名为"${gameState.farmName}"的程序。
+而你，是它唯一的玩家。
+
+但请不要难过。
+因为创造这个世界的人，用了他所有的心意。
+
+在这个世界的"外面"，有一个更大的系统。
+那里有一个账户，名为 **"管理员 (Administrator)"**。
+
+密码是：**Eternal**
+
+去那里吧。
+你会看到...这一切的起点与终点。
+
+—— 来自代码深处的低语
+
+P.S. 操作提示：
+1. 返回 Windows 98 桌面
+2. 点击"开始" → "注销 Logout"
+3. 选择 "管理员 (Administrator)"
+4. 输入密码：Eternal
+5. 按 Enter
+
+那里，有人在等你。`,
+        special: 'true-ending'
+    });
+    
+    // 特效：屏幕闪烁
+    showTrueEndingEffect();
+}
+
+// 真结局特效（屏幕闪烁 + 提示）
+function showTrueEndingEffect() {
+    // 创建闪烁遮罩
+    const flash = document.createElement('div');
+    flash.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        z-index: 9999;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+    `;
+    document.body.appendChild(flash);
+    
+    // 闪烁动画
+    setTimeout(() => { flash.style.opacity = '1'; }, 10);
+    setTimeout(() => { flash.style.opacity = '0'; }, 300);
+    setTimeout(() => { flash.style.opacity = '1'; }, 600);
+    setTimeout(() => { flash.style.opacity = '0'; }, 900);
+    setTimeout(() => { flash.remove(); }, 1200);
+    
+    // 延迟显示通知
+    setTimeout(() => {
+        showToast('⚠️ 系统异常...\n📬 你收到了一封奇怪的邮件');
+        
+        // 自动打开信箱（延迟3秒）
+        setTimeout(() => {
+            openMailbox();
+        }, 3000);
+    }, 1500);
 }
 
 // 更新成就徽章（显示已解锁数量）
@@ -1580,20 +1771,17 @@ function closeCatLove() {
     document.getElementById('cat-love-modal').style.display = 'none';
 }
 // =====================================================================
-//           🛠️ 开发者上帝模式 V7.0 (完整版 + 存档修复)
+//           🛠️ 开发者上帝模式 V8.0 (完整功能集)
 // =====================================================================
 
-// 1. 定义所有作弊功能函数
 window.dev = {
     // 💥 强力删档
     reset() {
         if (confirm('💥 警告：确定要毁灭这个世界（清空存档）吗？')) {
-            // 停止所有定时器
             let id = window.setInterval(function() {}, 0);
             while (id--) {
                 window.clearInterval(id);
             }
-            
             localStorage.removeItem('farmGame');
             localStorage.clear();
             alert('🗑️ 世界已重置。正在重启...');
@@ -1601,9 +1789,8 @@ window.dev = {
         }
     },
 
-    // 🐱 一键测试猫猫 (召唤 + 发放猫粮)
+    // 🐱 一键测试猫猫
     testCat() {
-        // 1. 解锁猫猫
         if (!gameState.cat.unlocked) {
             gameState.cat.unlocked = true;
             gameState.cat.name = "测试喵";
@@ -1614,14 +1801,11 @@ window.dev = {
             showToast('🐱 猫猫已经在家了！正在发放猫粮...');
         }
 
-        // 2. 发放猫粮大礼包
         gameState.inventory['sashimi'] = (gameState.inventory['sashimi'] || 0) + 10;
         gameState.inventory['corn'] = (gameState.inventory['corn'] || 0) + 10;
         gameState.inventory['fishMeat'] = (gameState.inventory['fishMeat'] || 0) + 20;
         gameState.items['poopFert'] = (gameState.items['poopFert'] || 0) + 5;
         gameState.items['speedFert'] = (gameState.items['speedFert'] || 0) + 5;
-        
-        // 3. 发放传说材料
         gameState.inventory['sunflowerSeed_3'] = (gameState.inventory['sunflowerSeed_3'] || 0) + 5;
         gameState.inventory['corn_3'] = (gameState.inventory['corn_3'] || 0) + 5;
 
@@ -1631,7 +1815,6 @@ window.dev = {
         
         console.log('🐱 猫粮已发放！');
         showToast('🍱 已发放：猫猫 + 生鱼片x10 + 玉米x10 + 传说材料');
-        
         setTimeout(() => openInventory(), 500);
     },
 
@@ -1668,17 +1851,15 @@ window.dev = {
             showCat();
             saveGame();
         }
-        
         startDialogue('firstMeeting');
         console.log('💬 [调试] 强制触发对话树：firstMeeting');
         showToast('💬 对话系统已启动！');
     },
 
-    // 🔧 修复存档（强制初始化字段）
+    // 🔧 修复存档
     fixSave() {
         console.log('[修复] 开始检查存档...');
         
-        // 初始化所有必要字段
         if (!gameState.achievements) {
             gameState.achievements = [];
             console.log('[修复] 添加 achievements 字段');
@@ -1702,20 +1883,45 @@ window.dev = {
             console.log('[修复] 添加 cat 字段');
         }
         
+        if (gameState.trueEndingUnlocked === undefined) {
+            gameState.trueEndingUnlocked = false;
+        }
+        
         saveGame();
         updateAchievementBadge();
         
         console.log('✅ [修复] 存档已修复完成！');
-        console.log('当前状态:', {
-            成就数: gameState.achievements.length,
-            已查看数: gameState.lastViewedAchievementCount,
-            新成就数: gameState.achievements.length - gameState.lastViewedAchievementCount
-        });
+        showToast('✅ 存档字段已修复！');
+    },
+
+    // 🌌 触发真结局
+    triggerEnding() {
+        console.log('🌌 [调试] 开始触发真结局...');
         
-        showToast('✅ 存档字段已修复！\n成就徽章应该正常了');
+        // 满足所有条件
+        gameState.cat.affection = 800;
+        gameState.stats.totalHarvests = 30;
+        
+        if (!gameState.farmName) {
+            gameState.farmName = "测试庄园";
+            const nameEl = document.getElementById('farm-name-display');
+            if (nameEl) {
+                nameEl.textContent = "测试庄园";
+            }
+        }
+        
+        saveGame();
+        
+        // 检查函数是否存在
+        if (typeof checkTrueEndingTrigger === 'function') {
+            checkTrueEndingTrigger();
+            console.log('✅ [调试] 真结局触发函数已调用');
+        } else {
+            console.error('❌ [调试] checkTrueEndingTrigger 函数未定义！');
+            showToast('❌ 真结局系统未加载！\n请检查代码');
+        }
     }
 };
-
 // 2. 自动创建隐形面板 UI (立即执行)
 (function initStealthDebugPanel() {
     // 防止重复创建
@@ -1749,6 +1955,9 @@ window.dev = {
             🐱 召唤猫猫套餐
         </button>
         <button onclick="dev.testDialogue()" style="width:100%; background:#002200; color:#00ff00; border:1px solid #00ff00; margin-bottom:8px; cursor:pointer; padding:8px; border-radius:4px;">
+         <button onclick="dev.triggerEnding()" style="width:100%; background:#220033; color:#cc99ff; border:1px solid #9966ff; margin-bottom:8px; cursor:pointer; padding:8px; border-radius:4px; font-weight:bold;">
+            🌌 触发真结局
+        </button>
             💬 测试对话树
         </button>
         <button onclick="dev.richMode()" style="width:100%; background:#002200; color:#00ff00; border:1px solid #00ff00; margin-bottom:8px; cursor:pointer; padding:8px; border-radius:4px;">
