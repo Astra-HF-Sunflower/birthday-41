@@ -276,8 +276,8 @@ function initGame() {
     setInterval(checkDelayedEvents, 1000);
     
       // ✅ 游戏启动后尝试自动播放 BGM
-    console.log('[游戏] 尝试启动背景音乐...');
-    tryAutoPlayBgm();
+    //console.log('[游戏] 尝试启动背景音乐...');
+   // tryAutoPlayBgm();
     
     console.log('✅ 游戏启动完成！');
        // 更新成就徽章（显示未读的新成就数量）
@@ -1356,18 +1356,23 @@ function updateBgmButton() {
     }
 }
 
-// ==================== 👂 游戏内交互监听器（智能版）====================
-let bgmAutoPlayed = false; // ✅ 标记：是否已经尝试过自动播放
+// ==================== 👂 游戏内交互监听器（容器限定版）====================
+let bgmAutoPlayed = false;
 
 document.addEventListener('click', (e) => {
+    // ✅ 新增：检查点击是否在游戏容器内
+    const gameContainer = document.getElementById('game-container');
+    if (!gameContainer || !gameContainer.contains(e.target)) {
+        // 如果点击不在游戏容器内，直接返回
+        return;
+    }
+
     // 1. 点击音效（仅按钮）
     if (e.target.tagName === 'BUTTON') {
         playSfx('click');
     }
 
-    // 2. ✅ 智能 BGM 恢复逻辑：
-    // 只要音乐"应该在播放"（isBgmPlaying = true）但实际"暂停了"（bgmAudio.paused）
-    // 就在用户点击游戏内任意位置时，立刻恢复播放
+    // 2. ✅ BGM 恢复逻辑（只在游戏内点击时触发）
     if (isBgmPlaying && !bgmAutoPlayed) {
         if (!bgmAudio) initBgm();
         
@@ -1376,7 +1381,7 @@ document.addEventListener('click', (e) => {
             bgmAudio.play()
                 .then(() => {
                     console.log('🎵 [BGM] 自动播放成功！');
-                    bgmAutoPlayed = true; // 标记已成功，避免重复触发
+                    bgmAutoPlayed = true;
                 })
                 .catch(err => {
                     console.warn('[BGM] 播放依然被拦截:', err);

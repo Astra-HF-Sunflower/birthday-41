@@ -113,7 +113,31 @@ function openWindow(appName) {
         windowEl.classList.remove('hidden');
         minimizedWindows[appName] = false;
     }
-
+if (windowEl) {
+        // ✅ 新增：检查并恢复 iframe 的 src
+        const iframe = windowEl.querySelector('iframe');
+        if (iframe) {
+            // 如果是画廊，且当前是空的或者空白页，就重新加载 gallery.html
+            if (appName === 'gallery') {
+                // 这里的 'gallery.html' 必须和你文件结构里的路径一致！
+                // 如果是在同级目录，就直接写文件名
+                const targetSrc = 'gallery.html'; 
+                
+                // 只有当它不正确的时候才重置，防止每次打开都刷新
+                if (iframe.getAttribute('src') !== targetSrc && iframe.contentWindow.location.pathname.indexOf(targetSrc) === -1) {
+                    iframe.src = targetSrc;
+                }
+            }
+            
+            // 庄园同理，如果也被重置过的话
+            if (appName === 'manor') {
+                 const targetSrc = 'game.html';
+                 if (iframe.getAttribute('src') !== targetSrc && iframe.contentWindow.location.pathname.indexOf(targetSrc) === -1) {
+                    iframe.src = targetSrc;
+                }
+            }
+        }
+       }
     // 显示窗口并带到最前面
     windowEl.classList.remove('hidden');
     document.querySelectorAll('.window').forEach(win => win.style.zIndex = 100);
@@ -172,10 +196,17 @@ function closeWindow(appName) {
 
         const iframe = windowEl.querySelector('iframe');
 
-        // 如果是回忆画廊，调用它的 toggleMusic
-        if (appName === 'gallery' && iframe && iframe.contentWindow && typeof iframe.contentWindow.toggleMusic === 'function') {
-            iframe.contentWindow.toggleMusic();
+       
+        // ✅ 针对画廊的修复逻辑
+        if (appName === 'gallery' && iframe) {
+            // 为了停止音乐，我们清空 src，但不要留空字符串，给一个空白页
+            // 这样浏览器就不会傻傻地去加载 index.html 了
+            iframe.src = 'about:blank';
+            
+            // 或者，如果你想保留状态，最好是用 window.stopMusic() 方法 (见上一个回答)
+            // 但既然你要解决套娃，说明你现在用的是“重置src法”
         }
+
 
         // ✅ 【核心修改】如果是庄园游戏，调用它的 stopBgm
         if (appName === 'manor' && iframe && iframe.contentWindow && typeof iframe.contentWindow.stopBgm === 'function') {
