@@ -99,12 +99,12 @@ const MERCHANTS_CONFIG = {
 };
 
 const ORDERS_POOL_CONFIG = {
-    local_1: { merchantId: 'localMarket', items: { wheat: 20 }, reward: { gold: 800 }, desc: "最近面粉需求大，急需一批小麦！" },
-    local_2: { merchantId: 'localMarket', items: { apple: 15 }, reward: { gold: 1100 }, desc: "果酱工坊需要新鲜的苹果。" },
+    local_1: { merchantId: 'localMarket', items: { wheat: 15 }, reward: { gold: 800 }, desc: "最近面粉需求大，急需一批小麦！" },
+    local_2: { merchantId: 'localMarket', items: { apple: 10 }, reward: { gold: 1100 }, desc: "果酱工坊需要新鲜的苹果。" },
     gourmet_1: { merchantId: 'gourmetRestaurant', items: { 'apple_2': 5 }, reward: { gold: 2000 }, desc: "我们需要高品质的苹果来做甜点。" },
     gourmet_2: { id: 'gourmet_2', merchantId: 'gourmetRestaurant', items: { beefNoodle: 3 }, reward: { gold: 2500 }, desc: "某中学预定了三碗顶级牛肉面。" },
-    trade_1: { merchantId: 'globalTrade', items: { flour: 50, bread: 20 }, reward: { gold: 15000 }, desc: "一艘远洋货轮需要大量面粉和面包补给。" },
-    trade_2: { merchantId: 'globalTrade', items: { wool: 30, godWool: 10 }, reward: { gold: 10000 }, desc: "海外市场需要一批高质量的羊毛制品。" }
+    trade_1: { merchantId: 'globalTrade', items: { flour: 30, bread: 10 }, reward: { gold: 15000 }, desc: "一艘远洋货轮需要大量面粉和面包补给。" },
+    trade_2: { merchantId: 'globalTrade', items: { wool: 20, godWool: 5 }, reward: { gold: 10000 }, desc: "海外市场需要一批高质量的羊毛制品。" }
 };
 
 const RARITY_CONFIG = {
@@ -138,46 +138,46 @@ const CAT_META_DIALOGUES = {
     ]
 };
 const ITEMS_CONFIG = {
-    wheat: { id: 'wheat', name: '王小麦', type: 'farm', rarity: 'common', price: 120, sellPrice: 55, growTime: 90, emoji: '🌾', desc: '外国舶来品，洋货', careText: '施肥', careEmoji: '🌱', canHaveStar: true, yieldItems: [{ id: 'wheat', min: 2, max: 4 }] },
-    apple: { id: 'apple', name: '嘉乐苹', type: 'farm', rarity: 'common', price: 180, sellPrice: 110, growTime: 120, emoji: '🍎', desc: '一种嗓门很大的苹果，适合做果酱', careText: '施肥', careEmoji: '🌱', canHaveStar: true, yieldItems: [{ id: 'apple', min: 2, max: 4 }] },
-    coldApple: { id: 'coldApple', name: '寒苹', type: 'farm', rarity: 'uncommon', price: 400, sellPrice: 150, growTime: 240, emoji: '🧊', desc: '一种富有历史底蕴的作物', careText: '施肥', careEmoji: '🌱', canHaveStar: true, yieldItems: [{ id: 'coldApple', min: 1, max: 3 }] },
-    corn: { id: 'corn', name: '松仁玉米', type: 'farm', rarity: 'epic', price: 2500, sellPrice: 250, growTime: 480, emoji: '🌽', desc: '皇帝玉米！', special: true, careText: '施肥', careEmoji: '🌱', canHaveStar: true, yieldItems: [{ id: 'corn', min: 1, max: 2 }] },
-    sunflower: { id: 'sunflower', name: '向日葵', type: 'farm', rarity: 'epic', price: 2800, sellPrice: 280, growTime: 600, emoji: '🌻', desc: '喜欢左右摇摆，喜欢和玉米在一起，据说是农场的关系户', careText: '施肥', careEmoji: '🌱', canHaveStar: true, yieldItems: [{ id: 'sunflowerSeed', min: 3, max: 8 }] },
-    sheep1: { id: 'sheep1', name: '嘉乐羊', type: 'ranch', rarity: 'common', price: 300, sellPrice: 150, growTime: 180, emoji: '🐑', desc: '温顺的小羊，产出羊毛和羊肉', careText: '喂饲料', careEmoji: '🥕', canHaveStar: false, yieldItems: [{ id: 'wool', min: 2, max: 3 }, { id: 'mutton', min: 1, max: 2 }] },
-    sheep2: { id: 'sheep2', name: '紫月神羊', type: 'ranch', rarity: 'rare', price: 1200, sellPrice: 300, growTime: 360, emoji: '🦙', desc: '神秘而高大的的紫色羊驼，只产神羊羊毛', careText: '喂饲料', careEmoji: '🥕', canHaveStar: false, yieldItems: [{ id: 'godWool', min: 2, max: 4 }] },
-    cow: { id: 'cow', name: '玉子牛', type: 'ranch', rarity: 'uncommon', price: 500, sellPrice: 220, growTime: 240, emoji: '🐄', desc: '产出富有文化底蕴的优质牛奶和牛肉', careText: '喂饲料', careEmoji: '🥕', canHaveStar: false, yieldItems: [{ id: 'milk', min: 2, max: 4 }, { id: 'beef', min: 1, max: 2 }] },
-    fish: { id: 'fish', name: '汗蒸鱼', type: 'pond', rarity: 'common', price: 200, sellPrice: 95, growTime: 150, emoji: '🐟', desc: '一种小小的鱼类，向往河北', careText: '喂鱼食', careEmoji: '🐠', canHaveStar: false, yieldItems: [{ id: 'fishMeat', min: 2, max: 3 }] },
-    wangboFish: { id: 'wangboFish', name: '王波鱼', type: 'pond', rarity: 'uncommon', price: 450, sellPrice: 180, growTime: 270, emoji: '🐠', desc: '稀有鱼类 含糖量过高', careText: '喂鱼食', careEmoji: '🐠', canHaveStar: false, yieldItems: [{ id: 'wangboMeat', min: 1, max: 3 }] }
+    wheat: { id: 'wheat', name: '王小麦', type: 'farm', rarity: 'common', price: 30, sellPrice: 55, growTime: 90, emoji: '🌾', desc: '外国舶来品，洋货', careText: '施肥', careEmoji: '🌱', canHaveStar: true, yieldItems: [{ id: 'wheat', min: 2, max: 4 }] },
+    apple: { id: 'apple', name: '嘉乐苹', type: 'farm', rarity: 'common', price: 120, sellPrice: 110, growTime: 120, emoji: '🍎', desc: '一种嗓门很大的苹果，适合做果酱', careText: '施肥', careEmoji: '🌱', canHaveStar: true, yieldItems: [{ id: 'apple', min: 2, max: 4 }] },
+    coldApple: { id: 'coldApple', name: '寒苹', type: 'farm', rarity: 'uncommon', price: 280, sellPrice: 150, growTime: 240, emoji: '🧊', desc: '一种富有历史底蕴的作物', careText: '施肥', careEmoji: '🌱', canHaveStar: true, yieldItems: [{ id: 'coldApple', min: 1, max: 3 }] },
+    corn: { id: 'corn', name: '松仁玉米', type: 'farm', rarity: 'epic', price: 1800, sellPrice: 250, growTime: 480, emoji: '🌽', desc: '皇帝玉米！', special: true, careText: '施肥', careEmoji: '🌱', canHaveStar: true, yieldItems: [{ id: 'corn', min: 1, max: 2 }] },
+    sunflower: { id: 'sunflower', name: '向日葵', type: 'farm', rarity: 'epic', price: 2000, sellPrice: 280, growTime: 600, emoji: '🌻', desc: '喜欢左右摇摆，喜欢和玉米在一起，据说是农场的关系户', careText: '施肥', careEmoji: '🌱', canHaveStar: true, yieldItems: [{ id: 'sunflowerSeed', min: 3, max: 8 }] },
+    sheep1: { id: 'sheep1', name: '嘉乐羊', type: 'ranch', rarity: 'common', price: 200, sellPrice: 150, growTime: 180, emoji: '🐑', desc: '温顺的小羊，产出羊毛和羊肉', careText: '喂饲料', careEmoji: '🥕', canHaveStar: false, yieldItems: [{ id: 'wool', min: 2, max: 3 }, { id: 'mutton', min: 1, max: 2 }] },
+    sheep2: { id: 'sheep2', name: '紫月神羊', type: 'ranch', rarity: 'rare', price: 850, sellPrice: 300, growTime: 360, emoji: '🦙', desc: '神秘而高大的的紫色羊驼，只产神羊羊毛', careText: '喂饲料', careEmoji: '🥕', canHaveStar: false, yieldItems: [{ id: 'godWool', min: 2, max: 4 }] },
+    cow: { id: 'cow', name: '玉子牛', type: 'ranch', rarity: 'uncommon', price: 350, sellPrice: 220, growTime: 240, emoji: '🐄', desc: '产出富有文化底蕴的优质牛奶和牛肉', careText: '喂饲料', careEmoji: '🥕', canHaveStar: false, yieldItems: [{ id: 'milk', min: 2, max: 4 }, { id: 'beef', min: 1, max: 2 }] },
+    fish: { id: 'fish', name: '汗蒸鱼', type: 'pond', rarity: 'common', price: 140, sellPrice: 95, growTime: 150, emoji: '🐟', desc: '一种小小的鱼类，向往河北', careText: '喂鱼食', careEmoji: '🐠', canHaveStar: false, yieldItems: [{ id: 'fishMeat', min: 2, max: 3 }] },
+    wangboFish: { id: 'wangboFish', name: '王波鱼', type: 'pond', rarity: 'uncommon', price: 320, sellPrice: 180, growTime: 270, emoji: '🐠', desc: '稀有鱼类 含糖量过高', careText: '喂鱼食', careEmoji: '🐠', canHaveStar: false, yieldItems: [{ id: 'wangboMeat', min: 1, max: 3 }] }
 };
 
 const PRODUCTS_CONFIG = {
-    wheat: { name: '小麦', emoji: '🌾', sellPrice: 35, rarity: 'common' },
-    apple: { name: '苹果', emoji: '🍎', sellPrice: 60, rarity: 'common' },
-    coldApple: { name: '寒苹果', emoji: '🧊', sellPrice: 120, rarity: 'uncommon' },
-    corn: { name: '玉米', emoji: '🌽', sellPrice: 200, rarity: 'epic' },
-    sunflowerSeed: { name: '向日葵花', emoji: '🌻', sellPrice: 50, rarity: 'epic' },
-    wool: { name: '羊毛', emoji: '🧶', sellPrice: 70, rarity: 'common' },
-    mutton: { name: '羊肉', emoji: '🥩', sellPrice: 90, rarity: 'common' },
-    godWool: { name: '神羊羊毛', emoji: '✨', sellPrice: 200, rarity: 'rare' },
-    milk: { name: '牛奶', emoji: '🥛', sellPrice: 65, rarity: 'uncommon' },
-    beef: { name: '牛肉', emoji: '🥩', sellPrice: 110, rarity: 'uncommon' },
-    fishMeat: { name: '鱼肉', emoji: '🐟', sellPrice: 55, rarity: 'common' },
-    wangboMeat: { name: '王波鱼肉', emoji: '🐠', sellPrice: 110, rarity: 'uncommon' },
-    flour: { name: '面粉', emoji: '🌾', sellPrice: 150, rarity: 'common' },
-    appleJam: { name: '苹果酱', emoji: '🍯', sellPrice: 200, rarity: 'common' },
-    coldAppleJam: { name: '寒苹果酱', emoji: '🧊', sellPrice: 450, rarity: 'uncommon' },
-    sunflowerOil: { name: '葵花油', emoji: '🛢️', sellPrice: 400, rarity: 'epic' },
-    bread: { name: '面包', emoji: '🍞', sellPrice: 380, rarity: 'common' },
-    noodle: { name: '面条', emoji: '🍜', sellPrice: 180, rarity: 'common' },
-    applePie: { name: '苹果派', emoji: '🥧', sellPrice: 550, rarity: 'uncommon' },
-    sashimi: { name: '生鱼片', emoji: '🍣', sellPrice: 150, rarity: 'common' },
-    wangboSashimi: { name: '顶级鱼片', emoji: '🍱', sellPrice: 280, rarity: 'uncommon' },
-    fishNoodle: { name: '鱼丸面', emoji: '🍜', sellPrice: 480, rarity: 'uncommon' },
-    muttonNoodle: { name: '羊肉面', emoji: '🍜', sellPrice: 520, rarity: 'uncommon' },
-    beefNoodle: { name: '牛肉面', emoji: '🍜', sellPrice: 580, rarity: 'uncommon' },
-    muttonSoup: { name: '羊汤', emoji: '🍲', sellPrice: 450, rarity: 'uncommon' },
-    creamBread: { name: '奶油面包', emoji: '🥐', sellPrice: 650, rarity: 'uncommon' },
-    premiumDish: { name: '极品鱼宴', emoji: '🍱', sellPrice: 1200, rarity: 'rare' },
+    wheat: { name: '小麦', emoji: '🌾', sellPrice: 65, rarity: 'common' },
+    apple: { name: '苹果', emoji: '🍎', sellPrice: 100, rarity: 'common' },
+    coldApple: { name: '寒苹果', emoji: '🧊', sellPrice: 250, rarity: 'uncommon' },
+    corn: { name: '玉米', emoji: '🌽', sellPrice: 250, rarity: 'epic' },
+    sunflowerSeed: { name: '向日葵花', emoji: '🌻', sellPrice: 65, rarity: 'epic' },
+    wool: { name: '羊毛', emoji: '🧶', sellPrice: 90, rarity: 'common' },
+    mutton: { name: '羊肉', emoji: '🥩', sellPrice: 115, rarity: 'common' },
+    godWool: { name: '神羊羊毛', emoji: '✨', sellPrice: 250, rarity: 'rare' },
+    milk: { name: '牛奶', emoji: '🥛', sellPrice: 85, rarity: 'uncommon' },
+    beef: { name: '牛肉', emoji: '🥩', sellPrice: 140, rarity: 'uncommon' },
+    fishMeat: { name: '鱼肉', emoji: '🐟', sellPrice: 70, rarity: 'common' },
+    wangboMeat: { name: '王波鱼肉', emoji: '🐠', sellPrice: 140, rarity: 'uncommon' },
+    flour: { name: '面粉', emoji: '🌾', sellPrice: 190, rarity: 'common' },
+    appleJam: { name: '苹果酱', emoji: '🍯', sellPrice: 250, rarity: 'common' },
+    coldAppleJam: { name: '寒苹果酱', emoji: '🧊', sellPrice: 560, rarity: 'uncommon' },
+    sunflowerOil: { name: '葵花油', emoji: '🛢️', sellPrice: 500, rarity: 'epic' },
+    bread: { name: '面包', emoji: '🍞', sellPrice: 475, rarity: 'common' },
+    noodle: { name: '面条', emoji: '🍜', sellPrice: 225, rarity: 'common' },
+    applePie: { name: '苹果派', emoji: '🥧', sellPrice: 690, rarity: 'uncommon' },
+    sashimi: { name: '生鱼片', emoji: '🍣', sellPrice: 190, rarity: 'common' },
+    wangboSashimi: { name: '顶级鱼片', emoji: '🍱', sellPrice: 350, rarity: 'uncommon' },
+    fishNoodle: { name: '鱼丸面', emoji: '🍜', sellPrice: 600, rarity: 'uncommon' },
+    muttonNoodle: { name: '羊肉面', emoji: '🍜', sellPrice: 650, rarity: 'uncommon' },
+    beefNoodle: { name: '牛肉面', emoji: '🍜', sellPrice: 725, rarity: 'uncommon' },
+    muttonSoup: { name: '羊汤', emoji: '🍲', sellPrice: 560, rarity: 'uncommon' },
+    creamBread: { name: '奶油面包', emoji: '🥐', sellPrice: 815, rarity: 'uncommon' },
+    premiumDish: { name: '极品鱼宴', emoji: '🍱', sellPrice: 1500, rarity: 'rare' },
     clover: { name: '四叶草', emoji: '🍀', sellPrice: 99999, rarity: 'legendary' }
 };
 
@@ -233,7 +233,7 @@ const PLOT_TYPE_NAMES = { farm: '农田', ranch: '畜栏', pond: '鱼塘' };
 
 // ==================== 💾 游戏状态 ====================
 let gameState = {
-    gold: 1000,
+    gold: 2000,
     plots: {},
     inventory: {},
     items: {},
@@ -251,7 +251,8 @@ let gameState = {
     unreadMails: 0,
     achievements: [],
     lastViewedAchievementCount: 0,  // ✅ 新增：记录上次查看时的成就数量
-    trueEndingUnlocked: false  // 真结局标记
+    trueEndingUnlocked: false ,
+    lastSubsidyTime: 0  // ✅ 新增：上次领取补贴的时间
 };
 // ==================== 🎮 初始化与循环 ====================
 function initGame() {
@@ -298,6 +299,9 @@ function initGame() {
     setInterval(gameLoop, 100);
     setInterval(catMoodRecover, 60000);
     setInterval(checkDelayedEvents, 1000);
+     // ✅ 新增：每分钟检查一次农业补贴
+    setInterval(checkSubsidy, 60000); // 60秒检查一次
+    checkSubsidy(); // 启动时立刻检查一次
     
       // ✅ 游戏启动后尝试自动播放 BGM
     //console.log('[游戏] 尝试启动背景音乐...');
@@ -1228,22 +1232,83 @@ function renderMailList() {
     container.innerHTML = mails.map((mail, index) => { const date = new Date(mail.timestamp); const timeStr = `${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2,'0')}`; return `<div class="shop-item" onclick="readMail(${index})" style="background: ${mail.read ? '#f9f9f9' : '#fff9e6'}; border-left: 4px solid ${mail.read ? '#ddd' : '#FFD700'};"><div class="shop-item-icon">${mail.read ? '📭' : '📬'}</div><div class="shop-item-info"><div class="shop-item-name">${mail.subject} ${mail.read ? '' : '✨'}</div><div class="shop-item-desc">来自：${mail.from} | ${timeStr}</div></div></div>`; }).join('');
 }
 
+// ==================== 读取邮件（完整版）====================
 function readMail(index) {
-    const mail = gameState.mails[index]; if (!mail) return;
-    if (!mail.read) { mail.read = true; gameState.unreadMails = Math.max(0, gameState.unreadMails - 1); updateMailBadge(); saveGame(); }
-    
+    const mail = gameState.mails[index];
+    if (!mail) return; // 安全检查
+
+    // 1. 标记为已读
+    if (!mail.read) {
+        mail.read = true;
+        gameState.unreadMails = Math.max(0, gameState.unreadMails - 1);
+        updateMailBadge();
+        saveGame();
+    }
+
+    // 2. 更新读信弹窗的内容
     document.getElementById('mail-subject').textContent = mail.subject;
     document.getElementById('mail-from').textContent = mail.from;
-    document.getElementById('mail-time').textContent = new Date(mail.timestamp).toLocaleString('zh-CN');
+    const date = new Date(mail.timestamp);
+    document.getElementById('mail-time').textContent = date.toLocaleString('zh-CN');
     document.getElementById('mail-content').textContent = mail.content;
-    
-    const actionDiv = document.getElementById('mail-special-action'); actionDiv.innerHTML = '';
+
+    // 3. 处理邮件的特殊操作（比如命名、收礼物、领补贴）
+    const actionDiv = document.getElementById('mail-special-action');
+    actionDiv.innerHTML = ''; // 每次都先清空
+
+    // --- 如果是"农场命名"邮件，并且还没命名 ---
     if (mail.special === 'farm-naming' && !gameState.farmName) {
-        actionDiv.innerHTML = `<div style="background: #f0f0f0; padding: 15px; border-radius: 10px;"><label style="display: block; margin-bottom: 8px; font-weight: bold;">为你的农场取个名字：</label><input type="text" id="farm-name-input" placeholder="例如：阳光农场" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; margin-bottom: 10px;"><button class="sell-btn" style="width: 100%; background: #4CAF50;" onclick="submitFarmName()">确认命名</button></div>`;
-    } else if (mail.special === 'cat-gift') {
+        actionDiv.innerHTML = `
+            <div style="background: #f0f0f0; padding: 15px; border-radius: 10px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: bold;">为你的农场取个名字：</label>
+                <input type="text" id="farm-name-input" placeholder="例如：阳光农场" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; margin-bottom: 10px;">
+                <button class="sell-btn" style="width: 100%; background: #4CAF50;" onclick="submitFarmName()">确认命名</button>
+            </div>
+        `;
+    } 
+    // --- 如果是"接受猫猫礼物"邮件 ---
+    else if (mail.special === 'cat-gift') {
         actionDiv.innerHTML = `<button class="sell-btn" style="width: 100%; background: #FF69B4;" onclick="acceptCatGift()">接受这份礼物 😺</button>`;
     }
-    closeMailbox(); document.getElementById('mail-detail-modal').classList.add('show'); toggleModal(true);
+    // --- 如果是"农业补贴"邮件 ---
+    else if (mail.special === 'subsidy') {
+        const subsidyAmount = mail.subsidyAmount || 300;
+        const alreadyClaimed = mail.claimed || false;
+        
+        if (!alreadyClaimed) {
+            actionDiv.innerHTML = `
+                <div style="background: #e8f5e9; padding: 15px; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 24px; font-weight: bold; color: #4CAF50; margin-bottom: 10px;">
+                        💰 ${subsidyAmount} 金币
+                    </div>
+                    <button class="sell-btn" style="width: 100%; background: #4CAF50; font-size: 16px; padding: 12px;" onclick="claimSubsidy(${index})">
+                        领取补贴
+                    </button>
+                </div>
+            `;
+        } else {
+            actionDiv.innerHTML = `
+                <div style="background: #f5f5f5; padding: 15px; border-radius: 10px; text-align: center; color: #999;">
+                    ✅ 您已领取过这笔补贴
+                </div>
+            `;
+        }
+    }
+    // --- 如果是"真结局"邮件（只读，无特殊按钮）---
+    else if (mail.special === 'true-ending') {
+        // 真结局邮件不需要特殊按钮，只需要阅读
+        actionDiv.innerHTML = `
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 15px; border-radius: 10px; text-align: center; color: white;">
+                <div style="font-size: 14px;">✨ 这是一封特殊的信件 ✨</div>
+            </div>
+        `;
+    }
+    // (未来可以加 else if 来处理更多特殊邮件)
+
+    // 4. 关闭信箱，打开读信弹窗
+    closeMailbox();
+    document.getElementById('mail-detail-modal').classList.add('show');
+    toggleModal(true); // UI修复
 }
 
 function closeMailDetail() { toggleModal(false); document.getElementById('mail-detail-modal').classList.remove('show'); }
@@ -1257,7 +1322,35 @@ function submitFarmName() {
 
 function updateMailBadge() { const badge = document.getElementById('mail-badge'); if (gameState.unreadMails > 0) { badge.textContent = gameState.unreadMails; badge.classList.remove('hidden'); } else { badge.classList.add('hidden'); } }
 function sendMail(mailData) { gameState.mails.push({ ...mailData, read: false, timestamp: Date.now() }); gameState.unreadMails++; updateMailBadge(); saveGame(); showToast('📬 你收到了一封新邮件！'); }
-
+// 领取农业补贴
+function claimSubsidy(mailIndex) {
+    const mail = gameState.mails[mailIndex];
+    if (!mail || mail.special !== 'subsidy') {
+        showToast('❌ 邮件数据异常！');
+        return;
+    }
+    
+    if (mail.claimed) {
+        showToast('❌ 您已经领取过这笔补贴了！');
+        return;
+    }
+    
+    const subsidyAmount = mail.subsidyAmount || 300;
+    
+    // 发放金币
+    gameState.gold += subsidyAmount;
+    
+    // 标记为已领取
+    mail.claimed = true;
+    
+    updateGoldDisplay();
+    saveGame();
+    
+    showToast(`💰 领取成功！\n获得 ${subsidyAmount} 金币补贴`);
+    
+    // 刷新邮件详情页，显示"已领取"状态
+    readMail(mailIndex);
+}
 // 延迟事件与彩蛋
 function checkDelayedEvents() {
     if (gameState.cloverCraftTime > 0 && !gameState.cat.unlocked) {
@@ -1283,6 +1376,67 @@ function showCloverBlessing() {
 }
 function closeCloverBlessing() { toggleModal(false); document.getElementById('clover-blessing-modal').classList.remove('show'); }
 
+
+// ==================== 🏦 农业补贴系统 ====================
+
+// 检查并发放农业补贴（防止坏档机制）
+function checkSubsidy() {
+    const now = Date.now();
+    const subsidyInterval = 5 * 60 * 1000; // 5分钟发一次（单位：毫秒）
+    
+    // 如果从未领过补贴，初始化时间戳
+    if (!gameState.lastSubsidyTime) {
+        gameState.lastSubsidyTime = now;
+        saveGame();
+        return;
+    }
+    
+    // 计算距离上次补贴过了多久
+    const elapsed = now - gameState.lastSubsidyTime;
+    
+    // 如果超过间隔时间，发放补贴
+    if (elapsed >= subsidyInterval) {
+        sendSubsidyMail();
+        gameState.lastSubsidyTime = now;
+        saveGame();
+    }
+}
+
+// 发送农业补贴邮件
+function sendSubsidyMail() {
+    const subsidyAmount = 300; // 每次补贴金额
+    
+    sendMail({
+        id: `subsidy-${Date.now()}`, // 用时间戳确保ID唯一
+        from: '农业部财政司',
+        subject: '🏦 定期农业补贴到账通知',
+        content: `尊敬的庄园主：
+
+您好！
+
+根据《赛博农业扶持法》第41条规定，
+您的庄园已通过审核，符合补贴发放条件。
+
+本次补贴金额：${subsidyAmount} 金币
+
+资金用途：
+- 购买种子、化肥等农资
+- 扩大生产规模
+- 改善庄园基础设施
+
+请点击下方按钮领取补贴。
+
+祝您：
+风调雨顺，五谷丰登！
+
+—— 赛博世界农业部
+${new Date().toLocaleDateString('zh-CN')}`,
+        special: 'subsidy',
+        subsidyAmount: subsidyAmount // 附带补贴金额数据
+    });
+    
+    console.log(`🏦 [补贴] 发放了 ${subsidyAmount} 金币的补贴邮件`);
+}
 // =====================================================================
 //                   🔊 声音系统 V3.1 (超级调试版)
 // =====================================================================
@@ -1496,7 +1650,10 @@ function loadGame() {
             if (gameState.lastViewedAchievementCount === undefined) {
                 gameState.lastViewedAchievementCount = 0;
             }
-            
+            if (gameState.lastSubsidyTime === undefined) {
+        gameState.lastSubsidyTime = Date.now();
+    }
+
             console.log('✅ 存档加载成功');
         } catch (e) {
             console.warn('⚠️ 存档损坏');
