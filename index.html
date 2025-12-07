@@ -1,203 +1,792 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>属于孙钰的成人礼！ —— your 皇甫</title>
-    <link rel="icon" type="image/png" href="images/favicon.png">
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CloudOS V2.0 - Manor Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600&family=Roboto:wght@300;400;500;700&display=swap');
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+            overflow: hidden;
+            user-select: none;
+            background-color: #000;
+        }
+
+        /* Windows 11 Wallpaper */
+        .bg-win11 {
+            background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            transition: background-image 0.5s ease-in-out;
+        }
+
+        /* MIUI Wallpaper */
+        .bg-miui {
+            background-image: url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2670&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            transition: background-image 0.5s ease-in-out;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .glass-dark {
+            background: rgba(30, 30, 30, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Scrollbar Hide */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Animations */
+        @keyframes popUp {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop {
+            animation: popUp 0.2s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .animate-slide-up {
+            animation: slideUp 0.3s ease-out forwards;
+        }
+
+        /* Desktop Icon Grid */
+        .desktop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 96px);
+            grid-auto-rows: 96px;
+            height: 100%;
+            padding: 10px;
+            gap: 4px;
+        }
+
+        /* Window Dragging */
+        .window-frame {
+            position: absolute;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: width 0.2s, height 0.2s, opacity 0.2s;
+        }
+
+        /* Mobile Grid */
+        .mobile-page {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 16px;
+            padding: 20px;
+            width: 100vw;
+            height: 100%;
+            flex-shrink: 0;
+        }
+
+        .version-tag {
+            position: absolute;
+            bottom: 5px;
+            right: 10px;
+            font-size: 10px;
+            color: rgba(255,255,255,0.4);
+            pointer-events: none;
+            z-index: 9999;
+        }
+        
+        /* Brightness Overlay */
+        #brightness-overlay {
+            pointer-events: none;
+            z-index: 99999;
+            background: black;
+            opacity: 0;
+            transition: opacity 0.1s;
+        }
+        
+        /* Custom Range Slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            margin-top: -6px; 
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #4b5563;
+            border-radius: 2px;
+        }
+            /* === 🤖 管理员控制台 (Cyberpunk UI) === */
+        .cyber-bg { background-color: #050510; color: #0f0; font-family: 'Courier New', monospace; }
+        .cyber-grid {
+            background-image: linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .cyber-glitch {
+            text-shadow: 2px 2px #ff00ff, -2px -2px #00ffff;
+            animation: glitch 1s infinite alternate;
+        }
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+        .scan-line {
+            width: 100%; height: 2px; background: #00ffff;
+            box-shadow: 0 0 10px #00ffff;
+            animation: scan 3s linear infinite;
+            position: absolute; top: 0; left: 0; pointer-events: none;
+        }
+        @keyframes scan { 0% {top: 0;} 100% {top: 100%;} }
+        
+        .cyber-btn {
+            border: 1px solid #00ffff; color: #00ffff; background: rgba(0, 255, 255, 0.1);
+            transition: all 0.3s; text-transform: uppercase; letter-spacing: 2px;
+        }
+        .cyber-btn:hover { background: #00ffff; color: #000; box-shadow: 0 0 20px #00ffff; }
+        
+        .cyber-card {
+            border: 1px solid #333; border-left: 3px solid #ff00ff;
+            background: rgba(20, 20, 30, 0.8); position: relative; overflow: hidden;
+        }
+    </style>
 </head>
-<body>
+<body class="h-screen w-screen text-white overflow-hidden bg-black">
 
-    <!-- ==================== 登录门 ==================== -->
-    <div id="login-gate">
-        <!-- 开机动画 -->
-        <div id="boot-screen">
-            <div class="windows-logo"></div>
-            <p>正在进入我们的庄园...</p>
-            <div class="spinner"></div>
+    <!-- Global Overlays -->
+    <div id="brightness-overlay" class="absolute inset-0"></div>
+    <div class="version-tag">CloudOS V2.0 Preview</div>
+
+    <!-- BOOT / LOGIN SCREEN -->
+    <div id="auth-layer" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black transition-all duration-700">
+        <!-- Boot Logo -->
+        <div id="boot-logo" class="flex flex-col items-center gap-4">
+            <i class="fa-brands fa-windows text-6xl text-blue-500 animate-pulse"></i>
+            <div class="mt-8 w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
 
-        <!-- 用户选择 -->
-        <div id="user-selection-screen" class="hidden">
-            <div class="user-card" onclick="selectUser('sunflower')">
-                <img src="images/sunflower-avatar.png" alt="小向日葵喵(管理员)">
-                <h2>向日葵</h2>
-            </div>
-            <div class="user-card" onclick="selectUser('corn')">
-                <img src="images/corn-avatar.png" alt="松仁玉米">
-                <h2>松仁玉米</h2>
-            </div>
-        </div>
-
-        <!-- 密码输入 -->
-        <div id="password-screen" class="hidden">
-            <img id="password-avatar" src="">
-            <h2 id="password-username"></h2>
-            <div class="password-input-wrapper">
-                <input type="password" id="login-password" placeholder="输入密码" autocomplete="off">
-                <button onclick="enterOS()">➔</button>
-            </div>
-            <p id="login-error"></p>
-            <a class="back-link" onclick="backToUserSelection()">← 返回用户选择</a>
-        </div>
-    </div>
-
-    <!-- ==================== 我们的专属 OS ==================== -->
-    <main id="desktop" class="hidden">
-
-        <!-- 桌面图标 -->
-        <div class="desktop-icons">
-            <div class="icon" ondblclick="openWindow('gallery')">
-                <img src="images/icon-gallery.png" alt="回忆画廊">
-                <span>回忆画廊.exe</span>
-            </div>
-            <div class="icon" ondblclick="openWindow('manor')">
-                <img src="images/icon-manor.png" alt="我们的庄园">
-                <span>我们的庄园.exe</span>
-            </div>
-        </div>
-
-        <!-- 所有窗口的容器 -->
-        <div id="window-container">
-            <!-- 回忆画廊 窗口 -->
-            <div id="gallery-window" class="window hidden">
-                <div class="title-bar">
-                    <div class="title-bar-text">🖼️ 回忆画廊</div>
-                    <div class="title-bar-controls">
-                        <button aria-label="Minimize" onclick="minimizeWindow('gallery')">—</button>
-                        <button aria-label="Maximize" onclick="maximizeWindow('gallery')">□</button>
-                        <button aria-label="Close" onclick="closeWindow('gallery')">✕</button>
-                    </div>
-                </div>
-                <div class="window-body">
-                    <!-- 用 iframe 嵌入回忆画廊 -->
-                    <iframe src="gallery.html" frameborder="0"></iframe>
-                </div>
-            </div>
-
-            <!-- 我们的庄园 窗口
-             
+        <!-- Login Form -->
+        <div id="login-form" class="hidden flex-col items-center gap-6 w-full max-w-md animate-pop">
+            <div id="current-time-lock" class="text-6xl font-light mb-12">12:00</div>
             
-（游戏） -->
-            <div id="manor-window" class="window hidden">
-                <div class="title-bar">
-                    <div class="title-bar-text">🏡 我们的庄园</div>
-                    <div class="title-bar-controls">
-                        <button aria-label="Minimize" onclick="minimizeWindow('manor')">—</button>
-                        <button aria-label="Maximize" onclick="maximizeWindow('manor')">□</button>
-                        <button aria-label="Close" onclick="closeWindow('manor')">✕</button>
-                    </div>
+            <div class="flex flex-col gap-4 w-64">
+                <!-- User Selector -->
+                <div class="flex justify-center gap-4 mb-4">
+                    <button onclick="selectUser('admin')" id="btn-admin" class="flex flex-col items-center gap-2 opacity-50 hover:opacity-100 transition-opacity">
+                        <div class="w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center text-xl font-bold border-2 border-transparent hover:border-white">
+                            AD
+                        </div>
+                        <span class="text-sm">Admin</span>
+                    </button>
+                    <button onclick="selectUser('user')" id="btn-user" class="flex flex-col items-center gap-2 opacity-50 hover:opacity-100 transition-opacity">
+                        <div class="w-16 h-16 rounded-full bg-emerald-600 flex items-center justify-center text-xl font-bold border-2 border-transparent hover:border-white">
+                            US
+                        </div>
+                        <span class="text-sm">User</span>
+                    </button>
                 </div>
-                <div class="window-body">
-                    <!-- 这里嵌入你现在的 game.html -->
-                    <iframe src="game.html" frameborder="0"></iframe>
+
+                <!-- Password Input -->
+                <div id="password-container" class="hidden flex-col gap-3 animate-pop">
+                    <input type="password" id="password-input" placeholder="Password" 
+                           class="bg-gray-800/50 border border-gray-600 rounded p-2 text-center focus:outline-none focus:border-blue-500 transition-colors">
+                    <button onclick="performLogin()" class="glass hover:bg-white/20 py-2 rounded transition-colors flex items-center justify-center gap-2">
+                        <span>Sign In</span> <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                    <button onclick="cancelLogin()" class="text-xs text-gray-400 hover:text-white">Switch User</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WINDOWS 11 DESKTOP -->
+    <div id="desktop-env" class="hidden absolute inset-0 bg-win11 bg-cover bg-no-repeat overflow-hidden transition-all duration-500">
+        <!-- Desktop Icons -->
+        <div id="desktop-icons" class="desktop-grid absolute inset-0 h-[calc(100%-48px)]"></div>
+        <!-- Window Container -->
+        <div id="window-area" class="absolute inset-0 pointer-events-none"></div>
+
+        <!-- Start Menu -->
+        <div id="start-menu" class="hidden absolute bottom-14 left-1/2 transform -translate-x-1/2 w-[600px] h-[650px] glass-dark rounded-lg p-6 flex-col gap-4 animate-slide-up z-40 text-white shadow-2xl transition-all">
+            <div class="w-full bg-gray-700/50 p-2 rounded flex items-center gap-2 border border-gray-600">
+                <i class="fa-solid fa-magnifying-glass text-gray-400 ml-2"></i>
+                <input type="text" placeholder="Search for apps..." class="bg-transparent w-full outline-none text-sm placeholder-gray-400 text-white">
+            </div>
+            <div class="flex justify-between items-center mt-2">
+                <span class="font-semibold text-sm">Pinned</span>
+                <button class="bg-white/10 px-3 py-1 rounded text-xs hover:bg-white/20 transition-colors">All apps</button>
+            </div>
+            <div class="grid grid-cols-6 gap-4 mt-2" id="start-menu-grid"></div>
+            <div class="mt-auto pt-4 border-t border-gray-600 flex justify-between items-center">
+                <div class="flex items-center gap-3 hover:bg-white/5 p-2 rounded cursor-pointer transition-colors">
+                    <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-xs font-bold" id="start-user-avatar">AD</div>
+                    <span class="text-sm font-medium" id="start-user-name">Administrator</span>
+                </div>
+                <button onclick="logout()" class="w-10 h-10 flex items-center justify-center hover:bg-red-500/80 rounded transition-colors">
+                    <i class="fa-solid fa-power-off"></i>
+                </button>
             </div>
         </div>
 
-        <!-- 任务栏 -->
-        <div class="taskbar">
-            <button id="start-button">
-                <img src="images/windows-icon.png" alt="Start">
-                <span>开始</span>
-            </button>
-            <div id="taskbar-apps"></div>
-        </div>
-
-        <!-- 开始菜单 -->
-        <div id="start-menu" class="hidden">
-            <ul>
-                <li onclick="logOut()">
-                    <img src="images/icon-logout.png" alt="注销">
-                    <span>注销</span>
-                </li>
-            </ul>
-        </div>
-    </main>
-
-       <!-- ==================== 管理员后台 (V3.0 赛博核心版) ==================== -->
-    <div id="admin-panel" class="hidden">
-        <!-- 动态背景网格 -->
-        <div class="cyber-grid-bg"></div>
-
-        <div class="admin-content-wrapper">
-            <div class="cyber-header">
-                <div class="cyber-glitch" data-text="SYSTEM_ROOT_ACCESS">SYSTEM_ROOT_ACCESS</div>
-                <div class="cyber-status">
-                    <span>USER: <strong style="color: #F72585;">SUNFLOWER</strong></span>
-                    <span class="blink">_ONLINE</span>
-                    <span>SECURITY: <strong style="color: #4CC9F0;">0%</strong></span>
-                </div>
+        <!-- Taskbar -->
+        <div class="absolute bottom-0 w-full h-12 glass-dark flex items-center justify-between px-2 z-50">
+            <div class="flex-1"></div>
+            <div class="flex items-center gap-1 h-full" id="taskbar-apps">
+                <button onclick="toggleStartMenu()" class="w-10 h-10 hover:bg-white/10 rounded flex items-center justify-center transition-colors active:scale-95 group">
+                    <i class="fa-brands fa-windows text-xl text-blue-400 group-hover:text-blue-300 transition-colors"></i>
+                </button>
             </div>
+            <div class="flex-1 flex justify-end items-center gap-2 text-xs h-full">
+                <div class="hover:bg-white/10 h-full px-2 flex gap-3 items-center rounded cursor-default transition-colors" onclick="openWindow(APPS.find(a=>a.id==='settings'))">
+                    <i class="fa-solid fa-wifi"></i><i class="fa-solid fa-volume-high"></i><i class="fa-solid fa-battery-full"></i>
+                </div>
+                <div class="hover:bg-white/10 h-full px-2 flex flex-col justify-center items-end rounded cursor-default transition-colors">
+                    <span id="taskbar-time">12:00 PM</span><span id="taskbar-date">10/24/2023</span>
+                </div>
+                <div class="w-1 h-full border-l border-gray-600/50 mx-1"></div>
+                <button class="w-2 h-full hover:bg-white/20"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MIUI MOBILE -->
+    <div id="mobile-env" class="hidden absolute inset-0 bg-miui bg-cover bg-center overflow-hidden flex-col transition-all duration-500">
+        <div class="h-8 w-full flex justify-between items-center px-4 text-xs font-medium z-20 backdrop-blur-sm bg-black/10">
+            <span id="mobile-time">12:00</span>
+            <div class="flex gap-2 items-center">
+                <i class="fa-solid fa-signal"></i><i class="fa-solid fa-wifi"></i><i class="fa-solid fa-battery-three-quarters text-sm"></i>
+            </div>
+        </div>
+        <div class="flex-1 flex overflow-x-auto overflow-y-hidden snap-x snap-mandatory no-scrollbar" id="mobile-workspace"></div>
+        <div class="h-24 w-full flex justify-center items-center px-4 z-20 pb-4">
+            <div class="glass w-[90%] h-20 rounded-3xl flex justify-around items-center px-2 shadow-lg" id="mobile-dock"></div>
+        </div>
+    </div>
+
+    <!-- CONTEXT MENU -->
+    <div id="context-menu" class="hidden fixed w-56 bg-gray-800/95 backdrop-blur-xl border border-gray-600 rounded-lg shadow-2xl py-1 z-[9999] text-sm animate-pop origin-top-left text-gray-100"></div>
+
+    <script>
+        // --- Configuration & Data ---
+        const WALLPAPERS = [
+            'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564', 
+            'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2670',
+            'https://images.unsplash.com/photo-1477346611705-65d1883cee1e?q=80&w=2670',
+            'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2672',
+            'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2670'
+        ];
+
+        const APPS = [
+             // ✅ 新增：管理员控制台 (只有Admin能见)
+  { id: 'admin_console', name: 'ROOT_ACCESS', icon: 'fa-solid fa-terminal', color: 'text-red-500', type: 'system', desktop: true, mobile: true },            
+            // ✅ 隐藏：制作人名单 (desktop: false) -> 只能通过控制台打开
+            { id: 'credits', name: 'Credits', icon: 'fa-solid fa-heart', color: 'text-pink-500', type: 'system', desktop: false, mobile: false },
+
+            { id: 'manor', name: '我们的庄园', icon: 'fa-solid fa-wheat-awn', color: 'text-yellow-500', type: 'game', desktop: true, mobile: true },
+            { id: 'memories', name: '回忆画廊', icon: 'fa-solid fa-images', color: 'text-pink-400', type: 'media', desktop: true, mobile: true },
             
-            <!-- 区域1：核心代码库 (Source Code) -->
-            <div class="cyber-section">
-                <div class="cyber-title">
-                    <span class="icon">💾</span> SOURCE_CODE_ARCHIVE
+            // ... 其他原有的 APP (edge, files 等) 保持不变 ...
+            { id: 'edge', name: 'Edge', icon: 'fa-brands fa-edge', color: 'text-blue-400', type: 'browser', desktop: true, mobile: true },
+            { id: 'files', name: 'Explorer', icon: 'fa-solid fa-folder', color: 'text-yellow-400', type: 'system', desktop: true, mobile: true },
+            { id: 'store', name: 'Store', icon: 'fa-brands fa-microsoft', color: 'text-blue-300', type: 'store', desktop: true, mobile: false },
+            { id: 'settings', name: 'Settings', icon: 'fa-solid fa-gear', color: 'text-gray-300', type: 'system', desktop: true, mobile: true },
+            { id: 'vscode', name: 'VS Code', icon: 'fa-solid fa-code', color: 'text-blue-500', type: 'dev', desktop: true, mobile: false },
+            { id: 'terminal', name: 'Terminal', icon: 'fa-solid fa-terminal', color: 'text-gray-100', type: 'dev', desktop: true, mobile: false },
+            { id: 'notepad', name: 'Notepad', icon: 'fa-solid fa-note-sticky', color: 'text-teal-400', type: 'util', desktop: true, mobile: true },
+            { id: 'calculator', name: 'Calculator', icon: 'fa-solid fa-calculator', color: 'text-orange-400', type: 'util', desktop: true, mobile: true },
+            { id: 'trash', name: 'Recycle Bin', icon: 'fa-solid fa-trash-can', color: 'text-gray-400', type: 'system', desktop: true, mobile: false },
+        ];
+
+        const USERS = {
+            // ✅ Admin 独享 admin_console
+            'admin': { name: 'Administrator', apps: ['admin_console', 'manor', 'memories', 'edge', 'files', 'settings', 'vscode', 'terminal', 'notepad', 'calculator', 'store', 'trash'] },
+            // ❌ Guest 看不到 console 和 credits
+            'user': { name: 'Guest User', apps: ['manor', 'memories', 'edge', 'files', 'notepad', 'calculator', 'store', 'trash'] }
+        };
+
+        // --- State ---
+        let state = {
+            device: 'desktop',
+            user: null,
+            windows: [],
+            zIndexCounter: 100,
+            selectedUserAttempt: null,
+            settings: { brightness: 100, volume: 50, wallpaper: WALLPAPERS[0] }
+        };
+
+        // --- Initialization ---
+        window.addEventListener('load', () => {
+            detectDevice();
+            startBootSequence();
+            updateClock();
+            setInterval(updateClock, 1000);
+            window.addEventListener('resize', () => {
+                detectDevice();
+                if(state.user) renderEnvironment();
+            });
+        });
+
+        function detectDevice() {
+            const width = window.innerWidth;
+            const prevDevice = state.device;
+            state.device = width < 768 ? 'mobile' : 'desktop';
+            if (state.user && prevDevice !== state.device) renderEnvironment();
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+            const dateStr = now.toLocaleDateString();
+            const lockClock = document.getElementById('current-time-lock'); if(lockClock) lockClock.innerText = timeStr;
+            const tbTime = document.getElementById('taskbar-time'); const tbDate = document.getElementById('taskbar-date');
+            if(tbTime) tbTime.innerText = timeStr; if(tbDate) tbDate.innerText = dateStr;
+            const mbTime = document.getElementById('mobile-time'); if(mbTime) mbTime.innerText = timeStr;
+        }
+
+        // --- Boot & Login ---
+        function startBootSequence() {
+            setTimeout(() => {
+                document.getElementById('boot-logo').classList.add('hidden');
+                document.getElementById('login-form').classList.remove('hidden');
+                document.getElementById('login-form').classList.add('flex');
+                applyWallpaper(state.settings.wallpaper);
+            }, 2000);
+        }
+
+        function selectUser(userId) {
+            state.selectedUserAttempt = userId;
+            document.getElementById('btn-admin').style.opacity = userId === 'admin' ? '1' : '0.5';
+            document.getElementById('btn-user').style.opacity = userId === 'user' ? '1' : '0.5';
+            const pwdContainer = document.getElementById('password-container');
+            pwdContainer.classList.remove('hidden');
+            pwdContainer.classList.add('flex');
+            document.getElementById('password-input').focus();
+        }
+
+        function cancelLogin() {
+            state.selectedUserAttempt = null;
+            document.getElementById('password-container').classList.add('hidden');
+            document.getElementById('password-container').classList.remove('flex');
+            document.getElementById('password-input').value = '';
+            document.getElementById('btn-admin').style.opacity = '0.5';
+            document.getElementById('btn-user').style.opacity = '0.5';
+        }
+
+        function performLogin() {
+            if(!state.selectedUserAttempt) return;
+            
+            // 简单密码逻辑，你可以自己改
+            const pwd = document.getElementById('password-input').value;
+            // 这里为了方便演示，暂不校验密码，或者你可以加上 if (pwd === 'xxx') ...
+            
+            state.user = state.selectedUserAttempt;
+            const authLayer = document.getElementById('auth-layer');
+            authLayer.style.opacity = '0';
+            setTimeout(() => {
+                authLayer.classList.add('hidden');
+                renderEnvironment();
+            }, 700);
+        }
+
+        function logout() {
+            state.user = null; state.selectedUserAttempt = null; state.windows = [];
+            const authLayer = document.getElementById('auth-layer');
+            authLayer.classList.remove('hidden'); void authLayer.offsetWidth; authLayer.style.opacity = '1';
+            document.getElementById('password-input').value = ''; cancelLogin();
+            document.getElementById('desktop-env').classList.add('hidden');
+            document.getElementById('mobile-env').classList.add('hidden');
+            document.getElementById('window-area').innerHTML = '';
+        }
+
+        // --- System ---
+        function setBrightness(value) {
+            state.settings.brightness = value;
+            document.getElementById('brightness-overlay').style.opacity = (100 - value) / 100;
+        }
+        function setWallpaper(url) {
+            state.settings.wallpaper = url; applyWallpaper(url);
+        }
+        function applyWallpaper(url) {
+            const css = `url('${url}')`;
+            document.getElementById('desktop-env').style.backgroundImage = css;
+            document.getElementById('mobile-env').style.backgroundImage = css;
+            document.getElementById('auth-layer').style.background = `${css} center/cover`;
+        }
+        function setVolume(val) { state.settings.volume = val; }
+
+        // --- Render ---
+        function renderEnvironment() {
+            const userConfig = USERS[state.user];
+            if (state.device === 'desktop') renderDesktop(userConfig); else renderMobile(userConfig);
+        }
+
+        function renderDesktop(userConfig) {
+            document.getElementById('mobile-env').classList.add('hidden');
+            document.getElementById('desktop-env').classList.remove('hidden');
+            document.getElementById('start-user-name').innerText = userConfig.name;
+            document.getElementById('start-user-avatar').innerText = state.user === 'admin' ? 'AD' : 'US';
+            document.getElementById('start-user-avatar').className = `w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${state.user === 'admin' ? 'bg-blue-500' : 'bg-emerald-600'}`;
+
+            const desktopGrid = document.getElementById('desktop-icons');
+            const startGrid = document.getElementById('start-menu-grid');
+            const taskbarApps = document.getElementById('taskbar-apps');
+            desktopGrid.innerHTML = ''; startGrid.innerHTML = '';
+            while(taskbarApps.children.length > 1) taskbarApps.removeChild(taskbarApps.lastChild);
+
+            userConfig.apps.forEach(appId => {
+                const app = APPS.find(a => a.id === appId);
+                if (!app || !app.desktop) return;
+
+                const dIcon = document.createElement('div');
+                dIcon.className = 'flex flex-col items-center justify-center p-2 hover:bg-white/10 rounded cursor-pointer transition-colors group relative border border-transparent hover:border-white/20';
+                dIcon.draggable = true;
+                dIcon.onclick = () => openWindow(app);
+                dIcon.addEventListener('dragstart', handleIconDragStart);
+                dIcon.addEventListener('dragover', handleIconDragOver);
+                dIcon.addEventListener('drop', handleIconDrop);
+                dIcon.addEventListener('dragend', handleIconDragEnd);
+                dIcon.innerHTML = `<div class="text-3xl mb-2 ${app.color} drop-shadow-2xl filter"><i class="${app.icon}"></i></div><span class="text-xs text-center text-shadow-sm truncate w-full px-1">${app.name}</span>`;
+                desktopGrid.appendChild(dIcon);
+
+                const sIcon = document.createElement('div');
+                sIcon.className = 'flex flex-col items-center justify-center p-2 hover:bg-white/10 rounded cursor-pointer transition-colors';
+                sIcon.onclick = () => { openWindow(app); toggleStartMenu(); };
+                sIcon.innerHTML = `<div class="text-2xl mb-1 ${app.color}"><i class="${app.icon}"></i></div><span class="text-[10px] text-center">${app.name}</span>`;
+                startGrid.appendChild(sIcon);
+
+                if(['manor', 'memories', 'edge'].includes(app.id)) pinAppToTaskbar(app);
+            });
+        }
+
+        function pinAppToTaskbar(app) {
+            const taskbarApps = document.getElementById('taskbar-apps');
+            if(document.getElementById(`taskbar-btn-${app.id}`)) return;
+            const tIcon = document.createElement('button');
+            tIcon.className = 'w-10 h-10 hover:bg-white/10 rounded flex items-center justify-center transition-colors group relative animate-pop';
+            tIcon.onclick = () => openWindow(app);
+            tIcon.innerHTML = `<i class="${app.icon} text-lg ${app.color} group-hover:-translate-y-1 transition-transform"></i><div class="hidden absolute bottom-0 w-1 h-1 bg-white rounded-full group-[.active]:block"></div>`;
+            tIcon.id = `taskbar-btn-${app.id}`;
+            taskbarApps.appendChild(tIcon);
+        }
+
+        function toggleStartMenu() {
+            const menu = document.getElementById('start-menu');
+            menu.classList.toggle('hidden');
+            if(!menu.classList.contains('hidden')) menu.classList.add('animate-slide-up');
+        }
+
+        // --- Window Management ---
+         function openWindow(app) {
+            if(state.windows.find(w => w.appId === app.id)) {
+                const existingEl = document.getElementById(`window-${app.id}`);
+                bringToFront(existingEl);
+                return;
+            }
+
+            const winId = `window-${app.id}`;
+            
+            // ✅ 修复：把 const 改成 let
+            let zIndex = ++state.zIndexCounter;
+            
+            const winEl = document.createElement('div');
+            winEl.id = winId;
+            winEl.className = 'window-frame glass-dark rounded-lg flex flex-col overflow-hidden animate-pop pointer-events-auto border border-gray-600/50';
+            winEl.style.width = '800px'; winEl.style.height = '600px';
+            winEl.style.top = '50px'; winEl.style.left = '50px'; winEl.style.zIndex = zIndex;
+ // ✅ 新增：如果是 Credits，直接全屏居中，且层级最高
+            if (app.id === 'credits') {
+                winEl.style.width = '90vw';
+                winEl.style.height = '90vh';
+                winEl.style.top = '5vh';
+                winEl.style.left = '5vw';
+                zIndex += 1000; // 强制超级置顶
+            }
+            const tbBtn = document.getElementById(`taskbar-btn-${app.id}`);
+            if(tbBtn) tbBtn.classList.add('bg-white/5', 'border-b-2', 'border-blue-400');
+
+            winEl.innerHTML = `
+                <div class="h-9 bg-gray-800/90 flex justify-between items-center px-3 select-none" onmousedown="startDrag(event, '${winId}')">
+                    <div class="flex items-center gap-2 text-xs font-medium text-gray-300"><i class="${app.icon} ${app.color}"></i><span>${app.name}</span></div>
+                    <div class="flex items-center h-full">
+                        <button onclick="closeWindow('${app.id}')" class="w-10 h-9 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
                 </div>
-                <div class="code-modal-content">
-                    <div class="code-column">
-                        <div class="code-label">HTML5::SKELETON</div>
-                        <div class="code-image-wrapper">
-                            <img src="images/code_html.png" alt="HTML" onclick="openImageViewer(this.src)">
-                            <div class="scan-line"></div>
+                <div class="flex-1 bg-[#1a1a1a] relative overflow-hidden flex flex-col">${getAppContent(app)}</div>
+            `;
+            winEl.onclick = () => bringToFront(winEl);
+            document.getElementById('window-area').appendChild(winEl);
+            state.windows.push({ appId: app.id, element: winEl });
+        }
+
+        function closeWindow(appId) {
+            const win = document.getElementById(`window-${appId}`);
+            if(win) {
+                win.style.opacity = '0'; win.style.transform = 'scale(0.95)';
+                setTimeout(() => { win.remove(); state.windows = state.windows.filter(w => w.appId !== appId); }, 150);
+                const tbBtn = document.getElementById(`taskbar-btn-${appId}`);
+                if(tbBtn) tbBtn.classList.remove('bg-white/5', 'border-b-2', 'border-blue-400');
+            }
+        }
+        function bringToFront(el) { state.zIndexCounter++; el.style.zIndex = state.zIndexCounter; }
+
+        // --- Content Generator (Core Injection) ---
+        function getAppContent(app) {
+              // ✅ 管理员专属：赛博控制台
+           // ✅ 管理员专属：赛博控制台 (手机适配版)
+            if (app.id === 'admin_console') return `
+                <div class="flex flex-col h-full cyber-bg cyber-grid relative overflow-auto p-4 md:p-8">
+                    <!-- 头部 -->
+                    <div class="text-center mb-8 border-b border-[#00ffff] pb-4">
+                        <h1 class="text-2xl md:text-4xl font-bold cyber-glitch mb-2">SYSTEM_ROOT_ACCESS</h1>
+                        <div class="text-[10px] md:text-xs text-gray-400 flex justify-center gap-4">
+                            <span>USER: <span class="text-[#ff00ff]">SUNFLOWER</span></span>
+                            <span>STATUS: <span class="text-[#00ffff] animate-pulse">ONLINE</span></span>
                         </div>
                     </div>
-                    <div class="code-column">
-                        <div class="code-label">CSS3::SKIN</div>
-                        <div class="code-image-wrapper">
-                            <img src="images/code_css.png" alt="CSS" onclick="openImageViewer(this.src)">
-                            <div class="scan-line"></div>
+
+                    <!-- 核心区域：手机端单列，电脑端双列 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto w-full">
+                        
+                        <!-- 左侧：代码档案 -->
+                        <div class="cyber-card p-4">
+                            <h3 class="text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-code"></i> SOURCE_ARCHIVE</h3>
+                            <div class="space-y-4">
+                                <div class="relative h-24 border border-gray-600 group cursor-pointer overflow-hidden">
+                                    <img src="images/code_html.png" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition">
+                                    <div class="absolute bottom-0 bg-black/80 w-full text-xs p-1 text-center">HTML_CORE</div>
+                                    <div class="scan-line"></div>
+                                </div>
+                                <div class="relative h-24 border border-gray-600 group cursor-pointer overflow-hidden">
+                                    <img src="images/code_js.png" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition">
+                                    <div class="absolute bottom-0 bg-black/80 w-full text-xs p-1 text-center">JS_LOGIC_MAIN</div>
+                                    <div class="scan-line" style="animation-delay: 1s;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 右侧：真·结局入口 -->
+                        <div class="cyber-card p-6 flex flex-col justify-center items-center text-center border-l-[#00ffff]">
+                            <i class="fa-solid fa-user-secret text-6xl mb-4 text-[#ff00ff] animate-bounce"></i>
+                            <h2 class="text-xl font-bold mb-2 text-white">HIDDEN_FRAGMENT</h2>
+                            <p class="text-xs text-gray-400 mb-6">Contains classified credits & messages.</p>
+                            
+                            <!-- 🚀 按钮修改：调用智能启动函数 -->
+                            <button onclick="launchCredits()" class="cyber-btn w-full py-3 font-bold flex items-center justify-center gap-2">
+                                <span>INITIALIZE</span> <i class="fa-solid fa-play"></i>
+                            </button>
                         </div>
                     </div>
-                    <div class="code-column">
-                        <div class="code-label">JS::SOUL</div>
-                        <div class="code-image-wrapper">
-                            <img src="images/code_js.png" alt="JS" onclick="openImageViewer(this.src)">
-                            <div class="scan-line"></div>
-                        </div>
+
+                    <!-- 底部日志 -->
+                    <div class="mt-auto pt-8 text-[10px] text-gray-600 font-mono">
+                        > Mobile interface loaded...<br>
+                        > System check complete...<br>
+                        > Welcome back, Commander.
                     </div>
                 </div>
-            </div>
+            `;
+            // ✅ 植入：庄园
+            if (app.id === 'manor') return `<iframe src="game.html" class="w-full h-full border-0 bg-[#87CEEB]"></iframe>`;
+            // ✅ 植入：画廊
+            if (app.id === 'memories') return `<iframe src="gallery.html" class="w-full h-full border-0 bg-black"></iframe>`;
+            // ✅ 植入：名单
+             if (app.id === 'credits') {
+                // 这里给 iframe 加个 id，方便调试，背景设为黑色
+                return `<iframe src="credits.html" class="w-full h-full border-0 bg-black" allow="autoplay"></iframe>`;
+            }
 
-            <!-- 区域2：真·结局入口 (Credits) -->
-            <div class="cyber-section highlight-section">
-                <div class="cyber-title">
-                    <span class="icon">❤️</span> HIDDEN_MEMORY_FRAGMENT
-                </div>
-                
-                <!-- 那个巨大的按钮 -->
-                <div class="credits-launcher" onclick="window.location.href='credits.html'">
-                    <div class="launcher-deco"></div>
-                    <div class="launcher-content">
-                        <div class="launcher-icon">🎬</div>
-                        <div class="launcher-text">
-                            <h2>INITIALIZE_CREDITS_ROLL</h2>
-                            <p>>> 播放制作人员名单 & 致辞</p>
+            if (app.id === 'edge') return `<div class="flex flex-col h-full bg-[#2b2b2b] text-white"><div class="h-9 bg-[#202020] flex items-center px-2 gap-2 border-b border-gray-700"><input type="text" value="https://bing.com" class="bg-[#333] rounded-full px-3 py-1 text-xs text-gray-300 w-full border border-gray-600"></div><div class="flex-1 bg-white flex items-center justify-center text-black">Browser Placeholder</div></div>`;
+            
+            if (app.id === 'settings') return `
+                <div class="flex h-full bg-[#1a1a1a] text-white">
+                    <div class="w-48 bg-[#202020] p-4 text-sm space-y-1"><div class="p-2 bg-blue-600/20 text-blue-400 rounded">System</div></div>
+                    <div class="flex-1 p-8 overflow-auto">
+                        <h3 class="font-semibold mb-4">Wallpaper</h3>
+                        <div class="grid grid-cols-3 gap-4">
+                            ${WALLPAPERS.map(url => `<div onclick="setWallpaper('${url}')" class="aspect-video bg-gray-700 rounded cursor-pointer hover:ring-2 ring-blue-500"><img src="${url}" class="w-full h-full object-cover rounded"></div>`).join('')}
                         </div>
-                        <div class="launcher-arrow">➔</div>
                     </div>
+                </div>`;
+
+            if (app.id === 'calculator') return `<div class="flex flex-col h-full bg-[#202020] text-white p-2"><div id="calc-display" class="h-1/4 flex items-end justify-end text-4xl p-4">0</div><div class="grid grid-cols-4 gap-1 flex-1"><button onclick="calcAppend('7')" class="bg-[#333] rounded">7</button><button onclick="calcAppend('8')" class="bg-[#333] rounded">8</button><button onclick="calcAppend('9')" class="bg-[#333] rounded">9</button><button onclick="calcAppend('/')" class="bg-orange-500 rounded">÷</button><button onclick="calcAppend('4')" class="bg-[#333] rounded">4</button><button onclick="calcAppend('5')" class="bg-[#333] rounded">5</button><button onclick="calcAppend('6')" class="bg-[#333] rounded">6</button><button onclick="calcAppend('*')" class="bg-orange-500 rounded">×</button><button onclick="calcAppend('1')" class="bg-[#333] rounded">1</button><button onclick="calcAppend('2')" class="bg-[#333] rounded">2</button><button onclick="calcAppend('3')" class="bg-[#333] rounded">3</button><button onclick="calcAppend('-')" class="bg-orange-500 rounded">-</button><button onclick="calcAppend('C')" class="bg-gray-500 rounded">C</button><button onclick="calcAppend('0')" class="bg-[#333] rounded">0</button><button onclick="calcEval()" class="bg-orange-500 rounded col-span-2">=</button></div></div>`;
+
+            return `<div class="w-full h-full flex flex-col items-center justify-center text-gray-500"><i class="${app.icon} text-6xl mb-4 opacity-20"></i><h2 class="text-xl font-bold">${app.name}</h2></div>`;
+        }
+
+        // --- Calculator ---
+        let calcExpression = '';
+        function calcAppend(char) { 
+            const d = document.getElementById('calc-display'); 
+            if(char==='C') { calcExpression=''; d.innerText='0'; } 
+            else { calcExpression+=char; d.innerText=calcExpression; } 
+        }
+        function calcEval() { 
+            try { document.getElementById('calc-display').innerText = eval(calcExpression); calcExpression=''; } 
+            catch { document.getElementById('calc-display').innerText = 'Error'; } 
+        }
+
+        // --- Dragging ---
+        let dragObj = null;
+        function startDrag(e, winId) {
+            const el = document.getElementById(winId); dragObj = { el, offX: e.clientX - el.offsetLeft, offY: e.clientY - el.offsetTop };
+            bringToFront(el); document.addEventListener('mousemove', doDrag); document.addEventListener('mouseup', stopDrag);
+        }
+        function doDrag(e) { if(dragObj) { dragObj.el.style.left = (e.clientX - dragObj.offX)+'px'; dragObj.el.style.top = (e.clientY - dragObj.offY)+'px'; } }
+        function stopDrag() { dragObj = null; document.removeEventListener('mousemove', doDrag); document.removeEventListener('mouseup', stopDrag); }
+
+        // --- Icon Dragging ---
+        let draggedIcon = null;
+        function handleIconDragStart(e) { draggedIcon = this; e.dataTransfer.effectAllowed = 'move'; this.style.opacity = '0.4'; }
+        function handleIconDragOver(e) { e.preventDefault(); return false; }
+        function handleIconDrop(e) { e.stopPropagation(); if(draggedIcon!==this) { this.parentNode.insertBefore(draggedIcon, this); } return false; }
+        function handleIconDragEnd() { this.style.opacity = '1'; draggedIcon = null; }
+
+        // --- Mobile Logic ---
+        function renderMobile(userConfig) {
+            document.getElementById('desktop-env').classList.add('hidden');
+            document.getElementById('mobile-env').classList.remove('hidden');
+            const workspace = document.getElementById('mobile-workspace');
+            const dock = document.getElementById('mobile-dock');
+            workspace.innerHTML = ''; dock.innerHTML = '';
+            
+            const mobileApps = userConfig.apps.map(id => APPS.find(a => a.id === id)).filter(a => a && a.mobile);
+            const dockApps = mobileApps.slice(-4);
+            const pageApps = mobileApps.slice(0, -4);
+
+            dockApps.forEach(app => {
+                const icon = document.createElement('div');
+                icon.className = 'flex flex-col items-center justify-center w-14 h-14 active:scale-90 transition-transform';
+                icon.onclick = () => openMobileApp(app);
+                icon.innerHTML = `<div class="w-12 h-12 rounded-2xl bg-gray-100/90 flex items-center justify-center text-2xl shadow-lg backdrop-blur-sm"><i class="${app.icon} ${app.color}"></i></div>`;
+                dock.appendChild(icon);
+            });
+
+            const appsPerPage = 20;
+            for(let i=0; i<Math.ceil(pageApps.length/appsPerPage); i++) {
+                const pageEl = document.createElement('div');
+                pageEl.className = 'mobile-page snap-center';
+                pageApps.slice(i*appsPerPage, (i+1)*appsPerPage).forEach(app => {
+                    const icon = document.createElement('div');
+                    icon.className = 'flex flex-col items-center gap-1 active:scale-95 transition-transform';
+                    icon.onclick = () => openMobileApp(app);
+                    icon.innerHTML = `<div class="w-14 h-14 rounded-2xl bg-white flex items-center justify-center text-2xl shadow-lg"><i class="${app.icon} ${app.color}"></i></div><span class="text-xs text-white text-shadow-sm font-medium">${app.name}</span>`;
+                    pageEl.appendChild(icon);
+                });
+                workspace.appendChild(pageEl);
+            }
+        }
+
+        function openMobileApp(app) {
+            const win = document.createElement('div');
+            win.className = 'absolute inset-0 z-[60] bg-gray-900 flex flex-col animate-slide-up';
+            win.innerHTML = `
+                <div class="flex justify-between items-center p-4 bg-[#1a1a1a] border-b border-gray-800">
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-blue-400 font-medium"><i class="fa-solid fa-chevron-left"></i> Back</button>
+                    <span class="font-bold">${app.name}</span><div class="w-8"></div>
                 </div>
-            </div>
+                <div class="flex-1 relative overflow-hidden bg-black">${getAppContent(app)}</div>
+                <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-white/50 rounded-full"></div>
+            `;
+            document.getElementById('mobile-env').appendChild(win);
+        }
+function openMobileApp(app) {
+            const win = document.createElement('div');
+            win.className = 'absolute inset-0 z-[60] bg-gray-900 flex flex-col animate-slide-up';
+            
+            // 🎯 针对庄园和画廊的特殊适配
+            const isImmersive = ['manor', 'memories'].includes(app.id);
+            
+            // 如果是沉浸式应用，头部栏变透明或者变小，或者干脆样式不同
+            const headerClass = isImmersive 
+                ? 'absolute top-0 left-0 w-full z-10 p-4 flex justify-between items-center text-white drop-shadow-md' // 悬浮头部
+                : 'flex justify-between items-center p-4 bg-[#1a1a1a] border-b border-gray-800'; // 普通头部
 
-            <!-- 底部返回 -->
-            <button class="cyber-back-btn" onclick="proceedToHub()">
-                &lt; LOGOUT & RETURN_TO_OS /&gt;
-            </button>
-        </div>
-    </div>
+            const backBtnClass = isImmersive
+                ? 'bg-black/50 px-3 py-1 rounded-full backdrop-blur-md text-sm hover:bg-black/70 transition'
+                : 'text-blue-400 font-medium';
 
-    <!-- ==================== 图片查看器（放大代码截图） ==================== -->
-    <div id="imageViewerModal" class="hidden">
-        <div class="image-viewer-overlay" onclick="closeImageViewer()"></div>
-        <div class="image-viewer-content">
-            <img id="viewerImage" src="" alt="放大图片">
-            <button class="close-viewer" onclick="closeImageViewer()">✕</button>
-        </div>
-    </div>
+            win.innerHTML = `
+                <!-- 头部导航栏 -->
+                <div class="${headerClass}">
+                    <button onclick="this.parentElement.parentElement.remove()" class="${backBtnClass}">
+                        <i class="fa-solid fa-chevron-left"></i> Back
+                    </button>
+                    ${isImmersive ? '' : `<span class="font-bold">${app.name}</span><div class="w-8"></div>`}
+                </div>
 
-    <!-- ==================== 脚本 ==================== -->
-    <script src="script.js"></script>
+                <!-- 内容区域 -->
+                <div class="flex-1 relative overflow-hidden bg-black">
+                    ${getAppContent(app)}
+                </div>
+
+                <!-- 底部小白条 (全面屏手势条) -->
+                <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-white/50 rounded-full pointer-events-none"></div>
+            `;
+            document.getElementById('mobile-env').appendChild(win);
+        }
+        // --- Context Menu ---
+        document.addEventListener('contextmenu', (e) => {
+            if(state.device==='mobile') return;
+            e.preventDefault();
+            const menu = document.getElementById('context-menu');
+            let x = e.clientX, y = e.clientY;
+            if(x+224 > window.innerWidth) x -= 224; if(y+250 > window.innerHeight) y -= 250;
+            menu.style.left = x+'px'; menu.style.top = y+'px';
+            menu.classList.remove('hidden');
+            
+            if(e.target.closest('.group')) {
+                const name = e.target.closest('.group').querySelector('span').innerText;
+                menu.innerHTML = `<div class="px-4 py-2 text-gray-400 border-b border-gray-700 mb-1 font-semibold select-none">${name}</div><button class="w-full text-left px-4 py-2 hover:bg-blue-600 flex items-center gap-3 transition-colors"><i class="fa-solid fa-folder-open w-4"></i> Open</button>`;
+            } else {
+                menu.innerHTML = `<button onclick="location.reload()" class="w-full text-left px-4 py-2 hover:bg-blue-600 flex items-center gap-3 transition-colors"><i class="fa-solid fa-rotate-right w-4"></i> Refresh</button><button onclick="openWindow(APPS.find(a=>a.id==='settings'))" class="w-full text-left px-4 py-2 hover:bg-blue-600 flex items-center gap-3 transition-colors"><i class="fa-solid fa-paintbrush w-4"></i> Wallpaper</button>`;
+            }
+        });
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('context-menu');
+            if(menu && !menu.contains(e.target)) menu.classList.add('hidden');
+        });        // ✅ 智能启动器：根据设备类型打开制作人名单
+        function launchCredits() {
+            const creditsApp = APPS.find(a => a.id === 'credits');
+            
+            if (state.device === 'mobile') {
+                // 手机端：用全屏页打开
+                openMobileApp(creditsApp);
+            } else {
+                // 电脑端：用窗口打开，并关闭控制台
+                openWindow(creditsApp);
+                closeWindow('admin_console');
+            }
+        }
+    </script>
 </body>
 </html>

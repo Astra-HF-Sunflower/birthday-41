@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>属于孙钰的成人礼！ —— your 皇甫</title>
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ==================== 登录门 ==================== -->
+    <div id="login-gate">
+        <!-- 开机动画 -->
+        <div id="boot-screen">
+            <div class="windows-logo"></div>
+            <p>正在进入我们的庄园...</p>
+            <div class="spinner"></div>
+        </div>
+
+        <!-- 用户选择 -->
+        <div id="user-selection-screen" class="hidden">
+            <div class="user-card" onclick="selectUser('sunflower')">
+                <img src="images/sunflower-avatar.png" alt="小向日葵喵(管理员)">
+                <h2>向日葵</h2>
+            </div>
+            <div class="user-card" onclick="selectUser('corn')">
+                <img src="images/corn-avatar.png" alt="松仁玉米">
+                <h2>松仁玉米</h2>
+            </div>
+        </div>
+
+        <!-- 密码输入 -->
+        <div id="password-screen" class="hidden">
+            <img id="password-avatar" src="">
+            <h2 id="password-username"></h2>
+            <div class="password-input-wrapper">
+                <input type="password" id="login-password" placeholder="输入密码" autocomplete="off">
+                <button onclick="enterOS()">➔</button>
+            </div>
+            <p id="login-error"></p>
+            <a class="back-link" onclick="backToUserSelection()">← 返回用户选择</a>
+        </div>
+    </div>
+
+    <!-- ==================== 我们的专属 OS ==================== -->
+    <main id="desktop" class="hidden">
+
+        <!-- 桌面图标 -->
+        <div class="desktop-icons">
+            <div class="icon" ondblclick="openWindow('gallery')">
+                <img src="images/icon-gallery.png" alt="回忆画廊">
+                <span>回忆画廊.exe</span>
+            </div>
+            <div class="icon" ondblclick="openWindow('manor')">
+                <img src="images/icon-manor.png" alt="我们的庄园">
+                <span>我们的庄园.exe</span>
+            </div>
+        </div>
+
+        <!-- 所有窗口的容器 -->
+        <div id="window-container">
+            <!-- 回忆画廊 窗口 -->
+            <div id="gallery-window" class="window hidden">
+                <div class="title-bar">
+                    <div class="title-bar-text">🖼️ 回忆画廊</div>
+                    <div class="title-bar-controls">
+                        <button aria-label="Minimize" onclick="minimizeWindow('gallery')">—</button>
+                        <button aria-label="Maximize" onclick="maximizeWindow('gallery')">□</button>
+                        <button aria-label="Close" onclick="closeWindow('gallery')">✕</button>
+                    </div>
+                </div>
+                <div class="window-body">
+                    <!-- 用 iframe 嵌入回忆画廊 -->
+                    <iframe src="gallery.html" frameborder="0"></iframe>
+                </div>
+            </div>
+
+            <!-- 我们的庄园 窗口
+             
+            
+（游戏） -->
+            <div id="manor-window" class="window hidden">
+                <div class="title-bar">
+                    <div class="title-bar-text">🏡 我们的庄园</div>
+                    <div class="title-bar-controls">
+                        <button aria-label="Minimize" onclick="minimizeWindow('manor')">—</button>
+                        <button aria-label="Maximize" onclick="maximizeWindow('manor')">□</button>
+                        <button aria-label="Close" onclick="closeWindow('manor')">✕</button>
+                    </div>
+                </div>
+                <div class="window-body">
+                    <!-- 这里嵌入你现在的 game.html -->
+                    <iframe src="game.html" frameborder="0"></iframe>
+                </div>
+            </div>
+        </div>
+
+        <!-- 任务栏 -->
+        <div class="taskbar">
+            <button id="start-button">
+                <img src="images/windows-icon.png" alt="Start">
+                <span>开始</span>
+            </button>
+            <div id="taskbar-apps"></div>
+        </div>
+
+        <!-- 开始菜单 -->
+        <div id="start-menu" class="hidden">
+            <ul>
+                <li onclick="logOut()">
+                    <img src="images/icon-logout.png" alt="注销">
+                    <span>注销</span>
+                </li>
+            </ul>
+        </div>
+    </main>
+
+       <!-- ==================== 管理员后台 (V3.0 赛博核心版) ==================== -->
+    <div id="admin-panel" class="hidden">
+        <!-- 动态背景网格 -->
+        <div class="cyber-grid-bg"></div>
+
+        <div class="admin-content-wrapper">
+            <div class="cyber-header">
+                <div class="cyber-glitch" data-text="SYSTEM_ROOT_ACCESS">SYSTEM_ROOT_ACCESS</div>
+                <div class="cyber-status">
+                    <span>USER: <strong style="color: #F72585;">SUNFLOWER</strong></span>
+                    <span class="blink">_ONLINE</span>
+                    <span>SECURITY: <strong style="color: #4CC9F0;">0%</strong></span>
+                </div>
+            </div>
+            
+            <!-- 区域1：核心代码库 (Source Code) -->
+            <div class="cyber-section">
+                <div class="cyber-title">
+                    <span class="icon">💾</span> SOURCE_CODE_ARCHIVE
+                </div>
+                <div class="code-modal-content">
+                    <div class="code-column">
+                        <div class="code-label">HTML5::SKELETON</div>
+                        <div class="code-image-wrapper">
+                            <img src="images/code_html.png" alt="HTML" onclick="openImageViewer(this.src)">
+                            <div class="scan-line"></div>
+                        </div>
+                    </div>
+                    <div class="code-column">
+                        <div class="code-label">CSS3::SKIN</div>
+                        <div class="code-image-wrapper">
+                            <img src="images/code_css.png" alt="CSS" onclick="openImageViewer(this.src)">
+                            <div class="scan-line"></div>
+                        </div>
+                    </div>
+                    <div class="code-column">
+                        <div class="code-label">JS::SOUL</div>
+                        <div class="code-image-wrapper">
+                            <img src="images/code_js.png" alt="JS" onclick="openImageViewer(this.src)">
+                            <div class="scan-line"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 区域2：真·结局入口 (Credits) -->
+            <div class="cyber-section highlight-section">
+                <div class="cyber-title">
+                    <span class="icon">❤️</span> HIDDEN_MEMORY_FRAGMENT
+                </div>
+                
+                <!-- 那个巨大的按钮 -->
+                <div class="credits-launcher" onclick="window.location.href='credits.html'">
+                    <div class="launcher-deco"></div>
+                    <div class="launcher-content">
+                        <div class="launcher-icon">🎬</div>
+                        <div class="launcher-text">
+                            <h2>INITIALIZE_CREDITS_ROLL</h2>
+                            <p>>> 播放制作人员名单 & 致辞</p>
+                        </div>
+                        <div class="launcher-arrow">➔</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部返回 -->
+            <button class="cyber-back-btn" onclick="proceedToHub()">
+                &lt; LOGOUT & RETURN_TO_OS /&gt;
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== 图片查看器（放大代码截图） ==================== -->
+    <div id="imageViewerModal" class="hidden">
+        <div class="image-viewer-overlay" onclick="closeImageViewer()"></div>
+        <div class="image-viewer-content">
+            <img id="viewerImage" src="" alt="放大图片">
+            <button class="close-viewer" onclick="closeImageViewer()">✕</button>
+        </div>
+    </div>
+
+    <!-- ==================== 脚本 ==================== -->
+    <script src="script.js"></script>
+</body>
+</html>
