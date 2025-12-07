@@ -179,6 +179,15 @@
             border: 1px solid #333; border-left: 3px solid #ff00ff;
             background: rgba(20, 20, 30, 0.8); position: relative; overflow: hidden;
         }
+                /* === 密码错误抖动动画 === */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .animate-shake {
+            animation: shake 0.3s ease-in-out;
+        }
     </style>
 </head>
 <body class="h-screen w-screen text-white overflow-hidden bg-black">
@@ -402,22 +411,60 @@
             document.getElementById('btn-user').style.opacity = '0.5';
         }
 
-        function performLogin() {
+               function performLogin() {
+            // 1. 还没选人？啥也不干
             if(!state.selectedUserAttempt) return;
             
-            // 简单密码逻辑，你可以自己改
-            const pwd = document.getElementById('password-input').value;
-            // 这里为了方便演示，暂不校验密码，或者你可以加上 if (pwd === 'xxx') ...
-            
-            state.user = state.selectedUserAttempt;
-            const authLayer = document.getElementById('auth-layer');
-            authLayer.style.opacity = '0';
-            setTimeout(() => {
-                authLayer.classList.add('hidden');
-                renderEnvironment();
-            }, 700);
-        }
+            const pwdInput = document.getElementById('password-input');
+            const pwd = pwdInput.value.trim(); // 去掉首尾空格
+            const errorMsg = document.getElementById('current-time-lock'); // 借用时间显示位来报错，或者你可以弹个窗
 
+            // 2. 验证逻辑
+            let isAuthSuccess = false;
+
+            if (state.selectedUserAttempt === 'admin') {
+                // 🛡️ 管理员：密码必须是 Eternal
+                // (大小写敏感，或者你可以改成 .toLowerCase() === 'eternal' 让它不敏感)
+                if (pwd === 'Eternal') {
+                    isAuthSuccess = true;
+                } else {
+                    // 密码错误的特效
+                    pwdInput.classList.add('border-red-500', 'animate-shake'); // 变红+抖动
+                    setTimeout(() => pwdInput.classList.remove('border-red-500', 'animate-shake'), 500);
+                    pwdInput.value = ''; // 清空
+                    pwdInput.placeholder = 'Access Denied';
+                }
+            } else {
+                // 👤 普通用户 (Guest)：
+                // 方案A：不需要密码 (直接放行)
+                // isAuthSuccess = true;
+                
+                // 方案B：设置一个简单密码 (比如姐姐生日 071130)
+                if (pwd === '071130') {
+                    isAuthSuccess = true;
+                } else {
+                    pwdInput.classList.add('border-red-500', 'animate-shake');
+                    setTimeout(() => pwdInput.classList.remove('border-red-500', 'animate-shake'), 500);
+                    pwdInput.value = '';
+                    pwdInput.placeholder = 'Wrong Password';
+                }
+            }
+
+            // 3. 登录成功处理
+            if (isAuthSuccess) {
+                state.user = state.selectedUserAttempt;
+                
+                // 播放个音效？(可选)
+                // new Audio('sfx/login.mp3').play();
+
+                const authLayer = document.getElementById('auth-layer');
+                authLayer.style.opacity = '0';
+                setTimeout(() => {
+                    authLayer.classList.add('hidden');
+                    renderEnvironment();
+                }, 700);
+            }
+        }
         function logout() {
             state.user = null; state.selectedUserAttempt = null; state.windows = [];
             const authLayer = document.getElementById('auth-layer');
