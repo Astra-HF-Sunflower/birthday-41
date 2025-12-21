@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎄 圣诞连锁礼物 — 休闲精美小游戏</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style>
+    :root{
+      --bg1:#071426;
+      --bg2:#0b2a3c;
+      --glass: rgba(255,255,255,.08);
+      --glass2: rgba(255,255,255,.12);
+      --shadow: 0 20px 60px rgba(0,0,0,.45);
+      --glow: 0 0 18px rgba(255,255,255,.22);
+      --gold: #ffd68a;
+      --mint: #74f1c4;
+      --rose: #ff7fb4;
+      --ice: #77d7ff;
+      --lime: #b8ff7a;
+      --violet: #a5a7ff;
+    }
+    body{
+      background:
+        radial-gradient(1000px 700px at 15% 20%, rgba(110,231,183,.20), transparent 60%),
+        radial-gradient(900px 650px at 85% 15%, rgba(99,102,241,.22), transparent 60%),
+        radial-gradient(900px 650px at 70% 90%, rgba(255,99,132,.20), transparent 62%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      overflow-x:hidden;
+    }
+    .glass{
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .chip{
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    .btn{
+      background: linear-gradient(135deg, rgba(110,231,183,.20), rgba(99,102,241,.20));
+      border: 1px solid rgba(255,255,255,.16);
+      box-shadow: 0 14px 40px rgba(0,0,0,.35);
+    }
+    .btn:hover{ filter: brightness(1.08); }
+    .btn:active{ transform: translateY(1px) scale(.99); }
+    .shake{ animation: shake .35s ease-in-out; }
+    @keyframes shake{
+      0%,100%{ transform: translate(0,0) }
+      20%{ transform: translate(-2px,1px) }
+      40%{ transform: translate(2px,-1px) }
+      60%{ transform: translate(-2px,-1px) }
+      80%{ transform: translate(2px,1px) }
+    }
+    .pulseGlow{ animation: pulseGlow 1.6s ease-in-out infinite; }
+    @keyframes pulseGlow{
+      0%,100%{ filter: drop-shadow(0 0 8px rgba(255,255,255,.18)); }
+      50%{ filter: drop-shadow(0 0 18px rgba(255,255,255,.32)); }
+    }
+    /* Board */
+    #boardWrap{
+      position: relative;
+      user-select: none;
+      -webkit-user-select:none;
+      touch-action: none;
+    }
+    #board{
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 10px;
+      padding: 14px;
+      border-radius: 18px;
+      background:
+        radial-gradient(500px 250px at 20% 20%, rgba(255,255,255,.14), transparent 60%),
+        radial-gradient(500px 250px at 80% 80%, rgba(255,255,255,.10), transparent 65%),
+        rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 20px 70px rgba(0,0,0,.42);
+      position: relative;
+      overflow: hidden;
+    }
+    .cell{
+      aspect-ratio: 1 / 1;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-size: 30px;
+      line-height: 1;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
+      border: 1px solid rgba(255,255,255,.16);
+      box-shadow: 0 10px 25px rgba(0,0,0,.25);
+      transform: translateZ(0);
+      transition: transform .12s ease, filter .15s ease, background .2s ease;
+      position: relative;
+    }
+    .cell::after{
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      background: radial-gradient(120px 80px at 30% 25%, rgba(255,255,255,.18), transparent 60%);
+      pointer-events:none;
+      mix-blend-mode: screen;
+      opacity: .85;
+    }
+    .cell:hover{ transform: translateY(-1px) scale(1.02); filter: brightness(1.06); }
+    .selected{ outline: 2px solid rgba(255,255,255,.70); box-shadow: 0 0 0 4px rgba(110,231,183,.18), 0 18px 40px rgba(0,0,0,.35); transform: translateY(-2px) scale(1.05); }
+    .hint{ animation: hint 1.1s ease-in-out infinite; }
+    @keyframes hint{
+      0%,100%{ transform: translateY(0) scale(1); filter: brightness(1); }
+      50%{ transform: translateY(-2px) scale(1.06); filter: brightness(1.12); }
+    }
+    .boom{ animation: boom .26s ease-out; }
+    @keyframes boom{
+      from{ transform: scale(1.0); }
+      to{ transform: scale(1.18); }
+    }
+    .floatUp{ animation: floatUp 900ms ease-out forwards; }
+    @keyframes floatUp{
+      from{ transform: translateY(0); opacity: 1; }
+      to{ transform: translateY(-26px); opacity: 0; }
+    }
+    /* Snow */
+    #snow{
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+    }
+    /* Particles */
+    #fx{
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 4;
+    }
+    .toast{
+      position: fixed;
+      left: 50%;
+      top: 16px;
+      transform: translateX(-50%);
+      z-index: 50;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: rgba(10,20,35,.55);
+      border: 1px solid rgba(255,255,255,.18);
+      backdrop-filter: blur(10px);
+      color: rgba(255,255,255,.92);
+      box-shadow: 0 20px 60px rgba(0,0,0,.4);
+    }
+    .kbd{
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.16);
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+    }
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      .hint,.pulseGlow,.shake,.boom,.floatUp{ animation: none !important; }
+      .cell{ transition: none !important; }
+    }
+  </style>
+</head>
+<body class="min-h-screen text-white">
+  <canvas id="snow"></canvas>
+  <main class="relative z-10 mx-auto max-w-6xl px-4 py-8">
+    <header class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <div class="space-y-2">
+        <div class="inline-flex items-center gap-2 chip rounded-2xl px-4 py-2">
+          <span class="text-xl">🎄</span>
+          <span class="text-sm text-white/90">圣诞连锁礼物</span>
+          <span class="text-xs text-white/70">Match-3 + 连击任务 + 道具</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-semibold tracking-tight">
+          用<strong class="text-white">交换</strong>做出消除，堆连击、点亮<strong class="text-white">圣诞树能量</strong>！
+        </h1>
+        <p class="text-white/75 max-w-2xl">
+          目标：在有限步数内完成任务（例如消除特定图案或达成连击）。连击越高，特效越炸、分数越多，还会生成强力礼物道具。
+        </p>
+      </div>
+      <div class="glass rounded-3xl p-4 w-full md:w-[420px]">
+        <div class="grid grid-cols-2 gap-3">
+          <div class="chip rounded-2xl p-3">
+            <div class="text-xs text-white/70">分数</div>
+            <div class="text-2xl font-semibold" id="score">0</div>
+          </div>
+          <div class="chip rounded-2xl p-3">
+            <div class="text-xs text-white/70">剩余步数</div>
+            <div class="text-2xl font-semibold" id="moves">25</div>
+          </div>
+          <div class="chip rounded-2xl p-3">
+            <div class="flex items-center justify-between">
+              <div class="text-xs text-white/70">连击</div>
+              <div class="text-xs text-white/70">最高：<span id="bestCombo">0</span></div>
+            </div>
+            <div class="text-2xl font-semibold"><span id="combo">0</span><span class="text-sm text-white/70">x</span></div>
+          </div>
+          <div class="chip rounded-2xl p-3">
+            <div class="text-xs text-white/70">圣诞树能量</div>
+            <div class="mt-2 h-3 w-full rounded-full bg-white/10 border border-white/15 overflow-hidden">
+              <div id="energyBar" class="h-full w-0 rounded-full" style="background: linear-gradient(90deg, rgba(110,231,183,.9), rgba(99,102,241,.9), rgba(255,127,180,.9)); box-shadow: 0 0 18px rgba(255,255,255,.25);"></div>
+            </div>
+            <div class="mt-2 text-xs text-white/70">满能量会自动触发 <span class="kbd">✨ 祝福爆发</span> 清屏特效</div>
+          </div>
+        </div>
+        <div class="mt-4 flex flex-wrap gap-2 items-center justify-between">
+          <div class="flex gap-2">
+            <button id="btnNew" class="btn rounded-2xl px-4 py-2 text-sm font-semibold">🎁 新局</button>
+            <button id="btnHint" class="btn rounded-2xl px-4 py-2 text-sm font-semibold">🔎 提示</button>
+          </div>
+          <div class="flex gap-2">
+            <button id="btnShuffle" class="btn rounded-2xl px-4 py-2 text-sm font-semibold">🌀 洗牌</button>
+            <button id="btnBomb" class="btn rounded-2xl px-4 py-2 text-sm font-semibold">💣 小炸弹 <span class="text-white/70" id="bombLeft">(2)</span></button>
+          </div>
+        </div>
+        <div class="mt-4 grid grid-cols-2 gap-3">
+          <div class="chip rounded-2xl p-3">
+            <div class="flex items-center justify-between">
+              <div class="text-xs text-white/70">任务</div>
+              <div class="text-xs text-white/70">关卡 <span id="level">1</span></div>
+            </div>
+            <div class="mt-1 text-sm text-white/90" id="questText">—</div>
+            <div class="mt-2 text-xs text-white/70" id="questProgress">—</div>
+          </div>
+          <div class="chip rounded-2xl p-3">
+            <div class="text-xs text-white/70">操作</div>
+            <div class="mt-2 text-sm text-white/85 leading-6">
+              交换相邻格子<br/>
+              4连：生成 <span class="font-semibold">🎇</span><br/>
+              5连：生成 <span class="font-semibold">🌟</span><br/>
+              T/L：生成 <span class="font-semibold">🎆</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <section class="mt-7 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
+      <div class="glass rounded-3xl p-4" id="boardWrap">
+        <div class="flex items-center justify-between mb-3">
+          <div class="text-white/80 text-sm">拖动/点击交换相邻格子（手机也支持）</div>
+          <div class="text-white/70 text-xs">快捷键：<span class="kbd">H</span>提示 <span class="kbd">R</span>新局 <span class="kbd">S</span>洗牌 <span class="kbd">B</span>炸弹</div>
+        </div>
+        <div id="board" class="relative"></div>
+        <canvas id="fx"></canvas>
+      </div>
+      <aside class="glass rounded-3xl p-4 space-y-4">
+        <div class="chip rounded-2xl p-3">
+          <div class="flex items-center justify-between">
+            <div class="text-sm font-semibold">道具仓</div>
+            <div class="text-xs text-white/70">连击越高掉落越多</div>
+          </div>
+          <div class="mt-3 grid grid-cols-3 gap-2 text-sm">
+            <button class="btn rounded-2xl px-3 py-2 font-semibold" id="toolLine">🎇 直线 <span class="text-white/70" id="lineLeft">0</span></button>
+            <button class="btn rounded-2xl px-3 py-2 font-semibold" id="toolCross">🎆 十字 <span class="text-white/70" id="crossLeft">0</span></button>
+            <button class="btn rounded-2xl px-3 py-2 font-semibold" id="toolStar">🌟 变色 <span class="text-white/70" id="starLeft">0</span></button>
+          </div>
+          <div class="mt-3 text-xs text-white/70">点击道具后，再点棋盘上的任意格子施放。</div>
+        </div>
+        <div class="chip rounded-2xl p-3">
+          <div class="text-sm font-semibold">今日祝福</div>
+          <div class="mt-2 text-white/80 text-sm" id="dailyBless">—</div>
+          <div class="mt-3 text-xs text-white/70">完成任务会提升关卡与步数奖励，保持“想再来一局”的节奏。</div>
+        </div>
+        <div class="chip rounded-2xl p-3">
+          <div class="text-sm font-semibold">特效强度</div>
+          <div class="mt-3 flex items-center justify-between">
+            <div class="text-xs text-white/70">飘雪/粒子/震动</div>
+            <label class="inline-flex items-center gap-2 text-xs text-white/70">
+              <input type="checkbox" id="toggleFX" class="accent-white" checked /> 开
+            </label>
+          </div>
+          <div class="mt-2 text-xs text-white/70">如果你设备较弱可关闭，游戏逻辑不受影响。</div>
+        </div>
+        <div class="chip rounded-2xl p-3">
+          <div class="text-sm font-semibold">小技巧</div>
+          <ul class="mt-2 text-xs text-white/70 list-disc pl-4 space-y-1">
+            <li>先做 4/5 连，制造 🌟/🎇，再用连锁清屏。</li>
+            <li>能量条满会触发“✨祝福爆发”，优先留到棋盘拥挤时。</li>
+            <li>提示会标出一个可行交换（不扣步）。</li>
+          </ul>
+        </div>
+      </aside>
+    </section>
+  </main>
+  <div id="toast" class="toast hidden"></div>
+  <script>
+    // --- Utilities ---
+    const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+    const rand=(a,b)=>Math.random()*(b-a)+a;
+    const pick=(arr)=>arr[Math.floor(Math.random()*arr.length)];
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // --- Emoji pieces ---
+    // Only emoji icons (as required)
+    const PIECES = [
+      {k:'candy', e:'🍬', c:'rgba(255,127,180,.22)'},
+      {k:'bell',  e:'🔔', c:'rgba(255,214,138,.20)'},
+      {k:'sock',  e:'🧦', c:'rgba(116,241,196,.20)'},
+      {k:'gift',  e:'🎁', c:'rgba(119,215,255,.20)'},
+      {k:'cookie',e:'🍪', c:'rgba(255,214,138,.18)'},
+      {k:'snow',  e:'❄️', c:'rgba(165,167,255,.20)'}
+    ];
+    // Specials
+    const SPECIAL = {
+      line: {k:'line', e:'🎇'},      // clears row/col depending on orientation stored on cell
+      cross:{k:'cross',e:'🎆'},      // clears row+col
+      star: {k:'star', e:'🌟'}       // clears all of a chosen color
+    };
+    // --- Game state ---
+    const SIZE = 8;
+    let board = []; // cells: {type:'normal'|'line'|'cross'|'star', pieceIndex, orient?}
+    let selected = null;
+    let dragging = false;
+    let dragFrom = null;
+    let lockInput = false;
+    let score = 0;
+    let moves = 25;
+    let combo = 0;
+    let bestCombo = 0;
+    let level = 1;
+    let quest = null; // {kind, target, cur, label}
+    let energy = 0; // 0..100
+    let inventory = { line:0, cross:0, star:0, bomb:2 };
+    let activeTool = null; // 'line'|'cross'|'star'|'bomb'
+    // DOM
+    const elBoard = document.getElementById('board');
+    const elWrap = document.getElementById('boardWrap');
+    const elScore = document.getElementById('score');
+    const elMoves = document.getElementById('moves');
+    const elCombo = document.getElementById('combo');
+    const elBestCombo = document.getElementById('bestCombo');
+    const elEnergyBar = document.getElementById('energyBar');
+    const elQuestText = document.getElementById('questText');
+    const elQuestProgress = document.getElementById('questProgress');
+    const elLevel = document.getElementById('level');
+    const elToast = document.getElementById('toast');
+    const elLineLeft = document.getElementById('lineLeft');
+    const elCrossLeft = document.getElementById('crossLeft');
+    const elStarLeft = document.getElementById('starLeft');
+    const elBombLeft = document.getElementById('bombLeft');
+    const btnNew = document.getElementById('btnNew');
+    const btnHint = document.getElementById('btnHint');
+    const btnShuffle = document.getElementById('btnShuffle');
+    const btnBomb = document.getElementById('btnBomb');
+    const toolLine = document.getElementById('toolLine');
+    const toolCross = document.getElementById('toolCross');
+    const toolStar = document.getElementById('toolStar');
+    const toggleFX = document.getElementById('toggleFX');
+    const dailyBless = document.getElementById('dailyBless');
+    // FX canvas
+    const fxCanvas = document.getElementById('fx');
+    const fxCtx = fxCanvas.getContext('2d');
+    let particles = [];
+    // Snow canvas
+    const snowCanvas = document.getElementById('snow');
+    const snowCtx = snowCanvas.getContext('2d');
+    let snowflakes = [];
+    function resizeCanvases(){
+      // FX: same size as board
+      const rect = elBoard.getBoundingClientRect();
+      fxCanvas.width = Math.floor(rect.width * devicePixelRatio);
+      fxCanvas.height = Math.floor(rect.height * devicePixelRatio);
+      fxCanvas.style.width = rect.width + 'px';
+      fxCanvas.style.height = rect.height + 'px';
+      fxCtx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+      // Snow: fullscreen
+      snowCanvas.width = Math.floor(innerWidth * devicePixelRatio);
+      snowCanvas.height = Math.floor(innerHeight * devicePixelRatio);
+      snowCanvas.style.width = innerWidth + 'px';
+      snowCanvas.style.height = innerHeight + 'px';
+      snowCtx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+    }
+    addEventListener('resize', ()=>{ resizeCanvases(); });
+    // --- Toast ---
+    let toastTimer=null;
+    function toast(msg){
+      elToast.textContent = msg;
+      elToast.classList.remove('hidden');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(()=>elToast.classList.add('hidden'), 1600);
+    }
+    // --- Audio (simple synth via WebAudio, no external assets) ---
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let actx = null;
+    function beep(type='sine', freq=440, dur=0.08, gain=0.05){
+      if(prefersReduced) return;
+      if(!actx) actx = new AudioCtx();
+      const t0 = actx.currentTime;
+      const o = actx.createOscillator();
+      const g = actx.createGain();
+      o.type = type;
+      o.frequency.setValueAtTime(freq, t0);
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(gain, t0+0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
+      o.connect(g).connect(actx.destination);
+      o.start(t0);
+      o.stop(t0+dur+0.02);
+    }
+    function chord(){
+      beep('triangle', 523.25, .10, .05);
+      beep('triangle', 659.25, .12, .04);
+      beep('triangle', 783.99, .14, .03);
+    }
+    // --- Board helpers ---
+    const idx=(r,c)=>r*SIZE+c;
+    const inb=(r,c)=>r>=0 && c>=0 && r<SIZE && c<SIZE;
+    function makeRandomCell(){
+      return { type:'normal', pieceIndex: Math.floor(Math.random()*PIECES.length) };
+    }
+    function cellEmoji(cell){
+      if(!cell) return '';
+      if(cell.type==='normal') return PIECES[cell.pieceIndex].e;
+      if(cell.type==='line') return SPECIAL.line.e;
+      if(cell.type==='cross') return SPECIAL.cross.e;
+      if(cell.type==='star') return SPECIAL.star.e;
+      return '❔';
+    }
+    function cellTint(cell){
+      if(!cell) return 'rgba(255,255,255,.08)';
+      if(cell.type==='normal') return PIECES[cell.pieceIndex].c;
+      if(cell.type==='line') return 'rgba(116,241,196,.22)';
+      if(cell.type==='cross') return 'rgba(255,214,138,.22)';
+      if(cell.type==='star') return 'rgba(165,167,255,.24)';
+      return 'rgba(255,255,255,.10)';
+    }
+    function renderBoard(){
+      elBoard.innerHTML='';
+      for(let r=0;r<SIZE;r++){
+        for(let c=0;c<SIZE;c++){
+          const cell = board[idx(r,c)];
+          const d = document.createElement('button');
+          d.className = 'cell';
+          d.dataset.r = r;
+          d.dataset.c = c;
+          d.style.background = `linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04)), ${cellTint(cell)}`;
+          d.innerHTML = `<span class="drop-shadow-[0_10px_24px_rgba(0,0,0,.45)]">${cellEmoji(cell)}</span>`;
+          elBoard.appendChild(d);
+        }
+      }
+      resizeCanvases();
+    }
+    function updateHUD(){
+      elScore.textContent = score.toLocaleString('zh-CN');
+      elMoves.textContent = moves;
+      elCombo.textContent = combo;
+      elBestCombo.textContent = bestCombo;
+      elEnergyBar.style.width = clamp(energy,0,100) + '%';
+      elLevel.textContent = level;
+      elLineLeft.textContent = '('+inventory.line+')';
+      elCrossLeft.textContent = '('+inventory.cross+')';
+      elStarLeft.textContent = '('+inventory.star+')';
+      elBombLeft.textContent = '('+inventory.bomb+')';
+      // tool highlight
+      for(const [tool,el] of [['line',toolLine],['cross',toolCross],['star',toolStar]]){
+        if(activeTool===tool) el.classList.add('pulseGlow');
+        else el.classList.remove('pulseGlow');
+      }
+      if(activeTool==='bomb') btnBomb.classList.add('pulseGlow');
+      else btnBomb.classList.remove('pulseGlow');
+    }
+    // --- Matching ---
+    function isMatchable(cell){
+      return cell && (cell.type==='normal');
+    }
+    function findMatches(){
+      // returns array of groups {cells:[i...], kind:'line'|'cross'|'five'|'three', centerIndex, orientation?}
+      const marks = new Array(SIZE*SIZE).fill(false);
+      const groups = [];
+      // horizontal runs
+      for(let r=0;r<SIZE;r++){
+        let c=0;
+        while(c<SIZE){
+          const i0=idx(r,c);
+          const cell=board[i0];
+          if(!isMatchable(cell)){ c++; continue; }
+          let j=c+1;
+          while(j<SIZE && isMatchable(board[idx(r,j)]) && board[idx(r,j)].pieceIndex===cell.pieceIndex) j++;
+          const len=j-c;
+          if(len>=3){
+            const cells=[];
+            for(let k=c;k<j;k++){ cells.push(idx(r,k)); marks[idx(r,k)]=true; }
+            groups.push({cells, axis:'h', len, pieceIndex: cell.pieceIndex});
+          }
+          c=j;
+        }
+      }
+      // vertical runs
+      for(let c=0;c<SIZE;c++){
+        let r=0;
+        while(r<SIZE){
+          const i0=idx(r,c);
+          const cell=board[i0];
+          if(!isMatchable(cell)){ r++; continue; }
+          let j=r+1;
+          while(j<SIZE && isMatchable(board[idx(j,c)]) && board[idx(j,c)].pieceIndex===cell.pieceIndex) j++;
+          const len=j-r;
+          if(len>=3){
+            const cells=[];
+            for(let k=r;k<j;k++){ cells.push(idx(k,c)); marks[idx(k,c)]=true; }
+            groups.push({cells, axis:'v', len, pieceIndex: cell.pieceIndex});
+          }
+          r=j;
+        }
+      }
+      // Detect T/L shapes and determine specials creation.
+      // We'll combine overlapping groups of same pieceIndex and create cross special.
+      const byIndex = new Map();
+      for(const g of groups){
+        const key = g.pieceIndex;
+        if(!byIndex.has(key)) byIndex.set(key, []);
+        byIndex.get(key).push(g);
+      }
+      const results = [];
+      const removeSet = new Set();
+      for(const [pidx, arr] of byIndex){
+        // Build overlap map
+        for(let a=0;a<arr.length;a++){
+          for(let b=a+1;b<arr.length;b++){
+            const A = arr[a], B = arr[b];
+            // overlap indicates T/L
+            const overlap = A.cells.find(i=>B.cells.includes(i));
+            if(overlap!==undefined){
+              const union = Array.from(new Set([...A.cells, ...B.cells]));
+              results.push({
+                type:'TL', cells: union, center: overlap, pieceIndex:pidx
+              });
+              for(const i of union) removeSet.add(i);
+            }
+          }
+        }
+      }
+      // Add non TL groups
+      for(const g of groups){
+        const any = g.cells.some(i=>removeSet.has(i));
+        if(any) continue;
+        results.push({ type:'run', cells: g.cells, axis:g.axis, len:g.len, pieceIndex:g.pieceIndex });
+      }
+      // Merge overlapping results of same pieceIndex if necessary
+      // (simple union pass)
+      let merged=[];
+      for(const item of results){
+        let placed=false;
+        for(const m of merged){
+          if(m.pieceIndex===item.pieceIndex && item.cells.some(i=>m.cells.includes(i))){
+            m.cells = Array.from(new Set([...m.cells, ...item.cells]));
+            m.type = (m.type==='TL' || item.type==='TL') ? 'TL' : 'run';
+            if(item.center!==undefined) m.center = item.center;
+            placed=true;
+            break;
+          }
+        }
+        if(!placed) merged.push({...item});
+      }
+      return merged.filter(g=>g.cells.length>=3);
+    }
+    function anyPossibleMove(){
+      // brute check swap adjacent for a match
+      for(let r=0;r<SIZE;r++){
+        for(let c=0;c<SIZE;c++){
+          const i=idx(r,c);
+          for(const [dr,dc] of [[1,0],[0,1]]){
+            const rr=r+dr, cc=c+dc;
+            if(!inb(rr,cc)) continue;
+            const j=idx(rr,cc);
+            swapCells(i,j);
+            const m=findMatches();
+            swapCells(i,j);
+            if(m.length>0) return {i,j};
+          }
+        }
+      }
+      return null;
+    }
+    function swapCells(i,j){
+      const t=board[i]; board[i]=board[j]; board[j]=t;
+    }
+    // --- Particles / FX ---
+    function rectOfCell(r,c){
+      const rect = elBoard.getBoundingClientRect();
+      const gap = 10;
+      const pad = 14;
+      // compute size based on grid
+      const w = (rect.width - pad*2 - gap*(SIZE-1)) / SIZE;
+      const h = w;
+      const x = pad + c*(w+gap);
+      const y = pad + r*(h+gap);
+      return {x,y,w,h};
+    }
+    function addBurstAt(x,y,color='rgba(255,255,255,.9)', n=16, power=1){
+      if(!toggleFX.checked || prefersReduced) return;
+      for(let i=0;i<n;i++){
+        const a = rand(0,Math.PI*2);
+        const s = rand(60, 220) * power;
+        particles.push({
+          x, y,
+          vx: Math.cos(a)*s,
+          vy: Math.sin(a)*s,
+          life: rand(0.45, 0.9),
+          r: rand(1.5, 4.2)*power,
+          color,
+          drag: rand(0.86, 0.93)
+        });
+      }
+    }
+    function addRing(x,y,color){
+      if(!toggleFX.checked || prefersReduced) return;
+      particles.push({
+        ring:true, x,y, life:0.55, t:0, color,
+        r0: 6, r1: 54
+      });
+    }
+    function addTextFloat(x,y,text){
+      if(!toggleFX.checked) return;
+      const el=document.createElement('div');
+      el.className='pointer-events-none absolute text-sm font-semibold floatUp';
+      el.style.left = x+'px';
+      el.style.top = y+'px';
+      el.style.transform = 'translate(-50%, -50%)';
+      el.style.textShadow = '0 10px 30px rgba(0,0,0,.5)';
+      el.textContent=text;
+      elWrap.appendChild(el);
+      setTimeout(()=>el.remove(), 950);
+    }
+    function boardShake(){
+      if(!toggleFX.checked || prefersReduced) return;
+      elWrap.classList.remove('shake');
+      void elWrap.offsetWidth;
+      elWrap.classList.add('shake');
+    }
+    function fxTick(dt){
+      fxCtx.clearRect(0,0,fxCanvas.width,fxCanvas.height);
+      const now = performance.now();
+      const keep=[];
+      for(const p of particles){
+        if(p.ring){
+          p.t += dt;
+          const k = p.t / p.life;
+          if(k>=1) continue;
+          const r = p.r0 + (p.r1-p.r0)*k;
+          fxCtx.globalAlpha = (1-k)*0.8;
+          fxCtx.strokeStyle = p.color;
+          fxCtx.lineWidth = 2.0;
+          fxCtx.beginPath();
+          fxCtx.arc(p.x,p.y,r,0,Math.PI*2);
+          fxCtx.stroke();
+          keep.push(p);
+          continue;
+        }
+        p.life -= dt;
+        if(p.life<=0) continue;
+        p.vx *= p.drag;
+        p.vy *= p.drag;
+        p.vy += 120*dt;
+        p.x += p.vx*dt;
+        p.y += p.vy*dt;
+        fxCtx.globalAlpha = clamp(p.life,0,1);
+        fxCtx.fillStyle = p.color;
+        fxCtx.beginPath();
+        fxCtx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        fxCtx.fill();
+        keep.push(p);
+      }
+      particles = keep;
+    }
+    let lastT=performance.now();
+    function loop(){
+      const t=performance.now();
+      const dt=Math.min(0.033,(t-lastT)/1000);
+      lastT=t;
+      if(toggleFX.checked && !prefersReduced) tickSnow(dt);
+      fxTick(dt);
+      requestAnimationFrame(loop);
+    }
+    // --- Snow ---
+    function initSnow(){
+      snowflakes=[];
+      const count = Math.floor(clamp(innerWidth/10, 80, 180));
+      for(let i=0;i<count;i++){
+        snowflakes.push({
+          x: Math.random()*innerWidth,
+          y: Math.random()*innerHeight,
+          r: rand(0.8, 2.6),
+          vy: rand(18, 60),
+          vx: rand(-12, 12),
+          w: rand(0, Math.PI*2)
+        });
+      }
+    }
+    function tickSnow(dt){
+      snowCtx.clearRect(0,0,innerWidth,innerHeight);
+      snowCtx.globalAlpha = 0.85;
+      for(const s of snowflakes){
+        s.w += dt*rand(0.5,1.2);
+        s.x += (s.vx + Math.sin(s.w)*8)*dt;
+        s.y += s.vy*dt;
+        if(s.y > innerHeight+10){ s.y = -10; s.x = Math.random()*innerWidth; }
+        if(s.x < -20) s.x = innerWidth+20;
+        if(s.x > innerWidth+20) s.x = -20;
+        snowCtx.fillStyle = 'rgba(255,255,255,.9)';
+        snowCtx.beginPath();
+        snowCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
+        snowCtx.fill();
+      }
+    }
+    // --- Quests / progression ---
+    const BLESSINGS = [
+      '🎶 铃铛轻响：本局 4 连更容易掉落 🎇（连击≥2 时额外+1）',
+      '🍪 曲奇香气：每次消除都会额外 +1 能量（小小但很爽）',
+      '❄️ 霜雪守护：洗牌不扣步（仍会重置连击）',
+      '🎁 礼物雨：达成任务后奖励 +2 步数',
+      '🧦 温暖袜子：使用道具时分数 +15%'
+    ];
+    let daily = null;
+    function newQuest(){
+      const kinds = ['score','piece','combo'];
+      const kind = pick(kinds);
+      if(kind==='score'){
+        const target = 1800 + level*700;
+        quest = {kind, target, cur:0, label:`在本关拿到 ${target.toLocaleString('zh-CN')} 分`};
+      }else if(kind==='piece'){
+        const p = pick(PIECES);
+        const target = 12 + level*4;
+        quest = {kind, target, cur:0, pieceKey:p.k, pieceEmoji:p.e, label:`消除 ${p.e} × ${target}`};
+      }else{
+        const target = Math.min(6, 3 + Math.floor(level/2));
+        quest = {kind, target, cur:0, label:`达成连击 ≥ ${target}x 一次`};
+      }
+      renderQuest();
+    }
+    function renderQuest(){
+      elQuestText.textContent = quest?.label || '—';
+      if(!quest) { elQuestProgress.textContent='—'; return; }
+      const cur = quest.cur;
+      const target = quest.target;
+      const pct = clamp(cur/target, 0, 1);
+      elQuestProgress.textContent = `进度：${Math.min(cur,target)} / ${target}`;
+    }
+    function checkQuestProgress(event){
+      if(!quest) return;
+      if(quest.kind==='score'){
+        quest.cur = Math.min(quest.target, score);
+      }
+      if(quest.kind==='piece' && event?.clearedPieces){
+        const clearedPieces = event.clearedPieces;
+        const p = PIECES.find(x=>x.k===quest.pieceKey);
+        if(p){ quest.cur = Math.min(quest.target, quest.cur + (clearedPieces[p.k]||0)); }
+      }
+      if(quest.kind==='combo' && event?.comboReached){
+        if(event.comboReached >= quest.target) quest.cur = quest.target;
+      }
+      renderQuest();
+      if(quest.cur>=quest.target){
+        onQuestComplete();
+      }
+    }
+    function onQuestComplete(){
+      chord();
+      toast('✨ 任务完成！关卡提升 + 奖励');
+      level++;
+      // reward
+      moves += 3 + (daily?.includes('🎁')?2:0);
+      inventory.bomb += 1;
+      inventory.line += 1;
+      inventory.cross += 1;
+      inventory.star += 1;
+      energy = clamp(energy + 25, 0, 100);
+      newQuest();
+      updateHUD();
+      boardShake();
+      // celebratory burst center
+      const rect = elBoard.getBoundingClientRect();
+      addRing(rect.width/2, rect.height/2, 'rgba(255,214,138,.9)');
+      addBurstAt(rect.width/2, rect.height/2, 'rgba(255,214,138,.85)', 42, 1.1);
+    }
+    // --- Specials activation ---
+    function blastLine(atIndex, orient){
+      const r = Math.floor(atIndex/SIZE);
+      const c = atIndex%SIZE;
+      const toClear=[];
+      if(orient==='h'){
+        for(let cc=0;cc<SIZE;cc++) toClear.push(idx(r,cc));
+      }else{
+        for(let rr=0;rr<SIZE;rr++) toClear.push(idx(rr,c));
+      }
+      return Array.from(new Set(toClear));
+    }
+    function blastCross(atIndex){
+      const r = Math.floor(atIndex/SIZE);
+      const c = atIndex%SIZE;
+      const toClear=[];
+      for(let cc=0;cc<SIZE;cc++) toClear.push(idx(r,cc));
+      for(let rr=0;rr<SIZE;rr++) toClear.push(idx(rr,c));
+      return Array.from(new Set(toClear));
+    }
+    function blastStar(atIndex, colorPieceIndex){
+      const toClear=[];
+      for(let i=0;i<SIZE*SIZE;i++){
+        const cell=board[i];
+        if(cell && cell.type==='normal' && cell.pieceIndex===colorPieceIndex) toClear.push(i);
+      }
+      // also clear the star itself
+      toClear.push(atIndex);
+      return Array.from(new Set(toClear));
+    }
+    // --- Resolve cycle ---
+    async function resolveAfterMove(initialEvent={}){
+      lockInput = true;
+      let chain=0;
+      let clearedPiecesTotal = {};
+      while(true){
+        const matches = findMatches();
+        if(matches.length===0) break;
+        chain++;
+        combo = chain;
+        bestCombo = Math.max(bestCombo, combo);
+        // Determine cells to clear and special to create
+        let clearSet = new Set();
+        let specialsToPlace = []; // {index, cell}
+        for(const m of matches){
+          for(const i of m.cells) clearSet.add(i);
+          // choose special creation
+          if(m.type==='TL'){
+            // create cross at center
+            specialsToPlace.push({
+              index: m.center,
+              cell: { type:'cross', pieceIndex: m.pieceIndex }
+            });
+          }else if(m.type==='run'){
+            if(m.cells.length>=5){
+              // star at middle
+              const mid = m.cells[Math.floor(m.cells.length/2)];
+              specialsToPlace.push({ index: mid, cell: {type:'star', pieceIndex: m.pieceIndex} });
+            }else if(m.cells.length===4){
+              const mid = m.cells[1];
+              specialsToPlace.push({ index: mid, cell: {type:'line', pieceIndex: m.pieceIndex, orient: m.axis} });
+            }
+          }
+        }
+        // Clear animation + particles
+        const color = chain>=3 ? 'rgba(255,127,180,.9)' : (chain===2?'rgba(116,241,196,.85)':'rgba(255,255,255,.8)');
+        const power = 1 + chain*0.12;
+        for(const i of clearSet){
+          const r=Math.floor(i/SIZE), c=i%SIZE;
+          const {x,y,w,h}=rectOfCell(r,c);
+          addBurstAt(x+w/2, y+h/2, color, 10+chain*4, power);
+          if(chain>=2 && Math.random()<0.18) addRing(x+w/2, y+h/2, 'rgba(255,255,255,.75)');
+        }
+        if(chain>=2) boardShake();
+        // scoring
+        const clearedCount = clearSet.size;
+        const base = clearedCount * 60;
+        const mult = 1 + (chain-1)*0.6;
+        const bonus = Math.floor(base * mult);
+        score += bonus;
+        // energy
+        let eGain = 8 + clearedCount*0.6 + (chain-1)*6;
+        if(daily && daily.includes('🍪')) eGain += clearedCount;
+        energy = clamp(energy + eGain, 0, 100);
+        // inventory drops (feel-good)
+        if(chain>=2 && Math.random()<0.55){
+          inventory.line += (daily && daily.includes('铃铛') ? 1 : 0);
+        }
+        if(chain>=3 && Math.random()<0.50) inventory.cross += 1;
+        if(chain>=4 && Math.random()<0.40) inventory.star += 1;
+        // count cleared pieces for quest
+        for(const i of clearSet){
+          const cell=board[i];
+          if(cell && cell.type==='normal'){
+            const key = PIECES[cell.pieceIndex].k;
+            clearedPiecesTotal[key] = (clearedPiecesTotal[key]||0)+1;
+          }
+        }
+        // mark cleared
+        for(const i of clearSet){
+          board[i] = null;
+        }
+        // place specials (override nulls)
+        for(const sp of specialsToPlace){
+          board[sp.index] = {...sp.cell};
+        }
+        updateHUD();
+        renderBoard();
+        // float text for combo
+        const rect = elBoard.getBoundingClientRect();
+        addTextFloat(rect.width/2, 18 + chain*6, chain===1?`+${bonus}`:`${chain}x 连击 +${bonus}`);
+        beep('square', 420+chain*80, 0.06, 0.035);
+        // cascade
+        await new Promise(r=>setTimeout(r, toggleFX.checked? 140 : 30));
+        dropDown();
+        renderBoard();
+        await new Promise(r=>setTimeout(r, toggleFX.checked? 110 : 30));
+        // Blessing burst
+        if(energy>=100){
+          energy = 0;
+          updateHUD();
+          await blessingBurst();
+        }
+      }
+      // quest updates
+      checkQuestProgress({
+        clearedPieces: clearedPiecesTotal,
+        comboReached: bestCombo
+      });
+      // no more matches => reset combo for next action
+      combo = 0;
+      updateHUD();
+      // dead board -> shuffle
+      if(!anyPossibleMove()){
+        toast('🌀 没有可行步了！自动洗牌');
+        await doShuffle(true);
+      }
+      lockInput = false;
+    }
+    function dropDown(){
+      // gravity
+      for(let c=0;c<SIZE;c++){
+        let write = SIZE-1;
+        for(let r=SIZE-1;r>=0;r--){
+          const i=idx(r,c);
+          if(board[i]!=null){
+            board[idx(write,c)] = board[i];
+            if(write!==r) board[i]=null;
+            write--;
+          }
+        }
+        for(let r=write;r>=0;r--){
+          board[idx(r,c)] = makeRandomCell();
+        }
+      }
+    }
+    async function blessingBurst(){
+      toast('✨ 祝福爆发！');
+      chord();
+      boardShake();
+      // clear random 14 cells with fireworks
+      const picks=[];
+      const all=[...Array(SIZE*SIZE).keys()];
+      while(picks.length<14 && all.length){
+        const k=Math.floor(Math.random()*all.length);
+        picks.push(all.splice(k,1)[0]);
+      }
+      const rect = elBoard.getBoundingClientRect();
+      addRing(rect.width/2, rect.height/2, 'rgba(116,241,196,.95)');
+      addBurstAt(rect.width/2, rect.height/2, 'rgba(116,241,196,.9)', 60, 1.3);
+      // clear with chain-like
+      const clearSet = new Set(picks);
+      const clearedPieces = {};
+      for(const i of clearSet){
+        const cell=board[i];
+        if(cell && cell.type==='normal'){
+          const key=PIECES[cell.pieceIndex].k;
+          clearedPieces[key]=(clearedPieces[key]||0)+1;
+        }
+        board[i]=null;
+        const r=Math.floor(i/SIZE), c=i%SIZE;
+        const {x,y,w,h}=rectOfCell(r,c);
+        addBurstAt(x+w/2, y+h/2, 'rgba(255,255,255,.9)', 18, 1.2);
+      }
+      score += 900 + clearSet.size*80;
+      updateHUD();
+      renderBoard();
+      await new Promise(r=>setTimeout(r, toggleFX.checked? 140:40));
+      dropDown();
+      renderBoard();
+      checkQuestProgress({clearedPieces});
+    }
+    // --- Input / swapping ---
+    function setSelected(rc){
+      clearHighlights();
+      selected = rc;
+      if(!rc) return;
+      const el = getCellEl(rc.r, rc.c);
+      if(el) el.classList.add('selected');
+    }
+    function clearHighlights(){
+      for(const el of elBoard.querySelectorAll('.cell')){
+        el.classList.remove('selected','hint');
+      }
+    }
+    function getCellEl(r,c){
+      return elBoard.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+    }
+    function adjacent(a,b){
+      return (Math.abs(a.r-b.r)+Math.abs(a.c-b.c))===1;
+    }
+    async function trySwap(a,b, costMove=true){
+      if(lockInput) return;
+      if(!adjacent(a,b)) return;
+      const i=idx(a.r,a.c), j=idx(b.r,b.c);
+      // Tool-cast if activeTool
+      if(activeTool){
+        await castToolAt(b.r,b.c); // if dragging from selected to b, cast at b
+        return;
+      }
+      // Swap
+      swapCells(i,j);
+      renderBoard();
+      beep('sine', 520, 0.05, 0.03);
+      // If swap triggers special activation or creates match
+      const m = findMatches();
+      const aCell = board[j];
+      const bCell = board[i];
+      const specialTriggered = await maybeTriggerSpecialOnSwap(i,j);
+      if(m.length===0 && !specialTriggered){
+        // swap back
+        await new Promise(r=>setTimeout(r, toggleFX.checked? 80:0));
+        swapCells(i,j);
+        renderBoard();
+        beep('sawtooth', 180, 0.06, 0.02);
+        toast('🙈 这步不行，再试试！');
+        setSelected(null);
+        return;
+      }
+      if(costMove){
+        moves--;
+        if(moves<0) moves=0;
+      }
+      setSelected(null);
+      updateHUD();
+      if(specialTriggered){
+        await resolveAfterMove();
+      }else{
+        await resolveAfterMove();
+      }
+      if(moves<=0){
+        endGame();
+      }
+    }
+    async function maybeTriggerSpecialOnSwap(i,j){
+      // If either swapped cell is special, trigger immediately
+      let triggered=false;
+      const triggers=[];
+      for(const k of [i,j]){
+        const cell=board[k];
+        if(!cell) continue;
+        if(cell.type==='line' || cell.type==='cross' || cell.type==='star') triggers.push(k);
+      }
+      if(triggers.length===0) return false;
+      // If star swapped with normal: clear that color
+      for(const k of triggers){
+        const cell=board[k];
+        if(cell.type==='star'){
+          // determine other cell
+          const other = (k===i? j : i);
+          const otherCell = board[other];
+          const colorIdx = otherCell?.type==='normal' ? otherCell.pieceIndex : Math.floor(Math.random()*PIECES.length);
+          await triggerSpecial(k, colorIdx);
+          triggered=true;
+        }
+      }
+      // line/cross: trigger without needing match
+      for(const k of triggers){
+        const cell=board[k];
+        if(cell.type==='line'){
+          await triggerSpecial(k);
+          triggered=true;
+        }
+        if(cell.type==='cross'){
+          await triggerSpecial(k);
+          triggered=true;
+        }
+      }
+      return triggered;
+    }
+    async function triggerSpecial(atIndex, colorIdxForStar=null){
+      const cell=board[atIndex];
+      if(!cell) return;
+      let toClear=[];
+      let color='rgba(255,255,255,.9)';
+      if(cell.type==='line'){
+        const orient = cell.orient || (Math.random()<0.5?'h':'v');
+        toClear = blastLine(atIndex, orient);
+        color='rgba(116,241,196,.9)';
+        beep('triangle', 740, 0.08, 0.04);
+      }else if(cell.type==='cross'){
+        toClear = blastCross(atIndex);
+        color='rgba(255,214,138,.9)';
+        beep('triangle', 620, 0.10, 0.04);
+      }else if(cell.type==='star'){
+        const colorIdx = colorIdxForStar ?? Math.floor(Math.random()*PIECES.length);
+        toClear = blastStar(atIndex, colorIdx);
+        color='rgba(165,167,255,.95)';
+        chord();
+      }
+      const rect=elBoard.getBoundingClientRect();
+      // FX
+      for(const i of toClear){
+        const r=Math.floor(i/SIZE), c=i%SIZE;
+        const {x,y,w,h}=rectOfCell(r,c);
+        addBurstAt(x+w/2, y+h/2, color, 16, 1.2);
+      }
+      addRing(rect.width/2, rect.height/2, color);
+      boardShake();
+      // clear
+      const clearedPieces={};
+      for(const i of toClear){
+        const cc=board[i];
+        if(cc && cc.type==='normal'){
+          const key=PIECES[cc.pieceIndex].k;
+          clearedPieces[key]=(clearedPieces[key]||0)+1;
+        }
+        board[i]=null;
+      }
+      score += 250 + toClear.length*45;
+      energy = clamp(energy + 14 + toClear.length*0.8, 0, 100);
+      updateHUD();
+      renderBoard();
+      checkQuestProgress({clearedPieces});
+      await new Promise(r=>setTimeout(r, toggleFX.checked? 140:30));
+      dropDown();
+      renderBoard();
+    }
+    // --- Tools ---
+    function setActiveTool(tool){
+      if(activeTool===tool) activeTool=null;
+      else activeTool=tool;
+      updateHUD();
+    }
+    async function castToolAt(r,c){
+      if(lockInput) return;
+      const i=idx(r,c);
+      if(!activeTool) return;
+      if(activeTool==='bomb'){
+        if(inventory.bomb<=0){ toast('💤 炸弹用完了'); activeTool=null; updateHUD(); return; }
+        inventory.bomb--;
+        // 3x3 clear
+        const toClear=[];
+        for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++){
+          const rr=r+dr, cc=c+dc;
+          if(inb(rr,cc)) toClear.push(idx(rr,cc));
+        }
+        const {x,y,w,h}=rectOfCell(r,c);
+        addRing(x+w/2, y+h/2, 'rgba(255,127,180,.95)');
+        addBurstAt(x+w/2, y+h/2, 'rgba(255,127,180,.9)', 70, 1.35);
+        boardShake();
+        beep('sawtooth', 140, 0.12, 0.05);
+        const clearedPieces={};
+        for(const k of toClear){
+          const cell=board[k];
+          if(cell && cell.type==='normal'){
+            const key=PIECES[cell.pieceIndex].k;
+            clearedPieces[key]=(clearedPieces[key]||0)+1;
+          }
+          board[k]=null;
+        }
+        score += Math.floor((daily && daily.includes('🧦')) ? 520*1.15 : 520);
+        energy = clamp(energy + 22, 0, 100);
+        updateHUD();
+        renderBoard();
+        checkQuestProgress({clearedPieces});
+        await new Promise(r=>setTimeout(r, toggleFX.checked? 150:40));
+        dropDown();
+        renderBoard();
+        activeTool=null;
+        updateHUD();
+        await resolveAfterMove();
+        return;
+      }
+      if(activeTool==='line'){
+        if(inventory.line<=0){ toast('💤 直线用完了'); activeTool=null; updateHUD(); return; }
+        inventory.line--;
+        board[i] = {type:'line', pieceIndex: 0, orient: Math.random()<0.5?'h':'v'};
+      }
+      if(activeTool==='cross'){
+        if(inventory.cross<=0){ toast('💤 十字用完了'); activeTool=null; updateHUD(); return; }
+        inventory.cross--;
+        board[i] = {type:'cross', pieceIndex: 0};
+      }
+      if(activeTool==='star'){
+        if(inventory.star<=0){ toast('💤 变色用完了'); activeTool=null; updateHUD(); return; }
+        inventory.star--;
+        board[i] = {type:'star', pieceIndex: 0};
+      }
+      // cost a move for tools
+      moves = Math.max(0, moves-1);
+      activeTool=null;
+      updateHUD();
+      renderBoard();
+      await triggerSpecial(i, Math.floor(Math.random()*PIECES.length));
+      await resolveAfterMove();
+      if(moves<=0) endGame();
+    }
+    // --- Hint / Shuffle ---
+    function showHint(){
+      if(lockInput) return;
+      clearHighlights();
+      const p = anyPossibleMove();
+      if(!p){ toast('🤔 暂时没提示（会自动洗牌）'); return; }
+      const a = {r: Math.floor(p.i/SIZE), c: p.i%SIZE};
+      const b = {r: Math.floor(p.j/SIZE), c: p.j%SIZE};
+      getCellEl(a.r,a.c)?.classList.add('hint');
+      getCellEl(b.r,b.c)?.classList.add('hint');
+      toast('🔎 已标出可行交换');
+      beep('sine', 880, 0.05, 0.02);
+    }
+    async function doShuffle(free=false){
+      if(lockInput) return;
+      lockInput=true;
+      clearHighlights();
+      if(!free){
+        if(daily && daily.includes('❄️')){
+          // no cost
+        }else{
+          moves = Math.max(0, moves-1);
+        }
+      }
+      combo = 0;
+      updateHUD();
+      // shuffle while avoiding immediate matches
+      const cells=[];
+      for(let i=0;i<SIZE*SIZE;i++) cells.push(board[i]||makeRandomCell());
+      for(let t=0;t<40;t++){
+        for(let i=cells.length-1;i>0;i--){
+          const j=Math.floor(Math.random()*(i+1));
+          const tmp=cells[i]; cells[i]=cells[j]; cells[j]=tmp;
+        }
+        board=cells.slice();
+        if(findMatches().length===0 && anyPossibleMove()) break;
+      }
+      renderBoard();
+      toast('🌀 洗牌完成');
+      addRing(elBoard.clientWidth/2, elBoard.clientHeight/2, 'rgba(119,215,255,.9)');
+      addBurstAt(elBoard.clientWidth/2, elBoard.clientHeight/2, 'rgba(119,215,255,.85)', 60, 1.1);
+      beep('triangle', 360, 0.08, 0.03);
+      lockInput=false;
+      if(moves<=0) endGame();
+    }
+    // --- Game flow ---
+    function generateBoard(){
+      board = new Array(SIZE*SIZE).fill(null).map(()=>makeRandomCell());
+      // avoid initial matches
+      let safe=0;
+      while(findMatches().length>0 && safe<40){
+        board = new Array(SIZE*SIZE).fill(null).map(()=>makeRandomCell());
+        safe++;
+      }
+      // ensure possible move
+      if(!anyPossibleMove()){
+        // force a pattern by swapping random adjacent until possible
+        for(let t=0;t<60;t++){
+          const i=Math.floor(Math.random()*SIZE*SIZE);
+          const r=Math.floor(i/SIZE), c=i%SIZE;
+          const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
+          const [dr,dc]=pick(dirs);
+          const rr=r+dr, cc=c+dc;
+          if(!inb(rr,cc)) continue;
+          swapCells(i, idx(rr,cc));
+          if(anyPossibleMove()) break;
+        }
+      }
+    }
+    function newGame(){
+      score=0;
+      moves=25;
+      combo=0;
+      bestCombo=0;
+      energy=0;
+      inventory = { line:0, cross:0, star:0, bomb:2 };
+      activeTool=null;
+      selected=null;
+      lockInput=false;
+      daily = pick(BLESSINGS);
+      dailyBless.textContent = daily;
+      generateBoard();
+      newQuest();
+      renderBoard();
+      updateHUD();
+      toast('🎄 开始！先找 4 连，爽感起飞');
+    }
+    function endGame(){
+      lockInput=true;
+      clearHighlights();
+      const msg = `🎅 本局结束！分数 ${score.toLocaleString('zh-CN')} · 最高连击 ${bestCombo}x`;
+      toast(msg);
+      addRing(elBoard.clientWidth/2, elBoard.clientHeight/2, 'rgba(255,214,138,.9)');
+      addBurstAt(elBoard.clientWidth/2, elBoard.clientHeight/2, 'rgba(255,214,138,.85)', 80, 1.25);
+      chord();
+      setTimeout(()=>{ lockInput=false; }, 450);
+    }
+    // --- Event listeners ---
+    elBoard.addEventListener('click', async (e)=>{
+      const btn = e.target.closest('.cell');
+      if(!btn) return;
+      if(lockInput) return;
+      const r = +btn.dataset.r;
+      const c = +btn.dataset.c;
+      // tool cast
+      if(activeTool){
+        await castToolAt(r,c);
+        return;
+      }
+      if(!selected){
+        setSelected({r,c});
+        return;
+      }
+      const a=selected;
+      const b={r,c};
+      if(a.r===b.r && a.c===b.c){
+        setSelected(null);
+        return;
+      }
+      if(adjacent(a,b)){
+        await trySwap(a,b,true);
+      }else{
+        setSelected({r,c});
+      }
+    });
+    // Drag swap
+    function cellFromPoint(clientX, clientY){
+      const rect = elBoard.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+      if(x<0||y<0||x>rect.width||y>rect.height) return null;
+      // approximate based on grid
+      const gap = 10;
+      const pad = 14;
+      const w = (rect.width - pad*2 - gap*(SIZE-1)) / SIZE;
+      const step = w+gap;
+      const c = Math.floor((x-pad)/step);
+      const r = Math.floor((y-pad)/step);
+      if(!inb(r,c)) return null;
+      // ensure within cell bounds
+      const cx = pad + c*step;
+      const cy = pad + r*step;
+      if(x<cx || x>cx+w || y<cy || y>cy+w) return null;
+      return {r,c};
+    }
+    elBoard.addEventListener('pointerdown', (e)=>{
+      if(lockInput) return;
+      const rc = cellFromPoint(e.clientX, e.clientY);
+      if(!rc) return;
+      dragging=true;
+      dragFrom=rc;
+      elBoard.setPointerCapture(e.pointerId);
+      if(!activeTool) setSelected(rc);
+    });
+    elBoard.addEventListener('pointermove', async (e)=>{
+      if(!dragging || lockInput) return;
+      const rc = cellFromPoint(e.clientX, e.clientY);
+      if(!rc) return;
+      if(!dragFrom) return;
+      if(rc.r===dragFrom.r && rc.c===dragFrom.c) return;
+      if(adjacent(dragFrom, rc)){
+        dragging=false;
+        // if tool active, cast at rc; else swap
+        if(activeTool){
+          await castToolAt(rc.r, rc.c);
+        }else{
+          await trySwap(dragFrom, rc, true);
+        }
+      }
+    });
+    elBoard.addEventListener('pointerup', ()=>{ dragging=false; dragFrom=null; });
+    elBoard.addEventListener('pointercancel', ()=>{ dragging=false; dragFrom=null; });
+    btnNew.addEventListener('click', ()=>newGame());
+    btnHint.addEventListener('click', ()=>showHint());
+    btnShuffle.addEventListener('click', ()=>doShuffle(false));
+    btnBomb.addEventListener('click', ()=>setActiveTool('bomb'));
+    toolLine.addEventListener('click', ()=>setActiveTool('line'));
+    toolCross.addEventListener('click', ()=>setActiveTool('cross'));
+    toolStar.addEventListener('click', ()=>setActiveTool('star'));
+    document.addEventListener('keydown', (e)=>{
+      const k=e.key.toLowerCase();
+      if(k==='h') showHint();
+      if(k==='r') newGame();
+      if(k==='s') doShuffle(false);
+      if(k==='b') setActiveTool('bomb');
+    });
+    // Kickstart
+    resizeCanvases();
+    initSnow();
+    newGame();
+    requestAnimationFrame(loop);
+    // on first interaction, resume audio context (mobile)
+    addEventListener('pointerdown', ()=>{ if(actx && actx.state==='suspended') actx.resume(); }, {once:true});
+  </script>
+</body>
+</html>

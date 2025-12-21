@@ -188,6 +188,32 @@
         .animate-shake {
             animation: shake 0.3s ease-in-out;
         }
+        /* ==================== ❄️ 冬日限定：纯 CSS 雪花特效 ==================== */
+.snow-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* 关键：不挡鼠标点击 */
+    z-index: 9999; /* 在最上层 */
+    overflow: hidden;
+}
+
+.snowflake {
+    position: absolute;
+    top: -10px;
+    color: #fff;
+    font-size: 1em;
+    font-family: Arial, sans-serif;
+    text-shadow: 0 0 5px #000;
+    animation: fall linear infinite;
+}
+
+@keyframes fall {
+    0% { transform: translateY(-10vh) translateX(0); opacity: 1; }
+    100% { transform: translateY(110vh) translateX(20px); opacity: 0.3; }
+}
     </style>
 </head>
 <body class="h-screen w-screen text-white overflow-hidden bg-black">
@@ -323,7 +349,15 @@
 
             { id: 'manor', name: '我们的庄园', icon: 'fa-solid fa-wheat-awn', color: 'text-yellow-500', type: 'game', desktop: true, mobile: true },
             { id: 'memories', name: '回忆画廊', icon: 'fa-solid fa-images', color: 'text-pink-400', type: 'media', desktop: true, mobile: true },
-            
+              // 📦 1. 安装包 (演员)：用来演戏的，点击弹出安装进度条
+    { id: 'installer_cris', name: '圣诞献礼.exe', icon: 'fa-solid fa-box-open', color: 'text-blue-400', type: 'util', desktop: true, mobile: true, isInstaller: true },
+
+    // 📦 新增：叠叠乐 (初始也是隐藏的)
+    { id: 'gift_game', name: '叠叠高', icon: 'fa-solid fa-cubes', color: 'text-green-400', type: 'game', desktop: false, mobile: true },
+
+    // 🍬 2. 消消乐本体 (主角)：初始不可见 (desktop: false)
+    { id: 'cris_game', name: '消消乐', icon: 'fa-solid fa-candy-cane', color: 'text-pink-500', type: 'game', desktop: false, mobile: true, realSrc: 'cris.html' },
+
             // ... 其他原有的 APP (edge, files 等) 保持不变 ...
             { id: 'edge', name: 'Edge', icon: 'fa-brands fa-edge', color: 'text-blue-400', type: 'browser', desktop: true, mobile: true },
             { id: 'files', name: 'Explorer', icon: 'fa-solid fa-folder', color: 'text-yellow-400', type: 'system', desktop: true, mobile: true },
@@ -338,9 +372,9 @@
 
         const USERS = {
             // ✅ Admin 独享 admin_console
-            'admin': { name: 'Administrator', apps: ['admin_console', 'manor', 'memories', 'edge', 'files', 'settings', 'vscode', 'terminal', 'notepad', 'calculator', 'store', 'trash'] },
+            'admin': { name: 'Administrator', apps: ['admin_console', 'installer_cris', 'manor', 'memories', 'edge', 'files', 'settings', 'vscode', 'terminal', 'notepad', 'calculator', 'store', 'trash'] },
             // ❌ Guest 看不到 console 和 credits
-            'user': { name: 'Guest User', apps: ['manor', 'memories', 'edge', 'files', 'notepad', 'calculator', 'store', 'trash'] }
+            'user': { name: 'Guest User', apps: ['manor','installer_cris', 'memories', 'edge', 'files', 'notepad', 'calculator', 'store', 'trash'] }
         };
 
         // --- State ---
@@ -356,6 +390,7 @@
         // --- Initialization ---
         window.addEventListener('load', () => {
             detectDevice();
+             loadInstalledApps(); // ✅ 新增：读取已安装的应用
             startBootSequence();
             updateClock();
             setInterval(updateClock, 1000);
@@ -608,6 +643,61 @@
 
         // --- Content Generator (Core Injection) ---
         function getAppContent(app) {
+              // 📦 安装包界面
+            if (app.id === 'installer_cris') {
+                // 返回一个带有进度条和按钮的界面
+                return `
+                    <div class="flex flex-col items-center justify-center h-full bg-[#f0f0f0] text-black select-none">
+                        <div class="w-96 bg-white p-6 rounded-lg shadow-xl border border-gray-300">
+                            <div class="flex items-center gap-4 mb-6">
+                                <i class="fa-solid fa-box-open text-4xl text-blue-500"></i>
+                                <div>
+                                    <h2 class="text-lg font-bold">圣诞限定版安装向导</h2>
+                                    <p class="text-xs text-gray-500">版本 v1.0.0 | By Huangfu</p>
+                                </div>
+                            </div>
+                            
+                            <!-- 初始状态：安装按钮 -->
+                            <div id="install-step-1" class="text-center">
+                                <p class="mb-4 text-sm text-gray-600">即将安装“消消乐”到您的桌面。<br>这可能需要消耗一点点快乐能量。</p>
+                                <button onclick="startFakeInstall()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded shadow transition-colors">
+                                    立即安装
+                                </button>
+                            </div>
+
+                            <!-- 进行状态：进度条 (初始隐藏) -->
+                            <div id="install-step-2" class="hidden">
+                                <div class="mb-2 flex justify-between text-xs font-bold text-gray-600">
+                                    <span id="install-status">正在解压资源...</span>
+                                    <span id="install-percent">0%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4 overflow-hidden">
+                                    <div id="install-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <!-- 完成状态：完成提示 (初始隐藏) -->
+                            <div id="install-step-3" class="hidden text-center">
+                                <i class="fa-solid fa-circle-check text-green-500 text-4xl mb-2 animate-bounce"></i>
+                                <h3 class="font-bold text-lg mb-1">安装成功！</h3>
+                                <p class="text-xs text-gray-500 mb-4">快捷方式已发送到桌面。</p>
+                                <button onclick="finishInstall()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded transition-colors">
+                                    完成
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }  // ✅ 新增：叠叠乐的内容
+            if (app.id === 'gift_game') {
+                return `<iframe src="gift.html" class="w-full h-full border-0"></iframe>`;
+            }
+
+
+            // 🍬 消消乐游戏本体
+            if (app.id === 'cris_game') {
+                return `<iframe src="cris.html" class="w-full h-full border-0"></iframe>`;
+            }
               // ✅ 管理员专属：赛博控制台
            // ✅ 管理员专属：赛博控制台 (手机适配版)
             if (app.id === 'admin_console') return `
@@ -765,6 +855,10 @@
                 <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-white/50 rounded-full"></div>
             `;
             document.getElementById('mobile-env').appendChild(win);
+               // ✅ 新增这一行：给手机窗口也发个身份证！
+            win.id = `mobile-win-${app.id}`; 
+            
+            win.className = 'absolute inset-0 z-[60] bg-gray-900 flex flex-col animate-slide-up';
         }
 function openMobileApp(app) {
             const win = document.createElement('div');
@@ -832,6 +926,148 @@ function openMobileApp(app) {
                 // 电脑端：用窗口打开，并关闭控制台
                 openWindow(creditsApp);
                 closeWindow('admin_console');
+            }
+        }
+        function letItSnow() {
+    const container = document.createElement('div');
+    container.className = 'snow-container';
+    document.body.appendChild(container);
+
+    const snowChars = ['❄', '❅', '❆', '•'];
+    
+    // 生成 50 片雪花
+    for (let i = 0; i < 50; i++) {
+        const flake = document.createElement('div');
+        flake.className = 'snowflake';
+        flake.innerHTML = snowChars[Math.floor(Math.random() * snowChars.length)];
+        
+        // 随机位置、大小、速度
+        flake.style.left = Math.random() * 100 + 'vw';
+        flake.style.fontSize = (Math.random() * 10 + 10) + 'px';
+        flake.style.opacity = Math.random();
+        flake.style.animationDuration = (Math.random() * 3 + 2) + 's'; // 2~5秒落地
+        flake.style.animationDelay = Math.random() * 5 + 's';
+        
+        container.appendChild(flake);
+    }
+}
+ // ==================== 📦 虚拟安装逻辑 ====================
+        
+        function startFakeInstall() {
+            // 1. 切换界面
+            document.getElementById('install-step-1').classList.add('hidden');
+            document.getElementById('install-step-2').classList.remove('hidden');
+            
+            const bar = document.getElementById('install-bar');
+            const percent = document.getElementById('install-percent');
+            const status = document.getElementById('install-status');
+            
+            let progress = 0;
+            
+            // 2. 模拟进度条动画
+            const timer = setInterval(() => {
+                // 随机增加进度，看起来更真实
+                progress += Math.random() * 5; 
+                if (progress > 100) progress = 100;
+                
+                // 更新 UI
+                bar.style.width = `${progress}%`;
+                percent.innerText = `${Math.floor(progress)}%`;
+                
+                // 随机更新状态文字
+                if (progress > 20 && progress < 50) status.innerText = "正在注入冬日暖阳...";
+                if (progress > 50 && progress < 80) status.innerText = "正在加载快乐因子...";
+                if (progress > 80 && progress < 99) status.innerText = "最后整理中...";
+
+                // 3. 安装完成
+                if (progress === 100) {
+                    clearInterval(timer);
+                    setTimeout(() => {
+                        document.getElementById('install-step-2').classList.add('hidden');
+                        document.getElementById('install-step-3').classList.remove('hidden');
+                        
+                        // ✨ 关键时刻：真正把游戏装进系统！
+                        reallyInstallGame(); 
+                    }, 500);
+                }
+            }, 150); // 每150毫秒动一次
+        }
+
+        function reallyInstallGame() {
+             const appsToInstall = ['cris_game', 'gift_game'];
+
+            // ✅ 新增：记在本子上！
+            localStorage.setItem('installed_games', 'true');
+
+            appsToInstall.forEach(appId => {
+                const app = APPS.find(a => a.id === appId);
+                if (!app) return;
+
+                // 1. 设为可见
+                app.desktop = true;
+
+                // 2. 加到当前用户列表
+                if (state.user && USERS[state.user]) {
+                    if (!USERS[state.user].apps.includes(appId)) {
+                        USERS[state.user].apps.push(appId);
+                    }
+                }
+            });
+
+            // 3. 刷新桌面 (一次刷新即可)
+            const userConfig = USERS[state.user];
+            if (state.device === 'desktop') {
+                renderDesktop(userConfig);
+            } else {
+                renderMobile(userConfig);
+            }
+            
+            // 可选：播放一个“噔噔噔”的成功音效
+        }
+              function loadInstalledApps() {
+            // 从浏览器缓存里找 'installed_games' 这个标记
+            const installed = localStorage.getItem('installed_games');
+            
+            if (installed === 'true') {
+                console.log("检测到已安装游戏，正在恢复...");
+                
+                // 恢复 APPS 里的可见性
+                const appsToRestore = ['cris_game', 'gift_game'];
+                appsToRestore.forEach(id => {
+                    const app = APPS.find(a => a.id === id);
+                    if (app) app.desktop = true;
+                });
+
+                // 恢复 USERS 里的列表 (确保两个用户都有)
+                const targetApps = ['cris_game', 'gift_game'];
+                ['admin', 'user'].forEach(uid => {
+                    targetApps.forEach(appId => {
+                        if (!USERS[uid].apps.includes(appId)) {
+                            USERS[uid].apps.push(appId);
+                        }
+                    });
+                });
+                
+                // 可选：如果已经安装了，那个“圣诞礼物.exe”安装包是不是该藏起来？
+                // 如果你想藏起来，就把 installer_cris 设为 false
+                // const installer = APPS.find(a => a.id === 'installer_cris');
+                // if(installer) installer.desktop = false;
+            }
+        }
+             // 3. 点击“完成”按钮 (双端修复版)
+        function finishInstall() {
+            if (state.device === 'mobile') {
+                // 📱 手机端：通过刚才发的身份证找到它，然后撕掉
+                const mobWin = document.getElementById('mobile-win-installer_cris');
+                if (mobWin) {
+                    // 加个退出动画会更自然
+                    mobWin.style.transform = 'translateY(100%)';
+                    mobWin.style.transition = 'transform 0.3s';
+                    setTimeout(() => mobWin.remove(), 300);
+                }
+            } else {
+                // 🖥️ 电脑端：走老规矩
+                closeWindow('installer_cris');
             }
         }
     </script>
