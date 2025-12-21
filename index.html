@@ -928,29 +928,7 @@ function openMobileApp(app) {
                 closeWindow('admin_console');
             }
         }
-        function letItSnow() {
-    const container = document.createElement('div');
-    container.className = 'snow-container';
-    document.body.appendChild(container);
-
-    const snowChars = ['❄', '❅', '❆', '•'];
-    
-    // 生成 50 片雪花
-    for (let i = 0; i < 50; i++) {
-        const flake = document.createElement('div');
-        flake.className = 'snowflake';
-        flake.innerHTML = snowChars[Math.floor(Math.random() * snowChars.length)];
-        
-        // 随机位置、大小、速度
-        flake.style.left = Math.random() * 100 + 'vw';
-        flake.style.fontSize = (Math.random() * 10 + 10) + 'px';
-        flake.style.opacity = Math.random();
-        flake.style.animationDuration = (Math.random() * 3 + 2) + 's'; // 2~5秒落地
-        flake.style.animationDelay = Math.random() * 5 + 's';
-        
-        container.appendChild(flake);
-    }
-}
+       
  // ==================== 📦 虚拟安装逻辑 ====================
         
         function startFakeInstall() {
@@ -1070,6 +1048,32 @@ function openMobileApp(app) {
                 closeWindow('installer_cris');
             }
         }
+        function letItSnow() {
+    const container = document.createElement('div');
+    container.className = 'snow-container';
+    document.body.appendChild(container);
+
+    const snowChars = ['❄', '❅', '❆', '•'];
+    
+    // 生成 50 片雪花
+    for (let i = 0; i < 50; i++) {
+        const flake = document.createElement('div');
+        flake.className = 'snowflake';
+        flake.innerHTML = snowChars[Math.floor(Math.random() * snowChars.length)];
+        
+        // 随机位置、大小、速度
+        flake.style.left = Math.random() * 100 + 'vw';
+        flake.style.fontSize = (Math.random() * 10 + 10) + 'px';
+        flake.style.opacity = Math.random();
+        flake.style.animationDuration = (Math.random() * 3 + 2) + 's'; // 2~5秒落地
+        flake.style.animationDelay = Math.random() * 5 + 's';
+        
+        container.appendChild(flake);
+    }
+}
+
+// 启动！
+letItSnow();
     </script>
 </body>
 </html>
