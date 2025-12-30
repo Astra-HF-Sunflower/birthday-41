@@ -341,7 +341,8 @@
             'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2670'
         ];
 
-        const APPS = [
+        const APPS = [// ✅ 新增：游戏空间 (GameSpace)
+{ id: 'gamespace', name: '游戏空间', icon: 'fa-solid fa-gamepad', color: 'text-purple-500', type: 'game', desktop: true, mobile: true },
              // ✅ 新增：管理员控制台 (只有Admin能见)
   { id: 'admin_console', name: 'ROOT_ACCESS', icon: 'fa-solid fa-terminal', color: 'text-red-500', type: 'system', desktop: true, mobile: true },            
             // ✅ 隐藏：制作人名单 (desktop: false) -> 只能通过控制台打开
@@ -372,9 +373,9 @@
 
         const USERS = {
             // ✅ Admin 独享 admin_console
-            'admin': { name: 'Administrator', apps: ['admin_console', 'installer_cris', 'manor', 'memories', 'edge', 'files', 'settings', 'vscode', 'terminal', 'notepad', 'calculator', 'store', 'trash'] },
+            'admin': { name: 'Administrator', apps: ['admin_console', 'gamespace','installer_cris', 'manor', 'memories', 'edge', 'files', 'settings', 'vscode', 'terminal', 'notepad', 'calculator', 'store', 'trash'] },
             // ❌ Guest 看不到 console 和 credits
-            'user': { name: 'Guest User', apps: ['manor','installer_cris', 'memories', 'edge', 'files', 'notepad', 'calculator', 'store', 'trash'] }
+            'user': { name: 'Guest User', apps: ['manor','gamespace','installer_cris', 'memories', 'edge', 'files', 'notepad', 'calculator', 'store', 'trash'] }
         };
 
         // --- State ---
@@ -691,6 +692,13 @@
             }  // ✅ 新增：叠叠乐的内容
             if (app.id === 'gift_game') {
                 return `<iframe src="gift.html" class="w-full h-full border-0"></iframe>`;
+            }
+
+
+            // ✅ 新增：游戏空间连接口
+            if (app.id === 'gamespace') {
+                // 背景设为黑色(bg-black)或者深灰，防止加载时闪白屏
+                return `<iframe src="gamespace.html" class="w-full h-full border-0 bg-black"></iframe>`;
             }
 
 
