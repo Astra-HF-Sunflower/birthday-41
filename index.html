@@ -589,7 +589,7 @@
         }
 
         // --- Window Management ---
-         function openWindow(app) {
+                function openWindow(app) {
             if(state.windows.find(w => w.appId === app.id)) {
                 const existingEl = document.getElementById(`window-${app.id}`);
                 bringToFront(existingEl);
@@ -597,35 +597,59 @@
             }
 
             const winId = `window-${app.id}`;
-            
-            // ✅ 修复：把 const 改成 let
             let zIndex = ++state.zIndexCounter;
             
             const winEl = document.createElement('div');
             winEl.id = winId;
-            winEl.className = 'window-frame glass-dark rounded-lg flex flex-col overflow-hidden animate-pop pointer-events-auto border border-gray-600/50';
-            winEl.style.width = '800px'; winEl.style.height = '600px';
-            winEl.style.top = '50px'; winEl.style.left = '50px'; winEl.style.zIndex = zIndex;
- // ✅ 新增：如果是 Credits，直接全屏居中，且层级最高
-            if (app.id === 'credits') {
-                winEl.style.width = '90vw';
-                winEl.style.height = '90vh';
-                winEl.style.top = '5vh';
-                winEl.style.left = '5vw';
-                zIndex += 1000; // 强制超级置顶
-            }
+            // 注意：加上 transition-all 让变大变小有动画效果
+            winEl.className = 'window-frame glass-dark rounded-lg flex flex-col overflow-hidden animate-pop pointer-events-auto border border-gray-600/50 transition-all duration-300 ease-in-out';
+            
+            // 默认尺寸
+            winEl.style.width = '800px';
+            winEl.style.height = '600px';
+            winEl.style.top = '80px';
+            winEl.style.left = '120px';
+            winEl.style.zIndex = zIndex;
+
             const tbBtn = document.getElementById(`taskbar-btn-${app.id}`);
             if(tbBtn) tbBtn.classList.add('bg-white/5', 'border-b-2', 'border-blue-400');
 
             winEl.innerHTML = `
-                <div class="h-9 bg-gray-800/90 flex justify-between items-center px-3 select-none" onmousedown="startDrag(event, '${winId}')">
-                    <div class="flex items-center gap-2 text-xs font-medium text-gray-300"><i class="${app.icon} ${app.color}"></i><span>${app.name}</span></div>
-                    <div class="flex items-center h-full">
-                        <button onclick="closeWindow('${app.id}')" class="w-10 h-9 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                <!-- Titlebar -->
+                <div class="h-9 bg-gray-800/90 flex justify-between items-center px-3 select-none" onmousedown="startDrag(event, '${winId}')" ontouchstart="startDrag(event, '${winId}')">
+                    <div class="flex items-center gap-2 text-xs font-medium text-gray-300">
+                        <i class="${app.icon} ${app.color}"></i>
+                        <span>${app.name}</span>
+                    </div>
+                    <div class="flex items-center h-full gap-1">
+                        <!-- 📱 手机模式按钮 -->
+                        <button onclick="toggleMobileMode('${winId}')" class="w-8 h-7 hover:bg-white/10 rounded flex items-center justify-center transition-colors" title="Mobile View">
+                            <i class="fa-solid fa-mobile-screen-button text-[10px]"></i>
+                        </button>
+                        
+                        <!-- ➖ 最小化 (暂时没做逻辑，先留着) -->
+                        <button class="w-8 h-7 hover:bg-white/10 rounded flex items-center justify-center transition-colors">
+                            <i class="fa-solid fa-minus text-[10px]"></i>
+                        </button>
+                        
+                        <!-- □ 最大化按钮 -->
+                        <button onclick="toggleMaximize('${winId}')" class="w-8 h-7 hover:bg-white/10 rounded flex items-center justify-center transition-colors">
+                            <i class="fa-regular fa-square text-[10px]"></i>
+                        </button>
+                        
+                        <!-- ❌ 关闭按钮 -->
+                        <button onclick="closeWindow('${app.id}')" class="w-8 h-7 hover:bg-red-500 hover:text-white rounded flex items-center justify-center transition-colors ml-1">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="flex-1 bg-[#1a1a1a] relative overflow-hidden flex flex-col">${getAppContent(app)}</div>
+                
+                <!-- Content (已修复滑动穿透) -->
+                <div class="flex-1 bg-[#1a1a1a] relative overflow-hidden flex flex-col touch-auto" onmousedown="event.stopPropagation()" ontouchstart="event.stopPropagation()">
+                    ${getAppContent(app)}
+                </div>
             `;
+            
             winEl.onclick = () => bringToFront(winEl);
             document.getElementById('window-area').appendChild(winEl);
             state.windows.push({ appId: app.id, element: winEl });
@@ -1079,7 +1103,63 @@ function openMobileApp(app) {
         container.appendChild(flake);
     }
 }
+        // --- 窗口控制：最大化 ---
+        function toggleMaximize(winId) {
+            const win = document.getElementById(winId);
+            if (!win) return;
 
+            // 检查当前状态
+            if (win.getAttribute('data-state') === 'maximized') {
+                // 🔄 还原 (Restore)
+                win.style.width = win.getAttribute('data-w');
+                win.style.height = win.getAttribute('data-h');
+                win.style.top = win.getAttribute('data-t');
+                win.style.left = win.getAttribute('data-l');
+                win.setAttribute('data-state', 'normal');
+                win.classList.add('rounded-lg'); // 恢复圆角
+            } else {
+                // ⬜ 最大化 (Maximize)
+                // 先保存当前尺寸，以便还原
+                win.setAttribute('data-w', win.style.width);
+                win.setAttribute('data-h', win.style.height);
+                win.setAttribute('data-t', win.style.top);
+                win.setAttribute('data-l', win.style.left);
+                win.setAttribute('data-state', 'maximized');
+
+                // 设为全屏 (留出底部任务栏 48px)
+                win.style.width = '100%';
+                win.style.height = 'calc(100% - 48px)';
+                win.style.top = '0';
+                win.style.left = '0';
+                win.classList.remove('rounded-lg'); // 去掉圆角，贴合边缘
+            }
+            bringToFront(win);
+        }
+
+        // --- 窗口控制：手机模式 ---
+        function toggleMobileMode(winId) {
+            const win = document.getElementById(winId);
+            if (!win) return;
+
+            if (win.getAttribute('data-state') === 'mobile') {
+                // 🔄 还原
+                win.style.width = '800px'; // 或者还原到之前的尺寸
+                win.style.height = '600px';
+                win.setAttribute('data-state', 'normal');
+            } else {
+                // 📱 变身手机 (类似于 iPhone 尺寸)
+                // 也要保存一下位置，防止变身后跑偏
+                win.setAttribute('data-w', win.style.width);
+                win.setAttribute('data-state', 'mobile');
+
+                win.style.width = '375px';
+                win.style.height = '667px';
+                // 自动居中一下，体验更好
+                win.style.top = '50px';
+                win.style.left = 'calc(50% - 187px)';
+            }
+            bringToFront(win);
+        }
 // 启动！
 letItSnow();
     </script>
